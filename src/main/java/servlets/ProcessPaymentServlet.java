@@ -16,7 +16,9 @@ import com.bittercode.model.Book;
 import com.bittercode.model.Cart;
 import com.bittercode.model.UserRole;
 import com.bittercode.service.BookService;
+import com.bittercode.service.OrderService;
 import com.bittercode.service.impl.BookServiceImpl;
+import com.bittercode.service.impl.OrderServiceImpl;
 import com.bittercode.util.StoreUtil;
 
 public class ProcessPaymentServlet extends HttpServlet {
@@ -45,6 +47,24 @@ public class ProcessPaymentServlet extends HttpServlet {
             List<Cart> cartItems = null;
             if (session.getAttribute("cartItems") != null)
                 cartItems = (List<Cart>) session.getAttribute("cartItems");
+
+            String username = (String) session.getAttribute(UserRole.CUSTOMER.toString());
+            if (username == null)
+                username = "demo";
+
+            double totalAmount = 0.0;
+            if (cartItems != null) {
+                for (Cart c : cartItems) {
+                    totalAmount += c.getBook().getPrice() * c.getQuantity();
+                }
+            }
+
+            OrderService orderService = new com.bittercode.service.impl.OrderServiceImpl();
+            String createdOrderId = null;
+            if (cartItems != null && !cartItems.isEmpty()) {
+                createdOrderId = orderService.createOrder(username, cartItems, totalAmount);
+            }
+
             for (Cart cart : cartItems) {
                 Book book = cart.getBook();
                 double bPrice = book.getPrice();
@@ -55,7 +75,7 @@ public class ProcessPaymentServlet extends HttpServlet {
                 int qtToBuy = cart.getQuantity();
                 availableQty = availableQty - qtToBuy;
                 bookService.updateBookQtyById(bCode, availableQty);
-                pw.println(this.addBookToCard(bCode, bName, bAuthor, bPrice, availableQty));
+                pw.println(this.addBookToCard(createdOrderId != null ? createdOrderId : ("ORD" + bCode), bName, bAuthor, bPrice * qtToBuy, availableQty));
                 session.removeAttribute("qty_" + bCode);
             }
             session.removeAttribute("amountToPay");
