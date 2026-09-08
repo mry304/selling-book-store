@@ -1,6 +1,6 @@
 package com.bittercode.service;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import com.bittercode.model.StoreException;
 import com.bittercode.model.User;
