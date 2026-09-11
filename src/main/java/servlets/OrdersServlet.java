@@ -43,7 +43,7 @@ public class OrdersServlet extends HttpServlet {
             if (isCustomer) {
                 RequestDispatcher rd = req.getRequestDispatcher("CustomerHome.html");
                 rd.include(req, res);
-                StoreUtil.setActiveTab(pw, "orders");
+                StoreUtil.setActiveTab(pw, "orders", session);
             } else {
                 RequestDispatcher rd = req.getRequestDispatcher("SellerHome.html");
                 rd.include(req, res);
@@ -53,60 +53,67 @@ public class OrdersServlet extends HttpServlet {
             String username = isCustomer ? (String) session.getAttribute(UserRole.CUSTOMER.toString()) : null;
             List<Order> orders = isCustomer ? orderService.getOrdersByUsername(username) : orderService.getAllOrders();
 
-            pw.println("<div id='topmid' style='background-color: #343a40; color: white; padding: 10px; text-align: center; margin-bottom: 20px;'>");
-            pw.println("<h2>" + (isCustomer ? "My Order History" : "Customer Orders Management") + "</h2>");
-            pw.println("</div>");
-
-            pw.println("<div class='container' style='margin-top: 20px;'>");
+            pw.println("<div class=\"bookshelf-page-container\">");
+            pw.println("  <div class=\"bookshelf-page-card\">");
+            pw.println("    <header class=\"bookshelf-page-header\">");
+            pw.println("      <h1>" + (isCustomer ? "My Orders History" : "Customer Orders Management") + "</h1>");
+            pw.println("      <p>" + (isCustomer ? "Review your purchased books and shipment status." : "Manage all customer orders and transaction histories.") + "</p>");
+            pw.println("    </header>");
 
             if (orders == null || orders.isEmpty()) {
-                pw.println("<div class='alert alert-info text-center'>No orders found!</div>");
+                pw.println("    <div class=\"bookshelf-empty-state\">");
+                pw.println("      <div class=\"empty-icon\">&#128220;</div>");
+                pw.println("      <h3>No orders placed yet</h3>");
+                pw.println("      <p>When you purchase books from our shelf, your order receipts will appear here.</p>");
+                pw.println("      <a href=\"viewbook\" class=\"btn-checkout-shelf\">&larr; Browse Available Books</a>");
+                pw.println("    </div>");
             } else {
-                pw.println("<div class='table-responsive'>");
-                pw.println("<table class='table table-bordered table-striped table-hover'>");
-                pw.println("<thead class='thead-dark'>");
-                pw.println("<tr>");
-                pw.println("<th>Order ID</th>");
+                pw.println("    <div class=\"table-responsive\">");
+                pw.println("      <table class=\"bookshelf-table\">");
+                pw.println("        <thead>");
+                pw.println("          <tr>");
+                pw.println("            <th>Order ID</th>");
                 if (isSeller) {
-                    pw.println("<th>Customer</th>");
+                    pw.println("            <th>Customer</th>");
                 }
-                pw.println("<th>Order Date</th>");
-                pw.println("<th>Items Purchased</th>");
-                pw.println("<th>Total Amount</th>");
-                pw.println("<th>Status</th>");
-                pw.println("</tr>");
-                pw.println("</thead>");
-                pw.println("<tbody>");
+                pw.println("            <th>Date</th>");
+                pw.println("            <th>Purchased Books</th>");
+                pw.println("            <th>Total Amount</th>");
+                pw.println("            <th>Status</th>");
+                pw.println("          </tr>");
+                pw.println("        </thead>");
+                pw.println("        <tbody>");
 
                 SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
                 for (Order order : orders) {
-                    pw.println("<tr>");
-                    pw.println("<td><strong>" + order.getOrderId() + "</strong></td>");
+                    pw.println("          <tr>");
+                    pw.println("            <td><strong>" + order.getOrderId() + "</strong></td>");
                     if (isSeller) {
-                        pw.println("<td>" + order.getUsername() + "</td>");
+                        pw.println("            <td>" + order.getUsername() + "</td>");
                     }
-                    pw.println("<td>" + (order.getOrderDate() != null ? sdf.format(order.getOrderDate()) : "N/A") + "</td>");
+                    pw.println("            <td style=\"color:var(--text-secondary);\">" + (order.getOrderDate() != null ? sdf.format(order.getOrderDate()) : "N/A") + "</td>");
 
                     // Items list
-                    pw.println("<td><ul style='margin-bottom: 0; padding-left: 20px;'>");
+                    pw.println("            <td><ul style=\"margin:0; padding-left:18px; line-height:1.6;\">");
                     for (OrderDetail item : order.getItems()) {
                         String name = item.getBookName() != null ? item.getBookName() : ("Book (" + item.getBookBarcode() + ")");
-                        pw.println("<li>" + name + " x <strong>" + item.getQuantity() + "</strong> (&#8377; " + item.getAmount() + ")</li>");
+                        pw.println("              <li><span class=\"book-title-cell\" style=\"font-size:0.95rem;\">" + name + "</span> &times; <strong>" + item.getQuantity() + "</strong> (&#8377; " + item.getAmount() + ")</li>");
                     }
-                    pw.println("</ul></td>");
+                    pw.println("            </ul></td>");
 
-                    pw.println("<td style='color: green; font-weight: bold;'>&#8377; " + order.getTotalAmount() + "</td>");
-                    pw.println("<td><span class='badge badge-success' style='font-size: 14px;'>" + order.getStatus() + "</span></td>");
-                    pw.println("</tr>");
+                    pw.println("            <td class=\"price-cell\">&#8377; " + String.format("%.2f", order.getTotalAmount()) + "</td>");
+                    pw.println("            <td><span class=\"badge-order-success\">" + order.getStatus() + "</span></td>");
+                    pw.println("          </tr>");
                 }
 
-                pw.println("</tbody>");
-                pw.println("</table>");
-                pw.println("</div>");
+                pw.println("        </tbody>");
+                pw.println("      </table>");
+                pw.println("    </div>"); // end table-responsive
             }
 
-            pw.println("</div>");
+            pw.println("  </div>"); // end bookshelf-page-card
+            pw.println("</div>");   // end bookshelf-page-container
 
         } catch (Exception e) {
             e.printStackTrace();

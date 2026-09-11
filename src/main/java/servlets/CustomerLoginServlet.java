@@ -15,6 +15,7 @@ import com.bittercode.model.User;
 import com.bittercode.model.UserRole;
 import com.bittercode.service.UserService;
 import com.bittercode.service.impl.UserServiceImpl;
+import com.bittercode.util.StoreUtil;
 
 public class CustomerLoginServlet extends HttpServlet {
 
@@ -30,22 +31,13 @@ public class CustomerLoginServlet extends HttpServlet {
         try {
 
             if (user != null) {
-
-                RequestDispatcher rd = req.getRequestDispatcher("CustomerHome.html");
-                rd.include(req, res);
-                pw.println("    <div id=\"topmid\"><h1>Welcome to Online <br>Book Store</h1></div>\r\n"
-                        + "    <br>\r\n"
-                        + "    <table class=\"tab\">\r\n"
-                        + "        <tr>\r\n"
-                        + "            <td><p>Welcome "+user.getFirstName()+", Happy Learning !!</p></td>\r\n"
-                        + "        </tr>\r\n"
-                        + "    </table>");
-
+                // Restore customer cart items from persistent storage (database & cache)
+                StoreUtil.restoreUserCart(req.getSession(), user.getEmailId());
+                res.sendRedirect("viewbook");
             } else {
-
                 RequestDispatcher rd = req.getRequestDispatcher("CustomerLogin.html");
                 rd.include(req, res);
-                pw.println("<table class=\"tab\"><tr><td>Incorrect UserName or PassWord</td></tr></table>");
+                pw.println("<div class='bookshelf-auth-wrap' style='margin-top:-20px; margin-bottom:20px;'><div class='alert alert-danger text-center' style='border-radius:12px;'>Incorrect Username or Password. Please try again!</div></div>");
             }
 
         } catch (Exception e) {

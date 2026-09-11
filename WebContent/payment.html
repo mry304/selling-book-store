@@ -1,216 +1,209 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="ISO-8859-1">
-<title>Book Store</title>
-<link rel="apple-touch-icon" sizes="180x180"
-	href="./favicons/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32"
-	href="./favicons/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16"
-	href="./favicons/favicon-16x16.png">
-<link rel="manifest" href="./favicons/site.webmanifest">
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkout — Book Store</title>
+<link rel="apple-touch-icon" sizes="180x180" href="./favicons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./favicons/favicon-16x16.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="styles.css">
-<!-- JavaScript Bundle with Popper -->
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
-	
-</script>
-
-<script
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js">
-	
-</script>
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="css/bookshelf-theme.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
-.row {
-	display: -ms-flexbox; /* IE10 */
-	display: flex;
-	-ms-flex-wrap: wrap; /* IE10 */
-	flex-wrap: wrap;
-	margin: 0 -16px;
+.checkout-form-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 36px;
+	margin-bottom: 24px;
 }
-
-.col-25 {
-	-ms-flex: 25%; /* IE10 */
-	flex: 25%;
+@media (max-width: 768px) {
+	.checkout-form-grid {
+		grid-template-columns: 1fr;
+		gap: 20px;
+	}
 }
-
-.col-50 {
-	-ms-flex: 50%; /* IE10 */
-	flex: 50%;
+.checkout-section-title {
+	font-family: 'Playfair Display', serif;
+	font-size: 1.25rem;
+	font-weight: 700;
+	color: var(--text-primary);
+	margin-bottom: 18px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid rgba(197, 137, 64, 0.2);
 }
-
-.col-75 {
-	-ms-flex: 75%; /* IE10 */
-	flex: 75%;
+.checkout-input-field {
+	margin-bottom: 16px;
 }
-
-.col-25, .col-50, .col-75 {
-	padding: 0 16px;
-}
-
-.container {
-	background-color: #f2f2f2;
-	padding: 5px 20px 15px 20px;
-	border: 1px solid lightgrey;
-	border-radius: 3px;
-}
-
-input[type=text] {
-	width: 100%;
-	margin-bottom: 20px;
-	padding: 12px;
-	border: 1px solid #ccc;
-	border-radius: 3px;
-}
-
-label {
-	margin-bottom: 10px;
+.checkout-input-field label {
 	display: block;
+	font-weight: 600;
+	font-size: 0.88rem;
+	color: var(--text-primary);
+	margin-bottom: 6px;
 }
-
-.icon-container {
-	margin-bottom: 20px;
-	padding: 7px 0;
-	font-size: 24px;
-}
-
-.btn {
-	background-color: #04AA6D;
-	color: white;
-	padding: 12px;
-	margin: 10px 0;
-	border: none;
+.checkout-input-field input {
 	width: 100%;
-	border-radius: 3px;
+	padding: 11px 15px;
+	border: 1px solid rgba(197, 137, 64, 0.25);
+	border-radius: 10px;
+	font-size: 0.95rem;
+	outline: none;
+	transition: all 0.2s ease;
+	background: #fff;
+}
+.checkout-input-field input:focus {
+	border-color: var(--accent-primary);
+	box-shadow: 0 0 0 3px rgba(197, 137, 64, 0.15);
+}
+.checkout-row-2 {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+}
+.card-icons-wrap {
+	display: flex;
+	gap: 12px;
+	font-size: 26px;
+	margin-bottom: 16px;
+}
+.checkout-total-bar {
+	margin-top: 24px;
+	padding: 20px 24px;
+	background: var(--bg-board);
+	border-radius: var(--radius-card);
+	border: 1px solid rgba(197, 137, 64, 0.2);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 16px;
+}
+.checkout-total-bar .btn {
+	background: var(--accent-primary) !important;
+	color: #fff !important;
+	border: 0 !important;
+	padding: 12px 32px !important;
+	border-radius: var(--radius-pill) !important;
+	font-weight: 700 !important;
+	font-size: 1rem !important;
 	cursor: pointer;
-	font-size: 17px;
+	box-shadow: 0 6px 16px rgba(197, 137, 64, 0.28);
+	transition: all 0.2s ease;
 }
-
-.btn:hover {
-	background-color: #45a049;
-}
-
-span.price {
-	float: right;
-	color: grey;
-}
-
-/* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other (and change the direction - make the "cart" column go on top) */
-@media ( max-width : 800px) {
-	.row {
-		flex-direction: column-reverse;
-	}
-	.col-25 {
-		margin-bottom: 20px;
-	}
+.checkout-total-bar .btn:hover {
+	background: var(--accent-hover) !important;
+	transform: translateY(-2px);
 }
 </style>
 </head>
-<body>
-	<header>
-		<nav class="navbar navbar-expand-sm bg-dark">
-			<a class="navbar-brand"> <!-- The below line can be an image or a h1, either will work -->
-				<img src="logo.png" alt="Google logo" width="60" height="30px">
-			</a>
-
-			<button style="background-color: white;" class="navbar-toggler"
-				type="button" data-toggle="collapse" data-target="#navbarNav"
-				aria-controls="navbarNav" aria-expanded="false"
-				aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-
-			<div class="collapse navbar-collapse" id="navbarNav">
-				<ul class="navbar-nav">
-					<li class="nav-item"><span><a class="nav-link active"
-							href="viewbook">Home</a></span></li>
-					<li class="nav-item "><span><a class="nav-link"
-							href="viewbook">Available Books</a></span></li>
-					<li class="nav-item "><span><a class="nav-link"
-							href="about.html">About Us</a></span></li>
-					<li class="nav-item "><span><a
-							class="nav-link glyphicon  glyphicon-shopping-cart " href="cart">Cart</a></span></li>
-					<li class="nav-item "><span><a class="nav-link"
-							href="logout">Logout</a></span></li>
-				</ul>
+<body class="customer-bookshelf-body">
+	<header class="bookshelf-header-wrap">
+		<nav class="navbar-bookshelf">
+			<a class="brand" href="viewbook">BOOKS</a>
+			<div class="pill-tabs">
+				<a href="viewbook" id="home">Home</a>
+				<a href="viewbook" id="books">Available Books</a>
+				<a href="orders" id="orders">Orders History</a>
+				<a href="about" id="about">About Us</a>
+			</div>
+			<div class="nav-icon-group">
+				<a href="cart" id="cart" class="nav-pill-btn active" title="View Cart">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+					<span>Cart</span>
+				</a>
+				<a href="logout" id="logout" class="nav-pill-btn nav-logout-btn" title="Logout">
+					<span class="nav-avatar"></span>
+					<span>Logout</span>
+				</a>
 			</div>
 		</nav>
 	</header>
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/popper.js@1.14.6/dist/umd/popper.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/js/bootstrap.min.js"></script>
-	<div class="container">
-	 <div id='topmid' style='background-color:grey'>Cart Checkout</div>
-		<div class="row">
-			<div class="col-75">
-				<div class="container">
-					<form action="pay" method="post">
-						<div class="row">
-							<div class="col-50">
-								<h3>Billing Address</h3>
-								<label for="fname"><i class="fa fa-user"></i> Full Name</label>
-								<input type="text" id="fname" name="firstname"
-									placeholder="John M. Doe"> <label for="email"><i
-									class="fa fa-envelope"></i> Email</label> <input type="text" id="email"
-									name="email" placeholder="john@example.com"> <label
-									for="adr"><i class="fa fa-address-card-o"></i> Address</label>
-								<input type="text" id="adr" name="address"
-									placeholder="542 W. 15th Street" required> <label
-									for="city"><i class="fa fa-institution"></i> City</label> <input
-									type="text" id="city" name="city" placeholder="New York">
 
-								<div class="row">
-									<div class="col-50">
-										<label for="state">State</label> <input type="text" id="state"
-											name="state" placeholder="NY">
-									</div>
-									<div class="col-50">
-										<label for="zip">Zip</label> <input type="text" id="zip"
-											name="zip" placeholder="10001">
-									</div>
+	<div class="bookshelf-page-container">
+		<div class="bookshelf-page-card">
+			<header class="bookshelf-page-header">
+				<h1>Secure Checkout</h1>
+				<p>Provide your delivery and payment details to complete your book purchase.</p>
+			</header>
+
+			<div class="checkout-form-container">
+				<form action="pay" method="post">
+					<div class="checkout-form-grid">
+						<!-- Billing Address Column -->
+						<div>
+							<h3 class="checkout-section-title"><i class="fa fa-map-marker"></i> Billing Address</h3>
+							<div class="checkout-input-field">
+								<label for="fname">Full Name</label>
+								<input type="text" id="fname" name="firstname" placeholder="John M. Doe" required>
+							</div>
+							<div class="checkout-input-field">
+								<label for="email">Email Address</label>
+								<input type="text" id="email" name="email" placeholder="john@example.com" required>
+							</div>
+							<div class="checkout-input-field">
+								<label for="adr">Street Address</label>
+								<input type="text" id="adr" name="address" placeholder="542 W. 15th Street" required>
+							</div>
+							<div class="checkout-input-field">
+								<label for="city">City</label>
+								<input type="text" id="city" name="city" placeholder="New York" required>
+							</div>
+							<div class="checkout-row-2">
+								<div class="checkout-input-field">
+									<label for="state">State</label>
+									<input type="text" id="state" name="state" placeholder="NY" required>
+								</div>
+								<div class="checkout-input-field">
+									<label for="zip">Zip Code</label>
+									<input type="text" id="zip" name="zip" placeholder="10001" required>
 								</div>
 							</div>
-
-							<div class="col-50">
-								<h3>Payment</h3>
-								<label for="fname">Accepted Cards</label>
-								<div class="icon-container">
-									<i class="fa fa-cc-visa" style="color: navy;"></i> <i
-										class="fa fa-cc-amex" style="color: blue;"></i> <i
-										class="fa fa-cc-mastercard" style="color: red;"></i> <i
-										class="fa fa-cc-discover" style="color: orange;"></i>
-								</div>
-								<label for="cname">Name on Card</label> <input type="text"
-									id="cname" name="cardname" placeholder="John More Doe">
-								<label for="ccnum">Credit card number</label> <input type="text"
-									id="ccnum" name="cardnumber" placeholder="1111-2222-3333-4444"
-									required> <label for="expmonth">Exp Month</label> <input
-									type="text" id="expmonth" name="expmonth"
-									placeholder="September">
-
-								<div class="row">
-									<div class="col-50">
-										<label for="expyear">Exp Year</label> <input type="text"
-											id="expyear" name="expyear" placeholder="2018">
-									</div>
-									<div class="col-50">
-										<label for="cvv">CVV</label> <input type="text" id="cvv"
-											name="cvv" placeholder="352">
-									</div>
-								</div>
-							</div>
-
 						</div>
-						<label> <input type="checkbox" checked="checked"
-							name="sameadr"> Shipping address same as billing
-						</label>
+
+						<!-- Payment Details Column -->
+						<div>
+							<h3 class="checkout-section-title"><i class="fa fa-credit-card"></i> Payment Method</h3>
+							<label style="font-weight:600; font-size:0.88rem;">Accepted Cards</label>
+							<div class="card-icons-wrap">
+								<i class="fa fa-cc-visa" style="color: #1a1f71;"></i>
+								<i class="fa fa-cc-amex" style="color: #006fcf;"></i>
+								<i class="fa fa-cc-mastercard" style="color: #eb001b;"></i>
+								<i class="fa fa-cc-discover" style="color: #ff6000;"></i>
+							</div>
+
+							<div class="checkout-input-field">
+								<label for="cname">Name on Card</label>
+								<input type="text" id="cname" name="cardname" placeholder="John More Doe" required>
+							</div>
+							<div class="checkout-input-field">
+								<label for="ccnum">Credit Card Number</label>
+								<input type="text" id="ccnum" name="cardnumber" placeholder="1111-2222-3333-4444" required>
+							</div>
+							<div class="checkout-row-2">
+								<div class="checkout-input-field">
+									<label for="expmonth">Exp Month</label>
+									<input type="text" id="expmonth" name="expmonth" placeholder="September" required>
+								</div>
+								<div class="checkout-input-field">
+									<label for="expyear">Exp Year</label>
+									<input type="text" id="expyear" name="expyear" placeholder="2026" required>
+								</div>
+							</div>
+							<div class="checkout-input-field">
+								<label for="cvv">CVV</label>
+								<input type="text" id="cvv" name="cvv" placeholder="352" required>
+							</div>
+						</div>
+					</div>
+
+					<label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-bottom:20px; font-size:0.9rem;">
+						<input type="checkbox" checked="checked" name="sameadr"> Shipping address same as billing
+					</label>
+
+					<div class="checkout-total-bar">
+
 				
 </body>
 </html>

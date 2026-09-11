@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import com.bittercode.constant.BookStoreConstants;
 import com.bittercode.service.UserService;
 import com.bittercode.service.impl.UserServiceImpl;
+import com.bittercode.util.StoreUtil;
 
 public class LogoutServlet extends HttpServlet {
 
@@ -21,6 +22,12 @@ public class LogoutServlet extends HttpServlet {
         PrintWriter pw = res.getWriter();
         res.setContentType(BookStoreConstants.CONTENT_TYPE_TEXT_HTML);
         try {
+
+            // Save user's current cart before session invalidation
+            String username = StoreUtil.getCustomerUsername(req.getSession());
+            if (username != null) {
+                StoreUtil.saveUserCart(req.getSession(), username);
+            }
 
             boolean logout = authService.logout(req.getSession());
 

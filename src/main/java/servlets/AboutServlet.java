@@ -21,7 +21,7 @@ public class AboutServlet extends HttpServlet {
         if (StoreUtil.isLoggedIn(UserRole.CUSTOMER, req.getSession())) {
             RequestDispatcher rd = req.getRequestDispatcher("CustomerHome.html");
             rd.include(req, res);
-            StoreUtil.setActiveTab(pw, "about");
+            StoreUtil.setActiveTab(pw, "about", req.getSession());
             pw.println("<iframe src=\"https://flowcv.me/shashirajraja\" class=\"holds-the-iframe\"\r\n"
                     + "        title=\"My Personal Website\" width=\"100%\" height=\"100%\"></iframe>");
 

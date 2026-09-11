@@ -1,142 +1,138 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="ISO-8859-1">
-<title>Book Store</title>
-<link rel="apple-touch-icon" sizes="180x180"
-	href="./favicons/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32"
-	href="./favicons/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16"
-	href="./favicons/favicon-16x16.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customer Login — Book Store</title>
+<link rel="apple-touch-icon" sizes="180x180" href="./favicons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./favicons/favicon-16x16.png">
 <link rel="manifest" href="./favicons/site.webmanifest">
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="css/bookshelf-theme.css">
 <style>
-/* COMPACT CAPTCHA YELLOW */
-.capbox {
-	background: #ccc2a7;
-	background: linear-gradient(to right, #ccc2a7, #8f8874);
-	border: #5c574b 0px solid;
-	border-width: 2px 2px 2px 20px;
-	box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	display: inline-block;
-	padding: 5px 8px 5px 8px;
-	border-radius: 4px 4px 4px 4px;
+.captcha-container-box {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px 16px;
+	background: var(--bg-board);
+	border-radius: var(--radius-card);
+	border: 1px solid rgba(197, 137, 64, 0.2);
+	margin-bottom: 24px;
 }
-
-.capbox-inner {
-	font: bold 12px arial, sans-serif;
-	color: #000000;
-	background: rgba(255, 255, 255, 0.30);
-	/* SEMI TRANSPARENT BACKGROUND */
-	margin: 0px auto 0px auto;
-	padding: 3px 8px 5px 10px;
-	border-radius: 4px;
-	display: inline-block;
-	vertical-align: middle;
-}
-
 #CaptchaDiv {
-	color: #000000;
-	font: normal 25px Impact, Charcoal, arial, sans-serif;
-	font-style: italic;
-	text-align: center;
-	vertical-align: middle;
-	background-color: #FFFFFF;
+	font-family: 'Playfair Display', serif;
+	font-weight: 700;
+	font-size: 1.6rem;
+	letter-spacing: 5px;
+	color: var(--accent-hover);
+	background: #fff;
+	padding: 6px 16px;
+	border-radius: 8px;
+	border: 1px dashed var(--accent-primary);
 	user-select: none;
-	display: inline-block;
-	padding: 3px 14px 3px 8px;
-	margin-right: 4px;
-	border-radius: 4px;
 }
-
 #CaptchaInput {
-	border: black 2px solid;
-	margin: 3px 0px 1px 0px;
-	width: 105px;
+	padding: 10px 14px;
+	border: 1px solid rgba(197, 137, 64, 0.25);
+	border-radius: 8px;
+	font-size: 0.95rem;
+	outline: none;
+	width: 130px;
 }
-
-input {
-	padding: 2px 2px;
-	margin: 2px 0;
-	box-sizing: border-box;
-	border-radius: 10px;
+.btn-auth-submit {
+	width: 100%;
+	padding: 13px;
+	border-radius: var(--radius-pill);
+	background: var(--accent-primary);
+	color: #fff;
+	border: 0;
+	font-weight: 700;
+	font-size: 1rem;
+	cursor: pointer;
+	box-shadow: 0 6px 16px rgba(197, 137, 64, 0.25);
+	transition: all 0.2s ease;
+}
+.btn-auth-submit:hover {
+	background: var(--accent-hover);
+	transform: translateY(-1px);
+}
+.auth-switch-link {
+	text-align: center;
+	margin-top: 20px;
+	font-size: 0.9rem;
+	color: var(--text-secondary);
+}
+.auth-switch-link a {
+	color: var(--accent-hover);
+	font-weight: 600;
+	text-decoration: none;
+}
+.auth-switch-link a:hover {
+	text-decoration: underline;
 }
 </style>
 </head>
-<body onload="funload()">
-	<header>
-		<nav class="navbar navbar-expand-sm bg-dark">
-			<a class="navbar-brand"> <!-- The below line can be an image or a h1, either will work -->
-				<img src="logo.png" alt="Google logo" width="60" height="30px">
-			</a>
-
-			<button style="background-color: white;" class="navbar-toggler"
-				type="button" data-toggle="collapse" data-target="#navbarNav"
-				aria-controls="navbarNav" aria-expanded="false"
-				aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-
-			<div class="collapse navbar-collapse" id="navbarNav">
-				<ul class="navbar-nav">
-					<li class="nav-item"><span><a class="nav-link"
-							href="index.html">Home</a></span></li>
-					<li class="nav-item "><span><a class="nav-link active"
-							href="login.html">Login</a></span></li>
-					<li class="nav-item "><span><a class="nav-link"
-							href="CustomerRegister.html">Register</a></span></li>
-				</ul>
+<body class="customer-bookshelf-body" onload="funload()">
+	<header class="bookshelf-header-wrap">
+		<nav class="navbar-bookshelf">
+			<a class="brand" href="index.html">BOOKS</a>
+			<div class="pill-tabs">
+				<a href="index.html">Home</a>
+				<a href="CustomerLogin.html" class="active">Login</a>
+				<a href="CustomerRegister.html">Register</a>
+			</div>
+			<div class="nav-icon-group">
+				<a href="SellerLogin.html" class="nav-pill-btn" style="font-size:0.82rem;">Seller Portal &rarr;</a>
 			</div>
 		</nav>
 	</header>
 
-	<div id="topmid">
-		<h1>Welcome to Online Book Store</h1>
+	<div class="bookshelf-auth-wrap">
+		<div class="bookshelf-page-card">
+			<header class="bookshelf-page-header" style="text-align:center;">
+				<h1>Welcome Back</h1>
+				<p>Sign in with your customer account to continue browsing our bookshelf collection.</p>
+			</header>
+
+			<form action="userlog" method="post" onsubmit="return checkform(event)" id="theform">
+				<div class="bookshelf-input-group">
+					<label for="userName">Username</label>
+					<input type="text" name="username" id="userName" placeholder="Enter your username" required>
+				</div>
+
+				<div class="bookshelf-input-group">
+					<label for="Password">Password</label>
+					<input type="password" name="password" id="Password" placeholder="Enter your password" required>
+				</div>
+
+				<div class="bookshelf-input-group">
+					<label>Verification Code</label>
+					<div class="captcha-container-box">
+						<div id="CaptchaDiv">46749</div>
+						<input type="hidden" id="txtCaptcha" value="46749">
+						<input type="text" name="CaptchaInput" id="CaptchaInput" placeholder="Enter code" required>
+					</div>
+				</div>
+
+				<button class="btn-auth-submit" type="submit">Sign In to Account</button>
+
+				<div class="auth-switch-link">
+					Don't have an account? <a href="CustomerRegister.html">Create an account</a>
+				</div>
+				<div class="auth-switch-link" style="margin-top:10px; font-size:0.85rem;">
+					Are you a store manager? <a href="SellerLogin.html">Login as Seller</a>
+				</div>
+			</form>
+		</div>
 	</div>
 
-	<form action="userlog" method="post" onsubmit="checkform()"
-		id="theform">
-		<table class="tab" style="width: 40%">
-			<tr style="color: brown; padding-left: 35%">
-				<td>Customer LOGIN</td>
-			</tr>
-			<tr>
-				<td><a href="SellerLogin.html"
-					style="color: blue; font-size: medium;">Are you Seller?, Click
-						Here to Login as Admin</a></td>
-			</tr>
-			<tr>
-				<td><label for="userName">Username : </label> <input
-					type="text" name="username" id="userName"
-					placeholder="Enter your Username"><br /> <br /> <label
-					for="Password">Password : </label> <input type="password"
-					name="password" placeholder="Enter Password" id="Password"><br />
-					<br />
-
-					<div class="capbox">
-						<div id="CaptchaDiv">46749</div>
-						<div class="capbox-inner">
-							<input type="hidden" id="txtCaptcha" value="46749"> <input
-								type="text" name="CaptchaInput" id="CaptchaInput" size="15"
-								placeholder="Enter Captcha"><br>
-						</div>
-					</div> <br />
-				<br /> <input class="btn btn-success" type="submit"
-					value=" Login as an User  "></td>
-			</tr>
-		</table>
-	</form>
-
-
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/popper.js@1.14.6/dist/umd/popper.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.6/dist/umd/popper.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/js/bootstrap.min.js"></script>
+
 	<script type="text/javascript">
 
 

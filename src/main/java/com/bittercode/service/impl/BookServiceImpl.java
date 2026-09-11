@@ -146,11 +146,25 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<Book> getBooksByCommaSeperatedBookIds(String commaSeperatedBookIds) throws StoreException {
         List<Book> books = new ArrayList<Book>();
+        if (commaSeperatedBookIds == null || commaSeperatedBookIds.trim().isEmpty()) {
+            return books;
+        }
+        String[] ids = commaSeperatedBookIds.split(",");
+        List<String> validIds = new ArrayList<>();
+        for (String id : ids) {
+            String trimmed = id.trim().replace("'", "");
+            if (!trimmed.isEmpty()) {
+                validIds.add("'" + trimmed + "'");
+            }
+        }
+        if (validIds.isEmpty()) {
+            return books;
+        }
+
         Connection con = DBUtil.getConnection();
         try {
             String getBooksByCommaSeperatedBookIdsQuery = "SELECT * FROM " + BooksDBConstants.TABLE_BOOK
-                    + " WHERE " +
-                    BooksDBConstants.COLUMN_BARCODE + " IN ( " + commaSeperatedBookIds + " )";
+                    + " WHERE " + BooksDBConstants.COLUMN_BARCODE + " IN ( " + String.join(",", validIds) + " )";
             PreparedStatement ps = con.prepareStatement(getBooksByCommaSeperatedBookIdsQuery);
             ResultSet rs = ps.executeQuery();
 
@@ -165,7 +179,7 @@ public class BookServiceImpl implements BookService {
                 books.add(book);
             }
         } catch (SQLException e) {
-
+            e.printStackTrace();
         }
         return books;
     }

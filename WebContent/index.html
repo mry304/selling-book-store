@@ -1,59 +1,217 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="ISO-8859-1">
-<title>Book Store</title>
-<link rel="apple-touch-icon" sizes="180x180"
-	href="./favicons/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32"
-	href="./favicons/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16"
-	href="./favicons/favicon-16x16.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Online Book Store — Curated Bookshelf</title>
+<link rel="apple-touch-icon" sizes="180x180" href="./favicons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./favicons/favicon-16x16.png">
 <link rel="manifest" href="./favicons/site.webmanifest">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" >
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="styles.css">
-
+<link rel="stylesheet" href="css/bookshelf-theme.css">
+<style>
+.landing-hero-board {
+	display: grid;
+	grid-template-columns: 1.15fr 0.85fr;
+	align-items: center;
+	gap: 40px;
+	padding: clamp(36px, 5vw, 68px) clamp(24px, 4vw, 56px);
+}
+@media (max-width: 960px) {
+	.landing-hero-board {
+		grid-template-columns: 1fr;
+		text-align: center;
+		gap: 36px;
+	}
+	.landing-cta-group, .landing-stats-row, .category-pills-row {
+		justify-content: center;
+	}
+	.landing-book-preview {
+		margin: 20px auto 0;
+	}
+}
+.gradient-text {
+	background: linear-gradient(135deg, #d97706 0%, #dc2626 50%, #9333ea 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	display: inline-block;
+}
+.landing-hero-title {
+	font-family: 'Playfair Display', serif;
+	font-size: clamp(2.4rem, 4vw, 3.8rem);
+	font-weight: 700;
+	line-height: 1.1;
+	color: var(--text-primary);
+	margin-bottom: 18px;
+	letter-spacing: -0.03em;
+}
+.landing-hero-desc {
+	font-size: 1.05rem;
+	line-height: 1.65;
+	color: var(--text-secondary);
+	margin-bottom: 26px;
+	max-width: 540px;
+}
+.landing-cta-group {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	flex-wrap: wrap;
+	margin-bottom: 32px;
+}
+.landing-stats-row {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	padding-top: 20px;
+	border-top: 1px solid rgba(197, 137, 64, 0.2);
+}
+.stat-item {
+	display: flex;
+	flex-direction: column;
+}
+.stat-num {
+	font-family: 'Playfair Display', serif;
+	font-size: 1.35rem;
+	font-weight: 700;
+	color: var(--accent-hover);
+}
+.stat-label {
+	font-size: 0.78rem;
+	color: var(--text-muted);
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+.stat-divider {
+	width: 1px;
+	height: 32px;
+	background: rgba(197, 137, 64, 0.25);
+}
+.shelf-pedestal {
+	position: absolute;
+	bottom: -15px;
+	width: 90%;
+	height: 14px;
+	border-radius: 4px;
+	background: linear-gradient(180deg, #fdfbf7, var(--shelf-surface), #c9b190);
+	box-shadow: 0 16px 24px rgba(78, 52, 28, 0.28), 0 0 20px rgba(217, 119, 6, 0.2);
+}
+</style>
 </head>
-<body onload="funload()">
-	<header>
-		<nav class="navbar navbar-expand-sm bg-dark">
-				<a class="navbar-brand">
-					<!-- The below line can be an image or a h1, either will work -->
-					<img src="logo.png" alt="Google logo" width="60" height="30px">
+<body class="customer-bookshelf-body" onload="funload()">
+	<header class="bookshelf-header-wrap">
+		<nav class="navbar-bookshelf">
+			<a class="brand" href="index.html">BOOKS</a>
+			<div class="pill-tabs">
+				<a href="index.html" class="active">Home</a>
+				<a href="CustomerLogin.html">Login</a>
+				<a href="CustomerRegister.html">Register</a>
+			</div>
+			<div class="nav-icon-group">
+				<a href="viewbook" class="nav-pill-btn" style="background:var(--accent-primary); color:#fff; border-color:var(--accent-primary);">
+					<span>Browse Store</span> &rarr;
 				</a>
-				
-				<button style="background-color:white;" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-				    <span class="navbar-toggler-icon" ></span>
-				 </button>
-
-                <div class="collapse navbar-collapse" id="navbarNav">                
-				<ul class="navbar-nav" >
-					<li class="nav-item"><span><a class="nav-link active" href="index.html">Home</a></span></li>
-					<li class="nav-item "><span><a class="nav-link" href="CustomerLogin.html">Login</a></span></li>
-					<li class="nav-item "><span><a class="nav-link" href="CustomerRegister.html">Register</a></span></li>
-				</ul>
-				</div>
-			</nav>
+			</div>
+		</nav>
 	</header>
-	<br>
-	<div id="topmid"><h1>Welcome to Online <br>Book Store</h1></div>
-	<br>
-	<table class="tab">
-		<tr>
-			<td><a href="index.html" id="happy">Happy Learning!!<br>Welcome to our book store!</a></td>
-		</tr>
-	</table>
 
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" ></script>
-	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.6/dist/umd/popper.min.js" ></script>
+	<main class="bookshelf-canvas" style="padding-top: 24px;">
+		<section class="bookshelf-board">
+			<div class="landing-hero-board">
+				<div>
+					<div class="badge-tag-star" style="margin-bottom:16px;">
+						<span>&#10024;</span> Hand-Picked 2026 Bookshelf Collection
+					</div>
+					
+					<h1 class="landing-hero-title">
+						Curated Books for <br><span class="gradient-text">Curious Minds.</span>
+					</h1>
+					
+					<p class="landing-hero-desc">
+						Step into our warm digital bookstore. Discover programming masterpieces, modern science, and timeless philosophy standing gracefully on physical 3D shelves.
+					</p>
+
+					<div class="landing-cta-group">
+						<a href="viewbook" class="btn-checkout-shelf" style="padding: 13px 32px; font-size: 1rem;">
+							Explore The Bookshelf &rarr;
+						</a>
+						<a href="CustomerLogin.html" class="btn-pill-secondary" style="padding: 12px 26px; font-size: 0.95rem;">
+							Customer Login
+						</a>
+					</div>
+
+					<div class="landing-stats-row">
+						<div class="stat-item">
+							<span class="stat-num">10,000+</span>
+							<span class="stat-label">Curated Titles</span>
+						</div>
+						<div class="stat-divider"></div>
+						<div class="stat-item">
+							<span class="stat-num">500+</span>
+							<span class="stat-label">Top Authors</span>
+						</div>
+						<div class="stat-divider"></div>
+						<div class="stat-item">
+							<span class="stat-num">&#9733; 4.9 / 5.0</span>
+							<span class="stat-label">Reader Rating</span>
+						</div>
+					</div>
+
+					<div class="category-pills-row">
+						<a href="viewbook" class="category-pill">&#128187; Computer Science</a>
+						<a href="viewbook" class="category-pill">&#128065; Fiction &amp; Mystery</a>
+						<a href="viewbook" class="category-pill">&#129504; Philosophy</a>
+						<a href="viewbook" class="category-pill">&#128640; Science &amp; Tech</a>
+					</div>
+				</div>
+
+				<!-- Interactive 3D Book Fan Deck -->
+				<div class="landing-book-preview">
+					<div class="book-fan-container" title="Hover to inspect books">
+						<!-- Left Book: C++ Primer -->
+						<div class="book-fan-item card-left">
+							<div class="book-standing-3d" style="--book-color: #1e3a5f; width: 140px; height: 210px;">
+								<span class="badge-kicker">CLASSIC</span>
+								<span class="book-title" style="font-size:1.3rem;">C++<br>Primer</span>
+								<span class="book-author" style="font-size:0.55rem;">LIPPMAN &amp; LAJOIE</span>
+							</div>
+						</div>
+
+						<!-- Center Book: Clean Code -->
+						<div class="book-fan-item card-center">
+							<div class="book-standing-3d featured-book" style="--book-color: #065f46; width: 175px; height: 260px; padding: 16px 14px;">
+								<span class="badge-kicker">SPOTLIGHT</span>
+								<span class="book-title" style="font-size:1.75rem;">Clean<br>Code</span>
+								<span class="book-author" style="font-size:0.65rem;">ROBERT C. MARTIN</span>
+							</div>
+						</div>
+
+						<!-- Right Book: Rust Programming -->
+						<div class="book-fan-item card-right">
+							<div class="book-standing-3d" style="--book-color: #9a3412; width: 140px; height: 210px;">
+								<span class="badge-kicker">TRENDING</span>
+								<span class="book-title" style="font-size:1.2rem;">Rust<br>Program</span>
+								<span class="book-author" style="font-size:0.55rem;">KLABNIK &amp; NICHOLS</span>
+							</div>
+						</div>
+
+						<div class="shelf-pedestal"></div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.6/dist/umd/popper.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/js/bootstrap.min.js"></script>
 	<script>
-		// Preloder script
-		var tmp = document.getElementById("loding");
 		function funload() {
-		  loding.style.display = "none";
+			// Ready
 		}
-	  </script>
-
-
+	</script>
 </body>
 </html>

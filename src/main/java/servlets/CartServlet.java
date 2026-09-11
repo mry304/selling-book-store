@@ -36,8 +36,14 @@ public class CartServlet extends HttpServlet {
             return;
         }
         try {
+            // Post-Redirect-Get pattern: If POST with selectedBookId, update cart and redirect to clean GET cart
+            if ("POST".equalsIgnoreCase(req.getMethod()) && req.getParameter("selectedBookId") != null) {
+                StoreUtil.updateCartItems(req);
+                res.sendRedirect("cart");
+                return;
+            }
+
             // Add/Remove Item from the cart if requested
-            // store the comma separated bookIds of cart in the session
             StoreUtil.updateCartItems(req);
 
             HttpSession session = req.getSession();
@@ -48,60 +54,81 @@ public class CartServlet extends HttpServlet {
             RequestDispatcher rd = req.getRequestDispatcher("CustomerHome.html");
             rd.include(req, res);
 
-            // Set the active tab as cart
-            StoreUtil.setActiveTab(pw, "cart");
+            // Set the active tab as cart and render cart count badge
+            StoreUtil.setActiveTab(pw, "cart", session);
 
             // Read the books from the database with the respective bookIds
             List<Book> books = bookService.getBooksByCommaSeperatedBookIds(bookIds);
             List<Cart> cartItems = new ArrayList<Cart>();
-            pw.println("<div id='topmid' style='background-color:grey'>Shopping Cart</div>");
-            pw.println("<table class=\"table table-hover\" style='background-color:white'>\r\n"
-                    + "  <thead>\r\n"
-                    + "    <tr style='background-color:black; color:white;'>\r\n"
-                    + "      <th scope=\"col\">BookId</th>\r\n"
-                    + "      <th scope=\"col\">Name</th>\r\n"
-                    + "      <th scope=\"col\">Author</th>\r\n"
-                    + "      <th scope=\"col\">Price/Item</th>\r\n"
-                    + "      <th scope=\"col\">Quantity</th>\r\n"
-                    + "      <th scope=\"col\">Amount</th>\r\n"
-                    + "    </tr>\r\n"
-                    + "  </thead>\r\n"
-                    + "  <tbody>\r\n");
+
+            pw.println("<div class=\"bookshelf-page-container\">");
+            pw.println("  <div class=\"bookshelf-page-card\">");
+            pw.println("    <header class=\"bookshelf-page-header\">");
+            pw.println("      <h1>Shopping Cart</h1>");
+            pw.println("      <p>Review the curated books in your bag before proceeding to payment.</p>");
+            pw.println("    </header>");
+
             double amountToPay = 0;
-            if (books == null || books.size() == 0) {
-                pw.println("    <tr style='background-color:green'>\r\n"
-                        + "      <th scope=\"row\" colspan='6' style='color:yellow; text-align:center;'> No Items In the Cart </th>\r\n"
-                        + "    </tr>\r\n");
-            }
-            for (Book book : books) {
-                int qty = (int) session.getAttribute("qty_" + book.getBarcode());
-                Cart cart = new Cart(book, qty);
-                cartItems.add(cart);
-                amountToPay += (qty * book.getPrice());
-                pw.println(getRowData(cart));
+
+            if (books == null || books.isEmpty()) {
+                pw.println("    <div class=\"bookshelf-empty-state\">");
+                pw.println("      <div class=\"empty-icon\">&#128214;</div>");
+                pw.println("      <h3>Your bookshelf cart is empty</h3>");
+                pw.println("      <p>Looks like you haven't added any books to your cart yet.</p>");
+                pw.println("      <a href=\"viewbook\" class=\"btn-checkout-shelf\">&larr; Explore Available Books</a>");
+                pw.println("    </div>");
+            } else {
+                pw.println("    <div class=\"table-responsive\">");
+                pw.println("      <table class=\"bookshelf-table\">");
+                pw.println("        <thead>");
+                pw.println("          <tr>");
+                pw.println("            <th>ID</th>");
+                pw.println("            <th>Title</th>");
+                pw.println("            <th>Author</th>");
+                pw.println("            <th>Price</th>");
+                pw.println("            <th style=\"text-align:center;\">Quantity</th>");
+                pw.println("            <th>Subtotal</th>");
+                pw.println("          </tr>");
+                pw.println("        </thead>");
+                pw.println("        <tbody>");
+
+                for (Book book : books) {
+                    int qty = 1;
+                    if (session.getAttribute("qty_" + book.getBarcode()) != null) {
+                        qty = (int) session.getAttribute("qty_" + book.getBarcode());
+                    }
+                    Cart cart = new Cart(book, qty);
+                    cartItems.add(cart);
+                    amountToPay += (qty * book.getPrice());
+                    pw.println(getRowData(cart));
+                }
+
+                pw.println("        </tbody>");
+                pw.println("      </table>");
+                pw.println("    </div>"); // end table-responsive
+
+                // Summary bar
+                pw.println("    <div class=\"cart-summary-bar\">");
+                pw.println("      <a href=\"viewbook\" class=\"btn-pill-secondary\">&larr; Continue Shopping</a>");
+                pw.println("      <div style=\"display:flex; align-items:center; gap:24px;\">");
+                pw.println("        <div>");
+                pw.println("          <span class=\"cart-total-label\">Total Amount:</span>");
+                pw.println("          <span class=\"cart-total-value\">&#8377; " + String.format("%.2f", amountToPay) + "</span>");
+                pw.println("        </div>");
+                pw.println("        <form action=\"checkout\" method=\"post\" style=\"margin:0;\">");
+                pw.println("          <button type=\"submit\" class=\"btn-checkout-shelf\" name=\"pay\">Proceed to Checkout &rarr;</button>");
+                pw.println("        </form>");
+                pw.println("      </div>");
+                pw.println("    </div>");
             }
 
             // set cartItems and amountToPay in the session
             session.setAttribute("cartItems", cartItems);
             session.setAttribute("amountToPay", amountToPay);
 
-            if (amountToPay > 0) {
-                pw.println("    <tr style='background-color:green'>\r\n"
-                        + "      <th scope=\"row\" colspan='5' style='color:yellow; text-align:center;'> Total Amount To Pay </th>\r\n"
-                        + "      <td colspan='1' style='color:white; font-weight:bold'><span>&#8377;</span> "
-                        + amountToPay
-                        + "</td>\r\n"
-                        + "    </tr>\r\n");
-            }
-            pw.println("  </tbody>\r\n"
-                    + "</table>");
-            if (amountToPay > 0) {
-                pw.println("<div style='text-align:right; margin-right:20px;'>\r\n"
-                        + "<form action=\"checkout\" method=\"post\">"
-                        + "<input type='submit' class=\"btn btn-primary\" name='pay' value='Proceed to Pay &#8377; "
-                        + amountToPay + "'/></form>"
-                        + "    </div>");
-            }
+            pw.println("  </div>"); // end bookshelf-page-card
+            pw.println("</div>");   // end bookshelf-page-container
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -109,17 +136,21 @@ public class CartServlet extends HttpServlet {
 
     public String getRowData(Cart cart) {
         Book book = cart.getBook();
-        return "    <tr>\r\n"
-                + "      <th scope=\"row\">" + book.getBarcode() + "</th>\r\n"
-                + "      <td>" + book.getName() + "</td>\r\n"
-                + "      <td>" + book.getAuthor() + "</td>\r\n"
-                + "      <td><span>&#8377;</span> " + book.getPrice() + "</td>\r\n"
-                + "      <td><form method='post' action='cart'><button type='submit' name='removeFromCart' class=\"glyphicon glyphicon-minus btn btn-danger\"></button> "
-                + "<input type='hidden' name='selectedBookId' value='" + book.getBarcode() + "'/>"
-                + cart.getQuantity()
-                + " <button type='submit' name='addToCart' class=\"glyphicon glyphicon-plus btn btn-success\"></button></form></td>\r\n"
-                + "      <td><span>&#8377;</span> " + (book.getPrice() * cart.getQuantity()) + "</td>\r\n"
-                + "    </tr>\r\n";
+        return "    <tr>"
+                + "      <td><strong>" + book.getBarcode() + "</strong></td>"
+                + "      <td class=\"book-title-cell\">" + book.getName() + "</td>"
+                + "      <td>" + book.getAuthor() + "</td>"
+                + "      <td class=\"price-cell\">&#8377; " + book.getPrice() + "</td>"
+                + "      <td style=\"text-align:center;\">"
+                + "        <form method='post' action='cart' class='cart-stepper'>"
+                + "          <button type='submit' name='removeFromCart' class=\"stepper-btn minus\" title=\"Remove\">&minus;</button>"
+                + "          <input type='hidden' name='selectedBookId' value='" + book.getBarcode() + "'/>"
+                + "          <span class=\"stepper-qty\">" + cart.getQuantity() + "</span>"
+                + "          <button type='submit' name='addToCart' class=\"stepper-btn plus\" title=\"Add\">&plus;</button>"
+                + "        </form>"
+                + "      </td>"
+                + "      <td class=\"price-cell\"><strong>&#8377; " + String.format("%.2f", (book.getPrice() * cart.getQuantity())) + "</strong></td>"
+                + "    </tr>";
     }
 
 }
