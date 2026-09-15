@@ -5,6 +5,7 @@ import java.util.List;
 
 public class User implements Serializable {
 
+    private String username;
     private String emailId;
     private String password;
     private String firstName;
@@ -12,6 +13,17 @@ public class User implements Serializable {
     private Long phone;
     private String address;
     private List<UserRole> roles;
+
+    public String getUsername() {
+        if (username != null && !username.trim().isEmpty()) {
+            return username.trim();
+        }
+        return emailId;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public String getEmailId() {
         return emailId;

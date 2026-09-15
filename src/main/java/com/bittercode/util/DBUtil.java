@@ -27,9 +27,15 @@ public class DBUtil {
 
     }// End of static block
 
-    public static Connection getConnection() throws StoreException {
-
-        if (connection == null) {
+    public static synchronized Connection getConnection() throws StoreException {
+        try {
+            if (connection == null || connection.isClosed()) {
+                Class.forName(DatabaseConfig.DRIVER_NAME);
+                connection = DriverManager.getConnection(DatabaseConfig.CONNECTION_STRING, DatabaseConfig.DB_USER_NAME,
+                        DatabaseConfig.DB_PASSWORD);
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
             throw new StoreException(ResponseCode.DATABASE_CONNECTION_FAILURE);
         }
 

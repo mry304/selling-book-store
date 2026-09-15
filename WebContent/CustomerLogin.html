@@ -97,6 +97,8 @@
 				<p>Sign in with your customer account to continue browsing our bookshelf collection.</p>
 			</header>
 
+			<div id="authAlertBox"></div>
+
 			<form action="userlog" method="post" onsubmit="return checkform(event)" id="theform">
 				<div class="bookshelf-input-group">
 					<label for="userName">Username</label>
@@ -190,6 +192,20 @@
 		// Remove the spaces from the entered and generated code
 		function removeSpaces(string) {
 			return string.split(' ').join('');
+		}
+
+		function funload() {
+			try {
+				var params = new URLSearchParams(window.location.search);
+				if (params.get('registered') === 'true') {
+					var alertBox = document.getElementById('authAlertBox');
+					if (alertBox) {
+						alertBox.innerHTML = '<div class="alert alert-success text-center" style="border-radius:12px; margin-bottom:18px; font-weight:600; background:#d4edda; color:#155724; border:1px solid #c3e6cb; padding:12px;">Đăng ký tài khoản thành công! Vui lòng đăng nhập bằng thông tin vừa tạo.</div>';
+					}
+				}
+			} catch (e) {
+				console.error(e);
+			}
 		}
 	</script>
 </body>
