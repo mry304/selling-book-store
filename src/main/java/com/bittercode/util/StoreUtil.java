@@ -200,8 +200,9 @@ public class StoreUtil {
         try {
             Connection con = DBUtil.getConnection();
             if (con != null) {
-                try (PreparedStatement ps = con.prepareStatement("SELECT book_barcode, quantity FROM user_cart WHERE username = ?")) {
+                try (PreparedStatement ps = con.prepareStatement("SELECT book_barcode, quantity FROM user_cart WHERE username = ? OR username IN (SELECT mailid FROM users WHERE username = ?)")) {
                     ps.setString(1, username);
+                    ps.setString(2, username);
                     try (ResultSet rs = ps.executeQuery()) {
                         while (rs.next()) {
                             String barcode = rs.getString("book_barcode");
@@ -247,8 +248,9 @@ public class StoreUtil {
             try {
                 Connection con = DBUtil.getConnection();
                 if (con != null) {
-                    try (PreparedStatement ps = con.prepareStatement("DELETE FROM user_cart WHERE username = ?")) {
+                    try (PreparedStatement ps = con.prepareStatement("DELETE FROM user_cart WHERE username = ? OR username IN (SELECT mailid FROM users WHERE username = ?)")) {
                         ps.setString(1, username);
+                        ps.setString(2, username);
                         ps.executeUpdate();
                     }
                 }

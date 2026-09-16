@@ -56,7 +56,9 @@ public class UserServiceImpl implements UserService {
                     user.setPassword(password);
 
                     if (session != null) {
-                        session.setAttribute(role.toString(), user.getEmailId());
+                        session.setAttribute(role.toString(), user.getUsername());
+                        session.setAttribute("userEmail", user.getEmailId());
+                        session.setAttribute("user", user);
                     }
                 }
             }

@@ -22,6 +22,7 @@ public class OrderServiceImpl implements OrderService {
     public String createOrder(String username, List<Cart> cartItems, double totalAmount) throws StoreException {
         Connection con = DBUtil.getConnection();
         String orderId = "ORD" + System.currentTimeMillis();
+        String validUsername = resolveUsername(con, username);
 
         String insertOrderQuery = "INSERT INTO orders (order_id, username, total_amount, status) VALUES (?, ?, ?, ?)";
         String insertDetailQuery = "INSERT INTO order_details (order_id, book_barcode, quantity, amount) VALUES (?, ?, ?, ?)";
@@ -31,7 +32,7 @@ public class OrderServiceImpl implements OrderService {
 
             try (PreparedStatement psOrder = con.prepareStatement(insertOrderQuery)) {
                 psOrder.setString(1, orderId);
-                psOrder.setString(2, username);
+                psOrder.setString(2, validUsername);
                 psOrder.setDouble(3, totalAmount);
                 psOrder.setString(4, "PAID");
                 psOrder.executeUpdate();
@@ -71,10 +72,11 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> getOrdersByUsername(String username) throws StoreException {
         Connection con = DBUtil.getConnection();
         List<Order> orders = new ArrayList<>();
+        String validUsername = resolveUsername(con, username);
         String query = "SELECT * FROM orders WHERE username = ? ORDER BY order_date DESC";
 
         try (PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setString(1, username);
+            ps.setString(1, validUsername);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Order order = new Order();
@@ -143,5 +145,24 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         return details;
+    }
+
+    private String resolveUsername(Connection con, String username) {
+        if (username == null || username.trim().isEmpty()) {
+            return username;
+        }
+        String query = "SELECT username FROM users WHERE username = ? OR mailid = ? LIMIT 1";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, username);
+            ps.setString(2, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("username");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return username;
     }
 }
