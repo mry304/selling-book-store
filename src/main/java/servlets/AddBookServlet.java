@@ -44,7 +44,6 @@ public class AddBookServlet extends HttpServlet {
             pw.println("    </div></div></main>");
             return;
         }
-
         try {
             String uniqueID = UUID.randomUUID().toString();
             String bCode = uniqueID;

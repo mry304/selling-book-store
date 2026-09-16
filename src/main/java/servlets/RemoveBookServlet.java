@@ -141,5 +141,4 @@ public class RemoveBookServlet extends HttpServlet {
                 + "      </td>\r\n"
                 + "    </tr>\r\n";
     }
-
 }
