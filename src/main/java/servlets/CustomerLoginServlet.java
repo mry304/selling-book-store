@@ -30,7 +30,7 @@ public class CustomerLoginServlet extends HttpServlet {
             User user = authService.login(UserRole.CUSTOMER, uName, pWord, req.getSession());
             if (user != null) {
                 // Restore customer cart items from persistent storage (database & cache)
-                StoreUtil.restoreUserCart(req.getSession(), user.getEmailId());
+                StoreUtil.restoreUserCart(req.getSession(), user.getUsername());
                 res.sendRedirect("viewbook");
             } else {
                 PrintWriter pw = res.getWriter();
