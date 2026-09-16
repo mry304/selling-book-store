@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="ISO-8859-1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book Store</title>
+<link rel="apple-touch-icon" sizes="180x180" href="./favicons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./favicons/favicon-16x16.png">
+<link rel="manifest" href="./favicons/site.webmanifest">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="css/bookshelf-theme.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+	var activeTab = 'home';
+</script>
+</head>
+<body class="customer-bookshelf-body">
+	<header class="bookshelf-header-wrap">
+		<nav class="navbar-bookshelf">
+			<a class="brand" href="viewbook">BOOKS</a>
+			
+			<div class="pill-tabs">
+				<a href="viewbook" id="home">Home</a>
+				<a href="viewbook" id="books">Available Books</a>
+				<a href="orders" id="orders">Orders History</a>
+			</div>
+
+			<div class="nav-icon-group">
+				<a href="cart" id="cart" class="nav-pill-btn" title="View Cart">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+					<span>Cart</span>
+				</a>
+				<a href="logout" id="logout" class="nav-pill-btn nav-logout-btn" title="Logout">
+					<span class="nav-avatar"></span>
+					<span>Logout</span>
+				</a>
+			</div>
+		</nav>
+	</header>
+
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.6/dist/umd/popper.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/js/bootstrap.min.js"></script>
+	<script>
+		if (document.getElementById(activeTab)) {
+			document.getElementById(activeTab).classList.add("active");
+		}
+	</script>
+</body>
+</html>

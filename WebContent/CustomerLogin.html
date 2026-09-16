@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="ISO-8859-1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customer Login — Book Store</title>
+<link rel="apple-touch-icon" sizes="180x180" href="./favicons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./favicons/favicon-16x16.png">
+<link rel="manifest" href="./favicons/site.webmanifest">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="css/bookshelf-theme.css">
+<style>
+.captcha-container-box {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px 16px;
+	background: var(--bg-board);
+	border-radius: var(--radius-card);
+	border: 1px solid rgba(197, 137, 64, 0.2);
+	margin-bottom: 24px;
+}
+#CaptchaDiv {
+	font-family: 'Playfair Display', serif;
+	font-weight: 700;
+	font-size: 1.6rem;
+	letter-spacing: 5px;
+	color: var(--accent-hover);
+	background: #fff;
+	padding: 6px 16px;
+	border-radius: 8px;
+	border: 1px dashed var(--accent-primary);
+	user-select: none;
+}
+#CaptchaInput {
+	padding: 10px 14px;
+	border: 1px solid rgba(197, 137, 64, 0.25);
+	border-radius: 8px;
+	font-size: 0.95rem;
+	outline: none;
+	width: 130px;
+}
+.btn-auth-submit {
+	width: 100%;
+	padding: 13px;
+	border-radius: var(--radius-pill);
+	background: var(--accent-primary);
+	color: #fff;
+	border: 0;
+	font-weight: 700;
+	font-size: 1rem;
+	cursor: pointer;
+	box-shadow: 0 6px 16px rgba(197, 137, 64, 0.25);
+	transition: all 0.2s ease;
+}
+.btn-auth-submit:hover {
+	background: var(--accent-hover);
+	transform: translateY(-1px);
+}
+.auth-switch-link {
+	text-align: center;
+	margin-top: 20px;
+	font-size: 0.9rem;
+	color: var(--text-secondary);
+}
+.auth-switch-link a {
+	color: var(--accent-hover);
+	font-weight: 600;
+	text-decoration: none;
+}
+.auth-switch-link a:hover {
+	text-decoration: underline;
+}
+</style>
+</head>
+<body class="customer-bookshelf-body" onload="funload()">
+	<header class="bookshelf-header-wrap">
+		<nav class="navbar-bookshelf">
+			<a class="brand" href="index.html">BOOKS</a>
+			<div class="pill-tabs">
+				<a href="index.html">Home</a>
+				<a href="CustomerLogin.html" class="active">Login</a>
+				<a href="CustomerRegister.html">Register</a>
+			</div>
+			<div class="nav-icon-group">
+				<a href="SellerLogin.html" class="nav-pill-btn" style="font-size:0.82rem;">Seller Portal &rarr;</a>
+			</div>
+		</nav>
+	</header>
+
+	<div class="bookshelf-auth-wrap">
+		<div class="bookshelf-page-card">
+			<header class="bookshelf-page-header" style="text-align:center;">
+				<h1>Welcome Back</h1>
+				<p>Sign in with your customer account to continue browsing our bookshelf collection.</p>
+			</header>
+
+			<div id="authAlertBox"></div>
+
+			<form action="userlog" method="post" onsubmit="return checkform(event)" id="theform">
+				<div class="bookshelf-input-group">
+					<label for="userName">Username</label>
+					<input type="text" name="username" id="userName" placeholder="Enter your username" required>
+				</div>
+
+				<div class="bookshelf-input-group">
+					<label for="Password">Password</label>
+					<input type="password" name="password" id="Password" placeholder="Enter your password" required>
+				</div>
+
+				<div class="bookshelf-input-group">
+					<label>Verification Code</label>
+					<div class="captcha-container-box">
+						<div id="CaptchaDiv">46749</div>
+						<input type="hidden" id="txtCaptcha" value="46749">
+						<input type="text" name="CaptchaInput" id="CaptchaInput" placeholder="Enter code" required>
+					</div>
+				</div>
+
+				<button class="btn-auth-submit" type="submit">Sign In to Account</button>
+
+				<div class="auth-switch-link">
+					Don't have an account? <a href="CustomerRegister.html">Create an account</a>
+				</div>
+				<div class="auth-switch-link" style="margin-top:10px; font-size:0.85rem;">
+					Are you a store manager? <a href="SellerLogin.html">Login as Seller</a>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.6/dist/umd/popper.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/js/bootstrap.min.js"></script>
+
+	<script type="text/javascript">
+
+
+		// Preloder script
+		var tmp = document.getElementById("loding");
+		function funload() {
+		  loding.style.display = "none";
+		}
+	  
+  
+
+		// Captcha Script
+
+		function checkform() {
+			var theform = document.getElementById("theform");
+			var why = "";
+
+			if (theform.CaptchaInput.value == "") {
+				why += "- Please Enter CAPTCHA Code.\n";
+			}
+			if (theform.CaptchaInput.value != "") {
+				if (ValidCaptcha(theform.CaptchaInput.value) == false) {
+					why += "- The CAPTCHA Code Does Not Match.\n";
+				}
+			}
+			if (why != "") {
+				alert(why);
+				event.preventDefault();
+				return false;
+			}
+			return true;
+		}
+
+		var a = Math.ceil(Math.random() * 9) + '';
+		var b = Math.ceil(Math.random() * 9) + '';
+		var c = Math.ceil(Math.random() * 9) + '';
+		var d = Math.ceil(Math.random() * 9) + '';
+		var e = Math.ceil(Math.random() * 9) + '';
+
+		var code = a + b + c + d + e;
+		document.getElementById("txtCaptcha").value = code;
+		document.getElementById("CaptchaDiv").innerHTML = code;
+
+		// Validate input against the generated number
+		function ValidCaptcha() {
+			var str1 = removeSpaces(document.getElementById('txtCaptcha').value);
+			var str2 = removeSpaces(document.getElementById('CaptchaInput').value);
+			if (str1 == str2) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		// Remove the spaces from the entered and generated code
+		function removeSpaces(string) {
+			return string.split(' ').join('');
+		}
+
+		function funload() {
+			try {
+				var params = new URLSearchParams(window.location.search);
+				if (params.get('registered') === 'true') {
+					var alertBox = document.getElementById('authAlertBox');
+					if (alertBox) {
+						alertBox.innerHTML = '<div class="alert alert-success text-center" style="border-radius:12px; margin-bottom:18px; font-weight:600; background:#d4edda; color:#155724; border:1px solid #c3e6cb; padding:12px;">Đăng ký tài khoản thành công! Vui lòng đăng nhập bằng thông tin vừa tạo.</div>';
+					}
+				}
+			} catch (e) {
+				console.error(e);
+			}
+		}
+	</script>
+</body>
+</html>

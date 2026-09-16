@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="ISO-8859-1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Login — Online Book Store</title>
+<link rel="apple-touch-icon" sizes="180x180" href="./favicons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./favicons/favicon-16x16.png">
+<link rel="manifest" href="./favicons/site.webmanifest">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="css/bookshelf-theme.css">
+<style>
+.btn-auth-submit {
+	width: 100%;
+	padding: 13px;
+	border-radius: var(--radius-pill);
+	background: var(--accent-primary);
+	color: #fff;
+	border: 0;
+	font-weight: 700;
+	font-size: 1rem;
+	cursor: pointer;
+	box-shadow: 0 6px 16px rgba(197, 137, 64, 0.25);
+	transition: all 0.2s ease;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+.btn-auth-submit:hover {
+	background: var(--accent-hover);
+	transform: translateY(-1px);
+	box-shadow: 0 8px 20px rgba(197, 137, 64, 0.35);
+}
+.auth-switch-link {
+	text-align: center;
+	margin-top: 20px;
+	font-size: 0.9rem;
+	color: var(--text-secondary);
+}
+.auth-switch-link a {
+	color: var(--accent-hover);
+	font-weight: 600;
+	text-decoration: none;
+}
+.auth-switch-link a:hover {
+	text-decoration: underline;
+}
+.admin-badge-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 54px;
+	height: 54px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, rgba(197, 137, 64, 0.18), rgba(174, 118, 52, 0.1));
+	color: var(--accent-hover);
+	margin-bottom: 14px;
+	font-size: 1.5rem;
+	border: 1px solid rgba(197, 137, 64, 0.25);
+	box-shadow: 0 4px 12px rgba(197, 137, 64, 0.1);
+}
+</style>
+</head>
+<body class="customer-bookshelf-body" onload="funload()">
+	<header class="bookshelf-header-wrap">
+		<nav class="navbar-bookshelf">
+			<a class="brand" href="index.html">BOOKS</a>
+			<div class="pill-tabs">
+				<a href="index.html">Home</a>
+				<a href="CustomerLogin.html" class="active">Login</a>
+				<a href="CustomerRegister.html">Register</a>
+			</div>
+			<div class="nav-icon-group">
+				<a href="CustomerLogin.html" class="nav-pill-btn" style="font-size:0.82rem;">Customer Portal &rarr;</a>
+			</div>
+		</nav>
+	</header>
+
+	<main class="bookshelf-canvas" style="padding-top: 36px; min-height: calc(100vh - 85px); display: flex; align-items: center; justify-content: center;">
+		<div class="bookshelf-auth-wrap" style="width: 100%; max-width: 460px; margin: 0 auto;">
+			<div class="bookshelf-page-card" style="box-shadow: var(--shadow-canvas);">
+				<header class="bookshelf-page-header" style="text-align: center; border-bottom: 1px solid rgba(197, 137, 64, 0.18); padding-bottom: 18px; margin-bottom: 24px;">
+					<div class="admin-badge-icon">&#128272;</div>
+					<h1>Admin Login</h1>
+					<p>Sign in to manage catalog, inventory, and orders.</p>
+				</header>
+
+				<div id="authAlertBox"></div>
+
+				<form action="adminlog" method="post" id="adminLoginForm">
+					<div class="bookshelf-input-group">
+						<label for="userName">Username</label>
+						<input type="text" name="username" id="userName" placeholder="Enter admin username" required autocomplete="username">
+					</div>
+
+					<div class="bookshelf-input-group">
+						<label for="Password">Password</label>
+						<input type="password" name="password" id="Password" placeholder="Enter admin password" required autocomplete="current-password">
+					</div>
+
+					<button class="btn-auth-submit" type="submit">
+						<span>Sign In as Admin</span> &rarr;
+					</button>
+
+					<div class="auth-switch-link">
+						Not an Admin? <a href="CustomerLogin.html">Login as Customer</a>
+					</div>
+					<div class="auth-switch-link" style="margin-top: 8px; font-size: 0.84rem;">
+						Need a customer account? <a href="CustomerRegister.html">Register here</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</main>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.6/dist/umd/popper.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/js/bootstrap.min.js"></script>
+	<script>
+		function funload() {
+			// Ready
+		}
+	</script>
+</body>
+</html>

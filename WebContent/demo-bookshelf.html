@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Books — Warm Minimalist Bookshelf</title>
+  <link rel="stylesheet" href="css/bookshelf-theme.css">
+  <style>
+    body { margin: 0; }
+    .demo-stage { padding: 34px 6.5% 38px; }
+    .top-shelf { display: grid; grid-template-columns: minmax(300px, 1fr) 220px 28px 180px 28px 180px; align-items: end; gap: clamp(18px, 2.2vw, 36px); min-height: 445px; }
+    .hero-copy { align-self: center; padding-bottom: 22px; }
+    .hero-copy h1 { max-width: 300px; margin: 0 0 18px; font: 600 clamp(2.6rem, 3.8vw, 3.8rem)/1.05 'Playfair Display', serif; letter-spacing: -.06em; }
+    .hero-copy p { margin: 0 0 22px; color: var(--text-secondary); font-size: .9rem; }
+    .featured-book { justify-self: center; width: 220px; height: 330px; padding: 20px 17px 18px 26px; border-radius: 7px 11px 8px 6px; box-shadow: 17px 27px 22px rgba(63,47,31,.27), 5px 10px 8px rgba(63,47,31,.16); }
+    .featured-book::before { width: 21px; }
+    .featured-book::after { right: 0; bottom: -18px; left: 9px; height: 23px; filter: blur(10px); }
+    .featured-book .book-kicker { font-size: .56rem; }
+    .featured-book .book-title { font-size: 2.65rem; }
+    .featured-book .book-author { font-size: .76rem; }
+    .bottom-shelf { display: grid; grid-template-columns: 28px repeat(4, minmax(210px, 1fr)); align-items: center; gap: clamp(20px, 2.2vw, 36px); min-height: 280px; padding: 38px 7% 25px; }
+    .book-listing { display: grid; grid-template-columns: 110px minmax(120px, 1fr); align-items: center; gap: 18px; }
+    .book-listing .book-standing-3d { width: 110px; height: 165px; }
+    .book-listing .book-title { font-size: 1.15rem; }
+    .listing-copy { min-width: 0; }
+    .stars { color: var(--accent-primary); font-size: .9rem; letter-spacing: 2px; }
+    .listing-copy h3 { margin: 6px 0; font: 700 1.05rem/1.25 'Playfair Display', serif; }
+    .listing-copy p { margin: 0 0 13px; color: var(--text-muted); font-size: .85rem; }
+    @media (max-width: 1200px) { .top-shelf { grid-template-columns: minmax(280px, 1fr) 220px 28px 180px; } .top-shelf > .vertical-label:nth-of-type(2), .audio-player-card { display: none; } .bottom-shelf { grid-template-columns: 28px repeat(2, minmax(260px, 1fr)); } .book-listing:nth-last-child(-n+2) { display: none; } }
+    @media (max-width: 720px) { .demo-stage { padding: 24px 24px 30px; } .top-shelf { grid-template-columns: minmax(230px, 1fr) 160px; gap: 20px; min-height: 400px; } .top-shelf .vertical-label, .author-card { display: none; } .featured-book { width: 160px; height: 250px; } .featured-book .book-title { font-size: 2rem; } .bottom-shelf { grid-template-columns: 22px 1fr; padding-inline: 8%; } .book-listing:nth-last-child(n+2) { display: none; } }
+    @media (max-width: 520px) { .demo-stage { padding: 16px 18px 24px; } .top-shelf { grid-template-columns: 1fr; min-height: auto; } .featured-book { justify-self: start; margin-left: 10%; } .hero-copy { padding-bottom: 0; } .bottom-shelf { grid-template-columns: 18px 1fr; gap: 14px; padding-inline: 2%; } .book-listing { grid-template-columns: 95px 1fr; gap: 14px; } .book-listing .book-standing-3d { width: 95px; height: 145px; } }
+  </style>
+</head>
+<body>
+  <main class="bookshelf-canvas">
+    <section class="bookshelf-board" aria-label="Bookshelf design-system preview">
+      <nav class="navbar-bookshelf">
+        <a class="brand" href="#">BOOKS</a>
+        <div class="pill-tabs"><a class="active" href="#">▥ &nbsp; Books</a><a href="#">◉ &nbsp; AudioBooks</a></div>
+        <div class="nav-icon-group"><button class="nav-icon-button" aria-label="Saved books">♧</button><button class="nav-icon-button" aria-label="Cart">♧</button><span class="nav-avatar" aria-label="Profile"></span><button class="nav-icon-button" aria-label="More">⋮</button></div>
+      </nav>
+      <div class="demo-stage">
+        <section class="top-shelf">
+          <div class="hero-copy"><h1>New &amp;<br>Trending</h1><p>Explore new worlds from authors.</p><label class="pill-search-input">⌕<input type="search" placeholder="Titles, author, or topics"></label></div>
+          <a class="book-standing-3d featured-book" style="--book-color:#286958" href="#"><span class="book-kicker">New York Times Bestseller</span><span class="book-title">The Last<br>Thing<br>He Told Me</span><span class="book-author">LAURA DAVE</span></a>
+          <span class="vertical-label">Author of the Week</span>
+          <article class="author-card"><div class="author-card__header">Stephen King<strong>Collection</strong></div><div class="author-card__portrait"></div></article>
+          <span class="vertical-label">Last listened</span>
+          <article class="audio-player-card"><div class="audio-player-card__title">False Witness: A Novel</div><div class="vinyl-record"></div><div class="player-controls"><span>↶</span><span class="play">Ⅱ</span><span>↷</span></div></article>
+        </section>
+        <div class="shelf-divider"></div>
+        <section class="bottom-shelf"><span class="vertical-label">Recent Bestsellers</span>
+          <article class="book-listing"><a class="book-standing-3d" style="--book-color:#3d8987" href="#"><span class="book-kicker">Blake Pierce</span><span class="book-title">Left<br>to Fear</span></a><div class="listing-copy"><div class="stars">★★★</div><h3>False Witness: A Novel</h3><p>Karin Slaughter</p><a class="btn-pill-buy" href="#">Buy Now</a></div></article>
+          <article class="book-listing"><a class="book-standing-3d" style="--book-color:#a64b72" href="#"><span class="book-kicker">Malibu</span><span class="book-title">Rising</span></a><div class="listing-copy"><div class="stars">★★★★</div><h3>Malibu Rising</h3><p>Taylor Jenkins Reid</p><a class="btn-pill-buy" href="#">Buy Now</a></div></article>
+          <article class="book-listing"><a class="book-standing-3d" style="--book-color:#173950" href="#"><span class="book-kicker">Brad Thor</span><span class="book-title">Black<br>Ice</span></a><div class="listing-copy"><div class="stars">★★★★</div><h3>Black Ice</h3><p>Brad Thor</p><a class="btn-pill-buy" href="#">Buy Now</a></div></article>
+          <article class="book-listing"><a class="book-standing-3d" style="--book-color:#272827" href="#"><span class="book-kicker">Sandra Brown</span><span class="book-title">Blind<br>Tiger</span></a><div class="listing-copy"><div class="stars">★★★★</div><h3>Blind Tiger</h3><p>Sandra Brown</p><a class="btn-pill-buy" href="#">Buy Now</a></div></article>
+        </section>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
