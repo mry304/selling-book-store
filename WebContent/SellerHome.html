@@ -13,37 +13,132 @@
 <link rel="stylesheet" href="css/bookshelf-theme.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-	var activeTab = 'home';
+	var activeTab = 'storebooks';
 </script>
 </head>
-<body class="customer-bookshelf-body">
-	<header class="bookshelf-header-wrap">
-		<nav class="navbar-bookshelf">
-			<a class="brand" href="index.html">BOOKS <span style="font-size:0.75rem; font-family:'Plus Jakarta Sans',sans-serif; background:var(--accent-soft); color:var(--accent-hover); padding:3px 8px; border-radius:999px; margin-left:4px;">ADMIN</span></a>
+<body class="customer-bookshelf-body admin-bookshelf-body">
 
-			<div class="pill-tabs">
-				<a href="index.html" id="home">Home</a>
-				<a href="storebooks" id="storebooks">Store Books</a>
-				<a href="addbook" id="addbook">Add Book</a>
-				<a href="removebook" id="removebook">Remove Book</a>
-				<a href="orders" id="orders">Orders List</a>
-			</div>
-
-			<div class="nav-icon-group">
-				<a href="logout" id="logout" class="nav-pill-btn nav-logout-btn" title="Logout">
-					<span class="nav-avatar" style="background: linear-gradient(135deg, #c58940, #ae7634);"></span>
-					<span>Logout</span>
-				</a>
-			</div>
-		</nav>
+	<!-- Mobile Topbar (< 992px) -->
+	<header class="admin-mobile-header">
+		<a class="admin-sidebar-brand" href="storebooks">
+			<span class="admin-brand-icon-wrap">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+			</span>
+			<span class="admin-brand-title">BOOKS <span class="admin-brand-badge">ADMIN</span></span>
+		</a>
+		<button class="admin-mobile-toggle-btn" id="adminMobileToggle" aria-label="Open navigation menu">
+			<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+		</button>
 	</header>
+
+	<!-- Mobile Sidebar Overlay Backdrop -->
+	<div class="admin-sidebar-backdrop" id="adminSidebarBackdrop"></div>
+
+	<!-- Left Sidebar Navigation -->
+	<aside class="admin-sidebar" id="adminSidebar">
+		<!-- Brand & Logo Area -->
+		<div class="admin-sidebar-brand-box">
+			<a class="admin-sidebar-brand" href="storebooks">
+				<span class="admin-brand-icon-wrap">
+					<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+				</span>
+				<div>
+					<span class="admin-brand-title">BOOKS</span>
+					<span class="admin-brand-badge">ADMIN</span>
+				</div>
+			</a>
+			<button class="admin-sidebar-close-btn" id="adminSidebarClose" aria-label="Close navigation menu">&times;</button>
+		</div>
+
+		<!-- Admin Profile Summary Card -->
+		<div class="admin-profile-box">
+			<div class="admin-profile-avatar">
+				<span>A</span>
+				<span class="admin-status-dot" title="Active & Online"></span>
+			</div>
+			<div class="admin-profile-info">
+				<span class="admin-profile-name">Store Admin</span>
+				<span class="admin-profile-role">
+					<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+					Online &bull; Manager
+				</span>
+			</div>
+		</div>
+
+		<!-- Navigation Menu Links -->
+		<nav class="admin-nav-menu">
+			<div class="admin-nav-group-title">Catalog & Inventory</div>
+			<a href="storebooks" id="storebooks" class="admin-nav-link">
+				<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+				<span>Store Inventory</span>
+			</a>
+			<a href="addbook" id="addbook" class="admin-nav-link">
+				<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+				<span>Add New Book</span>
+			</a>
+			<a href="removebook" id="removebook" class="admin-nav-link">
+				<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+				<span>Remove Book</span>
+			</a>
+
+			<div class="admin-nav-group-title">Sales & Orders</div>
+			<a href="orders" id="orders" class="admin-nav-link">
+				<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+				<span>Customer Orders</span>
+			</a>
+
+			<div class="admin-nav-group-title">Storefront Views</div>
+			<a href="viewbook" id="books" class="admin-nav-link">
+				<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+				<span>Preview Shelf</span>
+			</a>
+			<a href="index.html" id="home" class="admin-nav-link">
+				<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+				<span>Storefront Home</span>
+			</a>
+		</nav>
+
+		<!-- Bottom Footer Area -->
+		<div class="admin-sidebar-footer">
+			<a href="logout" id="logout" class="admin-logout-link" title="Sign out of Admin Session">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+				<span>Sign Out</span>
+			</a>
+			<div class="admin-system-version">BookStore Admin &bull; v1.2</div>
+		</div>
+	</aside>
 
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.6/dist/umd/popper.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/js/bootstrap.min.js"></script>
 	<script>
+		// Setup active tab highlight
 		if (typeof activeTab !== 'undefined' && document.getElementById(activeTab)) {
 			document.getElementById(activeTab).classList.add("active");
 		}
+
+		// Responsive Mobile Drawer Toggle
+		(function() {
+			var toggleBtn = document.getElementById('adminMobileToggle');
+			var closeBtn = document.getElementById('adminSidebarClose');
+			var sidebar = document.getElementById('adminSidebar');
+			var backdrop = document.getElementById('adminSidebarBackdrop');
+
+			function openSidebar() {
+				if (sidebar) sidebar.classList.add('open');
+				if (backdrop) backdrop.classList.add('active');
+				document.body.style.overflow = 'hidden';
+			}
+
+			function closeSidebar() {
+				if (sidebar) sidebar.classList.remove('open');
+				if (backdrop) backdrop.classList.remove('active');
+				document.body.style.overflow = '';
+			}
+
+			if (toggleBtn) toggleBtn.addEventListener('click', openSidebar);
+			if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+			if (backdrop) backdrop.addEventListener('click', closeSidebar);
+		})();
 	</script>
 </body>
 </html>
