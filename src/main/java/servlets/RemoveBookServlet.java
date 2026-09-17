@@ -67,7 +67,7 @@ public class RemoveBookServlet extends HttpServlet {
             pw.println("          <p>Select a book from the list below to remove it from the bookstore inventory catalog.</p>");
             pw.println("        </div>");
             pw.println("        <div style=\"display:flex; gap:12px; align-items:center;\">");
-            pw.println("          <input type=\"text\" id=\"bookSearchInput\" onkeyup=\"filterRemoveTable()\" placeholder=\"🔍 Search title, author, barcode...\" style=\"padding:9px 18px; border-radius:999px; border:1px solid rgba(197,137,64,0.3); font-size:0.88rem; outline:none; width:280px; background:#fff;\">");
+            pw.println("          <input type=\"text\" id=\"bookSearchInput\" onkeyup=\"filterRemoveTable()\" placeholder=\"Search title, author, barcode...\" style=\"padding:9px 18px; border-radius:999px; border:1px solid rgba(197,137,64,0.3); font-size:0.88rem; outline:none; width:280px; background:#fff;\">");
             pw.println("          <a href=\"addbook\" class=\"nav-pill-btn\" style=\"background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); font-size:0.88rem; padding:9px 18px;\">+ Add Book</a>");
             pw.println("        </div>");
             pw.println("      </header>");

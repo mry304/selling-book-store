@@ -27,7 +27,7 @@ public class SellerLoginServlet extends HttpServlet {
         try {
             User user = userService.login(UserRole.SELLER, uName, pWord, req.getSession());
             if (user != null) {
-                res.sendRedirect("storebooks");
+                res.sendRedirect("statistics");
             } else {
                 PrintWriter pw = res.getWriter();
                 RequestDispatcher rd = req.getRequestDispatcher("SellerLogin.html");

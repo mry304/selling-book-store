@@ -141,6 +141,19 @@
 		<servlet-name>ErrorHandlerServlet</servlet-name>
 		<url-pattern>/error</url-pattern>
 	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>AdminStatisticsServlet</servlet-name>
+		<servlet-class>servlets.AdminStatisticsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AdminStatisticsServlet</servlet-name>
+		<url-pattern>/statistics</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>AdminStatisticsServlet</servlet-name>
+		<url-pattern>/admin-stats</url-pattern>
+	</servlet-mapping>
 	<!-- error-code related error pages -->
 	<error-page>
 		<error-code>404</error-code>
