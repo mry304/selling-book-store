@@ -165,12 +165,17 @@ public class AdminStatisticsServlet extends HttpServlet {
                  ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     String st = rs.getString("status");
-                    statusLabels.add(st != null ? st : "PAID");
+                    String label = "ĐÃ THANH TOÁN";
+                    if ("PROCESSING".equalsIgnoreCase(st)) label = "ĐANG XỬ LÝ";
+                    else if ("SHIPPED".equalsIgnoreCase(st)) label = "ĐÃ GIAO";
+                    else if ("CANCELLED".equalsIgnoreCase(st)) label = "ĐÃ HỦY";
+                    else if (st != null && !st.trim().isEmpty()) label = st;
+                    statusLabels.add(label);
                     statusCounts.add(rs.getInt("cnt"));
                 }
             }
             if (statusLabels.isEmpty()) {
-                statusLabels.add("PAID");
+                statusLabels.add("ĐÃ THANH TOÁN");
                 statusCounts.add(0);
             }
 

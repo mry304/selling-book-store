@@ -26,13 +26,13 @@ public class CartServlet extends HttpServlet {
 
     public void service(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         PrintWriter pw = res.getWriter();
-        res.setContentType(BookStoreConstants.CONTENT_TYPE_TEXT_HTML);
+        res.setContentType("text/html; charset=UTF-8");
 
         // Check if Customer is logged In
         if (!StoreUtil.isLoggedIn(UserRole.CUSTOMER, req.getSession())) {
             RequestDispatcher rd = req.getRequestDispatcher("CustomerLogin.html");
             rd.include(req, res);
-            pw.println("<table class=\"tab\"><tr><td>Please Login First to Continue!!</td></tr></table>");
+            pw.println("<table class=\"tab\"><tr><td>Vui lòng đăng nhập để tiếp tục!</td></tr></table>");
             return;
         }
         try {
@@ -64,8 +64,8 @@ public class CartServlet extends HttpServlet {
             pw.println("<div class=\"bookshelf-page-container\">");
             pw.println("  <div class=\"bookshelf-page-card\">");
             pw.println("    <header class=\"bookshelf-page-header\">");
-            pw.println("      <h1>Shopping Cart</h1>");
-            pw.println("      <p>Review the curated books in your bag before proceeding to payment.</p>");
+            pw.println("      <h1>Giỏ Hàng Của Bạn</h1>");
+            pw.println("      <p>Kiểm tra các đầu sách đã chọn trước khi tiến hành thanh toán.</p>");
             pw.println("    </header>");
 
             double amountToPay = 0;
@@ -73,21 +73,21 @@ public class CartServlet extends HttpServlet {
             if (books == null || books.isEmpty()) {
                 pw.println("    <div class=\"bookshelf-empty-state\">");
                 pw.println("      <div class=\"empty-icon\">&#128214;</div>");
-                pw.println("      <h3>Your bookshelf cart is empty</h3>");
-                pw.println("      <p>Looks like you haven't added any books to your cart yet.</p>");
-                pw.println("      <a href=\"viewbook\" class=\"btn-checkout-shelf\">&larr; Explore Available Books</a>");
+                pw.println("      <h3>Giỏ hàng đang trống</h3>");
+                pw.println("      <p>Bạn chưa thêm cuốn sách nào vào giỏ hàng của mình.</p>");
+                pw.println("      <a href=\"viewbook\" class=\"btn-checkout-shelf\">&larr; Khám phá danh mục sách</a>");
                 pw.println("    </div>");
             } else {
                 pw.println("    <div class=\"table-responsive\">");
                 pw.println("      <table class=\"bookshelf-table\">");
                 pw.println("        <thead>");
                 pw.println("          <tr>");
-                pw.println("            <th>ID</th>");
-                pw.println("            <th>Title</th>");
-                pw.println("            <th>Author</th>");
-                pw.println("            <th>Price</th>");
-                pw.println("            <th style=\"text-align:center;\">Quantity</th>");
-                pw.println("            <th>Subtotal</th>");
+                pw.println("            <th>Mã sách</th>");
+                pw.println("            <th>Tựa sách</th>");
+                pw.println("            <th>Tác giả</th>");
+                pw.println("            <th>Đơn giá</th>");
+                pw.println("            <th style=\"text-align:center;\">Số lượng</th>");
+                pw.println("            <th>Tạm tính</th>");
                 pw.println("          </tr>");
                 pw.println("        </thead>");
                 pw.println("        <tbody>");
@@ -109,14 +109,14 @@ public class CartServlet extends HttpServlet {
 
                 // Summary bar
                 pw.println("    <div class=\"cart-summary-bar\">");
-                pw.println("      <a href=\"viewbook\" class=\"btn-pill-secondary\">&larr; Continue Shopping</a>");
+                pw.println("      <a href=\"viewbook\" class=\"btn-pill-secondary\">&larr; Tiếp tục mua sắm</a>");
                 pw.println("      <div style=\"display:flex; align-items:center; gap:24px;\">");
                 pw.println("        <div>");
-                pw.println("          <span class=\"cart-total-label\">Total Amount:</span>");
-                pw.println("          <span class=\"cart-total-value\">&#8377; " + String.format("%.2f", amountToPay) + "</span>");
+                pw.println("          <span class=\"cart-total-label\">Tổng thanh toán:</span>");
+                pw.println("          <span class=\"cart-total-value\">" + StoreUtil.formatPrice(amountToPay) + "</span>");
                 pw.println("        </div>");
                 pw.println("        <form action=\"checkout\" method=\"post\" style=\"margin:0;\">");
-                pw.println("          <button type=\"submit\" class=\"btn-checkout-shelf\" name=\"pay\">Proceed to Checkout &rarr;</button>");
+                pw.println("          <button type=\"submit\" class=\"btn-checkout-shelf\" name=\"pay\">Tiến hành Thanh toán &rarr;</button>");
                 pw.println("        </form>");
                 pw.println("      </div>");
                 pw.println("    </div>");
@@ -140,16 +140,16 @@ public class CartServlet extends HttpServlet {
                 + "      <td><strong>" + book.getBarcode() + "</strong></td>"
                 + "      <td class=\"book-title-cell\">" + book.getName() + "</td>"
                 + "      <td>" + book.getAuthor() + "</td>"
-                + "      <td class=\"price-cell\">&#8377; " + book.getPrice() + "</td>"
+                + "      <td class=\"price-cell\">" + StoreUtil.formatPrice(book.getPrice()) + "</td>"
                 + "      <td style=\"text-align:center;\">"
                 + "        <form method='post' action='cart' class='cart-stepper'>"
-                + "          <button type='submit' name='removeFromCart' class=\"stepper-btn minus\" title=\"Remove\">&minus;</button>"
+                + "          <button type='submit' name='removeFromCart' class=\"stepper-btn minus\" title=\"Giảm một\">&minus;</button>"
                 + "          <input type='hidden' name='selectedBookId' value='" + book.getBarcode() + "'/>"
                 + "          <span class=\"stepper-qty\">" + cart.getQuantity() + "</span>"
-                + "          <button type='submit' name='addToCart' class=\"stepper-btn plus\" title=\"Add\">&plus;</button>"
+                + "          <button type='submit' name='addToCart' class=\"stepper-btn plus\" title=\"Tăng một\">&plus;</button>"
                 + "        </form>"
                 + "      </td>"
-                + "      <td class=\"price-cell\"><strong>&#8377; " + String.format("%.2f", (book.getPrice() * cart.getQuantity())) + "</strong></td>"
+                + "      <td class=\"price-cell\"><strong>" + StoreUtil.formatPrice(book.getPrice() * cart.getQuantity()) + "</strong></td>"
                 + "    </tr>";
     }
 

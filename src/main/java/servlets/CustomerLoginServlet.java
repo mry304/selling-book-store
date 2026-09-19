@@ -22,7 +22,7 @@ public class CustomerLoginServlet extends HttpServlet {
     UserService authService = new UserServiceImpl();
 
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-        res.setContentType(BookStoreConstants.CONTENT_TYPE_TEXT_HTML);
+        res.setContentType("text/html; charset=UTF-8");
         String uName = req.getParameter(UsersDBConstants.COLUMN_USERNAME);
         String pWord = req.getParameter(UsersDBConstants.COLUMN_PASSWORD);
 
@@ -36,14 +36,14 @@ public class CustomerLoginServlet extends HttpServlet {
                 PrintWriter pw = res.getWriter();
                 RequestDispatcher rd = req.getRequestDispatcher("CustomerLogin.html");
                 rd.include(req, res);
-                pw.println("<div class='bookshelf-auth-wrap' style='margin-top:-20px; margin-bottom:20px;'><div class='alert alert-danger text-center' style='border-radius:12px;'>Incorrect Username or Password. Please try again!</div></div>");
+                pw.println("<div class='bookshelf-auth-wrap' style='margin-top:-20px; margin-bottom:20px;'><div class='alert alert-danger text-center' style='border-radius:12px;'>Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng thử lại!</div></div>");
             }
         } catch (Exception e) {
             e.printStackTrace();
             PrintWriter pw = res.getWriter();
             RequestDispatcher rd = req.getRequestDispatcher("CustomerLogin.html");
             rd.include(req, res);
-            pw.println("<div class='bookshelf-auth-wrap' style='margin-top:-20px; margin-bottom:20px;'><div class='alert alert-danger text-center' style='border-radius:12px;'>An error occurred during sign in. Please try again!</div></div>");
+            pw.println("<div class='bookshelf-auth-wrap' style='margin-top:-20px; margin-bottom:20px;'><div class='alert alert-danger text-center' style='border-radius:12px;'>Đã xảy ra lỗi trong quá trình đăng nhập. Vui lòng thử lại!</div></div>");
         }
     }
 

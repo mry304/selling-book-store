@@ -19,7 +19,7 @@ public class ErrorHandlerServlet extends HttpServlet {
 
     public void service(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         PrintWriter pw = res.getWriter();
-        res.setContentType("text/html");
+        res.setContentType("text/html; charset=UTF-8");
 
         // Fetch the exceptions
         Throwable throwable = (Throwable) req.getAttribute("jakarta.servlet.error.exception");

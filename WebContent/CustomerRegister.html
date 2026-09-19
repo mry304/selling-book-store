@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-<meta charset="ISO-8859-1">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Customer Registration — Book Store</title>
+<title>Đăng Ký Tài Khoản Bạn Đọc — Hiệu Sách Trực Tuyến</title>
 <link rel="apple-touch-icon" sizes="180x180" href="./favicons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./favicons/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="./favicons/favicon-16x16.png">
@@ -80,12 +80,12 @@ textarea.bookshelf-textarea:focus {
 		<nav class="navbar-bookshelf">
 			<a class="brand" href="index.html">BOOKS</a>
 			<div class="pill-tabs">
-				<a href="index.html">Home</a>
-				<a href="CustomerLogin.html">Login</a>
-				<a href="CustomerRegister.html" class="active">Register</a>
+				<a href="index.html">Trang chủ</a>
+				<a href="CustomerLogin.html">Đăng nhập</a>
+				<a href="CustomerRegister.html" class="active">Đăng ký</a>
 			</div>
 			<div class="nav-icon-group">
-				<a href="CustomerLogin.html" class="nav-pill-btn" style="font-size:0.82rem;">Sign In &rarr;</a>
+				<a href="CustomerLogin.html" class="nav-pill-btn" style="font-size:0.82rem;">Đăng nhập &rarr;</a>
 			</div>
 		</nav>
 	</header>
@@ -93,8 +93,8 @@ textarea.bookshelf-textarea:focus {
 	<div class="bookshelf-auth-wrap" style="max-width: 540px;">
 		<div class="bookshelf-page-card">
 			<header class="bookshelf-page-header" style="text-align:center;">
-				<h1>Create Account</h1>
-				<p>Register as a member to explore books and enjoy exclusive recommendations.</p>
+				<h1>Tạo Tài Khoản Mới</h1>
+				<p>Đăng ký thành viên để khám phá thế giới tri thức và nhận các gợi ý sách dành riêng cho bạn.</p>
 			</header>
 
 			<div id="authAlertBox"></div>
@@ -102,49 +102,49 @@ textarea.bookshelf-textarea:focus {
 			<form action="userreg" method="post">
 				<div class="register-grid-2">
 					<div class="bookshelf-input-group">
-						<label for="firstName">First Name</label>
-						<input type="text" name="firstname" id="firstName" placeholder="John" required>
+						<label for="firstName">Họ đệm</label>
+						<input type="text" name="firstname" id="firstName" placeholder="Nguyễn Văn" required>
 					</div>
 					<div class="bookshelf-input-group">
-						<label for="lastName">Last Name</label>
-						<input type="text" name="lastname" id="lastName" placeholder="Doe" required>
+						<label for="lastName">Tên</label>
+						<input type="text" name="lastname" id="lastName" placeholder="An" required>
 					</div>
 				</div>
 
 				<div class="bookshelf-input-group">
-					<label for="username">Username</label>
-					<input type="text" name="username" id="username" placeholder="e.g. johndoe" required>
+					<label for="username">Tên tài khoản (Username)</label>
+					<input type="text" name="username" id="username" placeholder="Ví dụ: vanan2026" required>
 				</div>
 
 				<div class="bookshelf-input-group">
-					<label for="Email">Email Address</label>
-					<input type="email" name="mailid" id="Email" placeholder="john@example.com" required>
+					<label for="Email">Địa chỉ Email</label>
+					<input type="email" name="mailid" id="Email" placeholder="an@example.com" required>
 				</div>
 
 				<div class="bookshelf-input-group">
-					<label for="passWord">Password</label>
-					<input type="password" name="password" id="passWord" placeholder="Create a strong password" required>
-				</div>
-
-					<div class="bookshelf-input-group">
-					<label for="phno">Mobile Phone</label>
-					<input type="tel" name="phone" id="phno" placeholder="e.g. 0912345678" pattern="[0-9+\-\s()]+" required>
+					<label for="passWord">Mật khẩu</label>
+					<input type="password" name="password" id="passWord" placeholder="Tạo mật khẩu an toàn" required>
 				</div>
 
 				<div class="bookshelf-input-group">
-					<label for="address">Shipping Address</label>
-					<textarea name="address" id="address" class="bookshelf-textarea" placeholder="Enter your full street address" required></textarea>
+					<label for="phno">Số điện thoại</label>
+					<input type="tel" name="phone" id="phno" placeholder="Ví dụ: 0912345678" pattern="[0-9+\-\s()]+" required>
+				</div>
+
+				<div class="bookshelf-input-group">
+					<label for="address">Địa chỉ giao hàng</label>
+					<textarea name="address" id="address" class="bookshelf-textarea" placeholder="Nhập đầy đủ số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố" required></textarea>
 				</div>
 
 				<label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin: 12px 0 20px; font-size:0.88rem; color:var(--text-secondary);">
 					<input type="checkbox" name="acceptance" required checked>
-					I accept all Terms &amp; Conditions
+					Tôi đồng ý với tất cả Điều khoản &amp; Điều kiện dịch vụ
 				</label>
 
-				<button class="btn-auth-submit" type="submit">Complete Registration</button>
+				<button class="btn-auth-submit" type="submit">Hoàn Tất Đăng Ký</button>
 
 				<div class="auth-switch-link">
-					Already have an account? <a href="CustomerLogin.html">Sign in here</a>
+					Đã có tài khoản? <a href="CustomerLogin.html">Đăng nhập tại đây</a>
 				</div>
 			</form>
 		</div>

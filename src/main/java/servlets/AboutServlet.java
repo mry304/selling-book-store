@@ -16,7 +16,7 @@ public class AboutServlet extends HttpServlet {
 
     public void service(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         PrintWriter pw = res.getWriter();
-        res.setContentType("text/html");
+        res.setContentType("text/html; charset=UTF-8");
         //If the store is logged in as customer or seller show about info
         if (StoreUtil.isLoggedIn(UserRole.CUSTOMER, req.getSession())) {
             RequestDispatcher rd = req.getRequestDispatcher("CustomerHome.html");
@@ -35,9 +35,9 @@ public class AboutServlet extends HttpServlet {
         } else {
             //If the user is not logged in, ask to login first
             //Proceed only if logged in or forword to login page
-            RequestDispatcher rd = req.getRequestDispatcher("login.html");
+            RequestDispatcher rd = req.getRequestDispatcher("CustomerLogin.html");
             rd.include(req, res);
-            pw.println("<table class=\"tab\"><tr><td>Please Login First to Continue!!</td></tr></table>");
+            pw.println("<table class=\"tab\"><tr><td>Vui lòng đăng nhập để tiếp tục!</td></tr></table>");
         }
 
     }

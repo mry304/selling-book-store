@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-<meta charset="ISO-8859-1">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Admin Login — Online Book Store</title>
+<title>Đăng nhập Quản trị viên — Online Book Store</title>
 <link rel="apple-touch-icon" sizes="180x180" href="./favicons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./favicons/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="./favicons/favicon-16x16.png">
@@ -69,12 +69,12 @@
 		<nav class="navbar-bookshelf">
 			<a class="brand" href="index.html">BOOKS</a>
 			<div class="pill-tabs">
-				<a href="index.html">Home</a>
-				<a href="CustomerLogin.html" class="active">Login</a>
-				<a href="CustomerRegister.html">Register</a>
+				<a href="index.html">Trang chủ</a>
+				<a href="CustomerLogin.html" class="active">Đăng nhập</a>
+				<a href="CustomerRegister.html">Đăng ký</a>
 			</div>
 			<div class="nav-icon-group">
-				<a href="CustomerLogin.html" class="nav-pill-btn" style="font-size:0.82rem;">Customer Portal &rarr;</a>
+				<a href="CustomerLogin.html" class="nav-pill-btn" style="font-size:0.82rem;">Cổng Khách hàng &rarr;</a>
 			</div>
 		</nav>
 	</header>
@@ -84,32 +84,32 @@
 			<div class="bookshelf-page-card" style="box-shadow: var(--shadow-canvas);">
 				<header class="bookshelf-page-header" style="text-align: center; border-bottom: 1px solid rgba(197, 137, 64, 0.18); padding-bottom: 18px; margin-bottom: 24px;">
 					<div class="admin-badge-icon">&#128272;</div>
-					<h1>Admin Login</h1>
-					<p>Sign in to manage catalog, inventory, and orders.</p>
+					<h1>Đăng nhập Quản trị viên</h1>
+					<p>Đăng nhập để quản lý kho sách, danh mục và đơn đặt hàng.</p>
 				</header>
 
 				<div id="authAlertBox"></div>
 
 				<form action="adminlog" method="post" id="adminLoginForm">
 					<div class="bookshelf-input-group">
-						<label for="userName">Username</label>
-						<input type="text" name="username" id="userName" placeholder="Enter admin username" required autocomplete="username">
+						<label for="userName">Tên đăng nhập</label>
+						<input type="text" name="username" id="userName" placeholder="Nhập tên đăng nhập admin" required autocomplete="username">
 					</div>
 
 					<div class="bookshelf-input-group">
-						<label for="Password">Password</label>
-						<input type="password" name="password" id="Password" placeholder="Enter admin password" required autocomplete="current-password">
+						<label for="Password">Mật khẩu</label>
+						<input type="password" name="password" id="Password" placeholder="Nhập mật khẩu admin" required autocomplete="current-password">
 					</div>
 
 					<button class="btn-auth-submit" type="submit">
-						<span>Sign In as Admin</span> &rarr;
+						<span>Đăng nhập Quản trị</span> &rarr;
 					</button>
 
 					<div class="auth-switch-link">
-						Not an Admin? <a href="CustomerLogin.html">Login as Customer</a>
+						Không phải Quản trị viên? <a href="CustomerLogin.html">Đăng nhập Khách hàng</a>
 					</div>
 					<div class="auth-switch-link" style="margin-top: 8px; font-size: 0.84rem;">
-						Need a customer account? <a href="CustomerRegister.html">Register here</a>
+						Cần tài khoản khách hàng? <a href="CustomerRegister.html">Đăng ký ngay</a>
 					</div>
 				</form>
 			</div>

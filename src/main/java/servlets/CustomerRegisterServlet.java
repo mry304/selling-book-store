@@ -41,7 +41,7 @@ public class CustomerRegisterServlet extends HttpServlet {
                 || pWord == null || pWord.trim().isEmpty()
                 || fName == null || fName.trim().isEmpty()
                 || lName == null || lName.trim().isEmpty()) {
-            redirectWithError(res, "Please fill in all required fields.");
+            redirectWithError(res, "Vui lòng điền đầy đủ các thông tin bắt buộc.");
             return;
         }
 
@@ -76,13 +76,13 @@ public class CustomerRegisterServlet extends HttpServlet {
             } else {
                 // FAILURE: redirect back to register page with error message
                 String friendlyMsg = (respCode != null && respCode.contains("already registered"))
-                        ? respCode
-                        : "Registration failed. Please check your information and try again.";
+                        ? "Email hoặc tên đăng nhập này đã được sử dụng. Vui lòng chọn tài khoản khác!"
+                        : "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin và thử lại.";
                 redirectWithError(res, friendlyMsg);
             }
         } catch (Throwable t) {
             t.printStackTrace();
-            redirectWithError(res, "An unexpected error occurred. Please try again.");
+            redirectWithError(res, "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.");
         }
     }
 

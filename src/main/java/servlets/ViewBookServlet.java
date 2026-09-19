@@ -34,13 +34,13 @@ public class ViewBookServlet extends HttpServlet {
 
     public void service(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         PrintWriter pw = res.getWriter();
-        res.setContentType("text/html");
+        res.setContentType("text/html; charset=UTF-8");
 
         // Check if customer or seller is logged in, or else return to login page
         if (!StoreUtil.isLoggedIn(UserRole.CUSTOMER, req.getSession()) && !StoreUtil.isLoggedIn(UserRole.SELLER, req.getSession())) {
             RequestDispatcher rd = req.getRequestDispatcher("CustomerLogin.html");
             rd.include(req, res);
-            pw.println("<div class='bookshelf-auth-wrap' style='margin-top:-20px; margin-bottom:20px;'><div class='alert alert-warning text-center' style='border-radius:12px;'>Please sign in first to continue!</div></div>");
+            pw.println("<div class='bookshelf-auth-wrap' style='margin-top:-20px; margin-bottom:20px;'><div class='alert alert-warning text-center' style='border-radius:12px;'>Vui lòng đăng nhập để tiếp tục!</div></div>");
             return;
         }
 
@@ -86,23 +86,23 @@ public class ViewBookServlet extends HttpServlet {
             // --- Upper Shelf (Hero / Featured / Author / Audio Player) ---
             pw.println("      <section class=\"top-shelf\">");
             pw.println("        <div class=\"hero-copy\">");
-            pw.println("          <h1>New &amp;<br>Trending</h1>");
-            pw.println("          <p>Explore new worlds from authors.</p>");
+            pw.println("          <h1>Sách Mới &amp;<br>Thịnh Hành</h1>");
+            pw.println("          <p>Khám phá thế giới tri thức từ các tác giả nổi tiếng.</p>");
             pw.println("          <div class=\"pill-search-input\">");
             pw.println("            <span>&#9906;</span>");
-            pw.println("            <input type=\"search\" id=\"bookSearchInput\" placeholder=\"Titles, author, or topics...\" onkeyup=\"filterBooks()\">");
+            pw.println("            <input type=\"search\" id=\"bookSearchInput\" placeholder=\"Tìm kiếm tựa sách, tác giả, chủ đề...\" onkeyup=\"filterBooks()\">");
             pw.println("          </div>");
             pw.println("        </div>");
 
             pw.println("        <div class=\"book-standing-3d featured-book\" style=\"--book-color:" + featuredColor + "\">");
-            pw.println("          <span class=\"book-kicker\">Bestseller Spotlight</span>");
+            pw.println("          <span class=\"book-kicker\">Tác Phẩm Nổi Bật</span>");
             pw.println("          <span class=\"book-title\">" + escapeHtml(featuredTitle) + "</span>");
             pw.println("          <span class=\"book-author\">" + escapeHtml(featuredAuthor) + "</span>");
             pw.println("        </div>");
 
-            pw.println("        <span class=\"vertical-label\">Author of the Week</span>");
+            pw.println("        <span class=\"vertical-label\">Tác Giả Nổi Bật</span>");
             pw.println("        <article class=\"author-card\">");
-            pw.println("          <div class=\"author-card__header\">Stephen King<strong>Collection</strong></div>");
+            pw.println("          <div class=\"author-card__header\">Stephen King<strong>Tuyển Tập</strong></div>");
             pw.println("          <div class=\"author-card__portrait\"></div>");
             pw.println("        </article>");
 
@@ -117,9 +117,9 @@ public class ViewBookServlet extends HttpServlet {
                 secondColor = getBookColor(sBook.getBarcode());
             }
 
-            pw.println("        <span class=\"vertical-label\">Editor's Pick</span>");
+            pw.println("        <span class=\"vertical-label\">Biên Tập Viên Chọn</span>");
             pw.println("        <div class=\"book-standing-3d featured-book-secondary\" style=\"--book-color:" + secondColor + "\">");
-            pw.println("          <span class=\"book-kicker\">Top Recommendation</span>");
+            pw.println("          <span class=\"book-kicker\">Gợi Ý Hàng Đầu</span>");
             pw.println("          <span class=\"book-title\">" + escapeHtml(secondTitle) + "</span>");
             pw.println("          <span class=\"book-author\">" + escapeHtml(secondAuthor) + "</span>");
             pw.println("        </div>");
@@ -130,7 +130,7 @@ public class ViewBookServlet extends HttpServlet {
 
             // --- Lower Shelf (Recent Bestsellers Grid) ---
             pw.println("      <section class=\"bottom-shelf-layout\">");
-            pw.println("        <span class=\"vertical-label\">Recent Bestsellers</span>");
+            pw.println("        <span class=\"vertical-label\">Sách Bán Chạy Nhất</span>");
             pw.println("        <div class=\"bottom-shelf-books\" id=\"bookshelfContainer\">");
 
             if (books != null && !books.isEmpty()) {
@@ -138,7 +138,7 @@ public class ViewBookServlet extends HttpServlet {
                     pw.println(this.addBookToCard(session, book));
                 }
             } else {
-                pw.println("<p style='grid-column: 1/-1; padding: 40px; text-align: center; color: var(--text-secondary);'>No books currently available in the catalog.</p>");
+                pw.println("<p style='grid-column: 1/-1; padding: 40px; text-align: center; color: var(--text-secondary);'>Hiện chưa có cuốn sách nào trong danh mục.</p>");
             }
 
             pw.println("        </div>");
@@ -146,9 +146,9 @@ public class ViewBookServlet extends HttpServlet {
 
             // --- Bottom Checkout Bar ---
             pw.println("      <footer class=\"bottom-shelf-footer\">");
-            pw.println("        <span class=\"shelf-note\">Showing curated books directly on shelf</span>");
+            pw.println("        <span class=\"shelf-note\">Hiển thị các đầu sách tuyển chọn trực tiếp trên kệ</span>");
             pw.println("        <form action=\"cart\" method=\"post\">");
-            pw.println("          <button type=\"submit\" class=\"btn-checkout-shelf\" name=\"cart\">Proceed to Checkout &rarr;</button>");
+            pw.println("          <button type=\"submit\" class=\"btn-checkout-shelf\" name=\"cart\">Xem giỏ hàng &amp; Thanh toán &rarr;</button>");
             pw.println("        </form>");
             pw.println("      </footer>");
 
@@ -191,21 +191,21 @@ public class ViewBookServlet extends HttpServlet {
                 button = "<form action=\"viewbook\" method=\"post\" style='margin:0;'>"
                         + "<input type='hidden' name='selectedBookId' value='" + bCode + "'>"
                         + "<input type='hidden' name='qty_" + bCode + "' value='1'/>"
-                        + "<button type='submit' class=\"btn-pill-buy\" name='addToCart'>Buy Now</button>"
+                        + "<button type='submit' class=\"btn-pill-buy\" name='addToCart'>Chọn mua</button>"
                         + "</form>";
             } else {
                 button = "<form method='post' action='viewbook' class='cart-stepper'>"
-                        + "<button type='submit' name='removeFromCart' class=\"stepper-btn minus\" title=\"Remove one\">&minus;</button>"
+                        + "<button type='submit' name='removeFromCart' class=\"stepper-btn minus\" title=\"Bớt một\">&minus;</button>"
                         + "<input type='hidden' name='selectedBookId' value='" + bCode + "'/>"
                         + "<span class='stepper-qty'>" + cartItemQty + "</span>"
-                        + "<button type='submit' name='addToCart' class=\"stepper-btn plus\" title=\"Add one\">&plus;</button>"
+                        + "<button type='submit' name='addToCart' class=\"stepper-btn plus\" title=\"Thêm một\">&plus;</button>"
                         + "</form>";
             }
         } else {
-            button = "<span class=\"badge-out-of-stock\">Out Of Stock</span>";
+            button = "<span class=\"badge-out-of-stock\">Tạm hết hàng</span>";
         }
 
-        String[] kickers = {"BESTSELLER", "HOT NEW", "TOP CHOICE", "MUST READ", "FEATURED"};
+        String[] kickers = {"BÁN CHẠY", "MỚI NHẤT", "GỢI Ý", "NỔI BẬT", "ĐẶC SẮC"};
         String kicker = kickers[Math.abs(bCode.hashCode()) % kickers.length];
 
         return "<article class=\"book-listing\">"
@@ -222,7 +222,7 @@ public class ViewBookServlet extends HttpServlet {
                 + "    </div>"
                 + "    <h3 title=\"" + escapeHtml(book.getName()) + "\">" + escapeHtml(book.getName()) + "</h3>"
                 + "    <p class=\"author-text\">" + escapeHtml(book.getAuthor()) + "</p>"
-                + "    <div class=\"price-tag\">&#8377; " + book.getPrice() + "</div>"
+                + "    <div class=\"price-tag\">" + StoreUtil.formatPrice(book.getPrice()) + "</div>"
                 + button
                 + "  </div>"
                 + "</article>";

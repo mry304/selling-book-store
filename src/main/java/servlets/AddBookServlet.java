@@ -23,12 +23,12 @@ public class AddBookServlet extends HttpServlet {
 
     public void service(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         PrintWriter pw = res.getWriter();
-        res.setContentType(BookStoreConstants.CONTENT_TYPE_TEXT_HTML);
+        res.setContentType("text/html; charset=UTF-8");
 
         if (!StoreUtil.isLoggedIn(UserRole.SELLER, req.getSession())) {
             RequestDispatcher rd = req.getRequestDispatcher("SellerLogin.html");
             rd.include(req, res);
-            pw.println("<table class=\"tab\"><tr><td>Please Login First to Continue!!</td></tr></table>");
+            pw.println("<table class=\"tab\"><tr><td>Vui lòng đăng nhập quản trị để tiếp tục!</td></tr></table>");
             return;
         }
 
@@ -48,21 +48,21 @@ public class AddBookServlet extends HttpServlet {
             String uniqueID = UUID.randomUUID().toString();
             String bCode = uniqueID;
             String bAuthor = req.getParameter(BooksDBConstants.COLUMN_AUTHOR);
-            double bPrice = Integer.parseInt(req.getParameter(BooksDBConstants.COLUMN_PRICE));
+            double bPrice = Double.parseDouble(req.getParameter(BooksDBConstants.COLUMN_PRICE));
             int bQty = Integer.parseInt(req.getParameter(BooksDBConstants.COLUMN_QUANTITY));
 
             Book book = new Book(bCode, bName, bAuthor, bPrice, bQty);
             String message = bookService.addBook(book);
             if ("SUCCESS".equalsIgnoreCase(message)) {
-                pw.println("<div class='alert alert-success text-center' style='border-radius:12px; margin-bottom:24px;'>Book \"" + bName + "\" added successfully to store catalog!</div>");
-                pw.println("<div class='text-center'><a href='storebooks' class='nav-pill-btn' style='background:var(--accent-primary); color:#fff; border-color:var(--accent-primary);'>&larr; View Store Inventory</a> <a href='addbook' class='nav-pill-btn' style='margin-left:12px;'>+ Add Another Book</a></div>");
+                pw.println("<div class='alert alert-success text-center' style='border-radius:12px; margin-bottom:24px;'>Đã thêm sách \"" + bName + "\" vào kho thành công!</div>");
+                pw.println("<div class='text-center'><a href='storebooks' class='nav-pill-btn' style='background:var(--accent-primary); color:#fff; border-color:var(--accent-primary);'>&larr; Xem Kho Sách</a> <a href='addbook' class='nav-pill-btn' style='margin-left:12px;'>+ Thêm Cuốn Sách Khác</a></div>");
             } else {
-                pw.println("<div class='alert alert-danger text-center' style='border-radius:12px; margin-bottom:24px;'>Failed to add book. Please fill up all fields carefully!</div>");
+                pw.println("<div class='alert alert-danger text-center' style='border-radius:12px; margin-bottom:24px;'>Thêm sách thất bại. Vui lòng kiểm tra lại các trường thông tin!</div>");
                 showAddBookForm(pw);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            pw.println("<div class='alert alert-danger text-center' style='border-radius:12px; margin-bottom:24px;'>An error occurred while adding the book. Please try again!</div>");
+            pw.println("<div class='alert alert-danger text-center' style='border-radius:12px; margin-bottom:24px;'>Đã xảy ra lỗi khi thêm sách. Vui lòng thử lại!</div>");
             showAddBookForm(pw);
         }
         pw.println("    </div></div></main>");
@@ -70,27 +70,27 @@ public class AddBookServlet extends HttpServlet {
     
     private static void showAddBookForm(PrintWriter pw) {
         String form = "<header class=\"bookshelf-page-header\" style=\"text-align:center;\">\r\n"
-                + "      <h1>Add New Book</h1>\r\n"
-                + "      <p>Enter details of the title to add to your bookstore collection</p>\r\n"
+                + "      <h1>Thêm Sách Mới</h1>\r\n"
+                + "      <p>Nhập thông tin chi tiết đầu sách để bổ sung vào kho hàng</p>\r\n"
                 + "    </header>\r\n"
                 + "    <form action=\"addbook\" method=\"post\">\r\n"
                 + "      <div class=\"bookshelf-input-group\">\r\n"
-                + "        <label for=\"bookName\">Book Title</label>\r\n"
-                + "        <input type=\"text\" name=\"name\" id=\"bookName\" placeholder=\"e.g. Clean Architecture\" required>\r\n"
+                + "        <label for=\"bookName\">Tựa sách</label>\r\n"
+                + "        <input type=\"text\" name=\"name\" id=\"bookName\" placeholder=\"Ví dụ: Tôi Thấy Hoa Vàng Trên Cỏ Xanh\" required>\r\n"
                 + "      </div>\r\n"
                 + "      <div class=\"bookshelf-input-group\">\r\n"
-                + "        <label for=\"bookAuthor\">Author</label>\r\n"
-                + "        <input type=\"text\" name=\"author\" id=\"bookAuthor\" placeholder=\"e.g. Robert C. Martin\" required>\r\n"
+                + "        <label for=\"bookAuthor\">Tác giả</label>\r\n"
+                + "        <input type=\"text\" name=\"author\" id=\"bookAuthor\" placeholder=\"Ví dụ: Nguyễn Nhật Ánh\" required>\r\n"
                 + "      </div>\r\n"
                 + "      <div class=\"bookshelf-input-group\">\r\n"
-                + "        <label for=\"bookPrice\">Price (đ)</label>\r\n"
-                + "        <input type=\"number\" name=\"price\" id=\"bookPrice\" placeholder=\"e.g. 299\" required min=\"1\">\r\n"
+                + "        <label for=\"bookPrice\">Đơn giá (VNĐ)</label>\r\n"
+                + "        <input type=\"number\" name=\"price\" id=\"bookPrice\" placeholder=\"Ví dụ: 120000\" required min=\"1\" step=\"any\">\r\n"
                 + "      </div>\r\n"
                 + "      <div class=\"bookshelf-input-group\">\r\n"
-                + "        <label for=\"bookQuantity\">Stock Quantity</label>\r\n"
-                + "        <input type=\"number\" name=\"quantity\" id=\"bookQuantity\" placeholder=\"e.g. 25\" required min=\"1\">\r\n"
+                + "        <label for=\"bookQuantity\">Số lượng nhập kho</label>\r\n"
+                + "        <input type=\"number\" name=\"quantity\" id=\"bookQuantity\" placeholder=\"Ví dụ: 50\" required min=\"1\">\r\n"
                 + "      </div>\r\n"
-                + "      <button class=\"btn-auth-submit\" type=\"submit\" style=\"margin-top:12px;\">+ Add to Catalog</button>\r\n"
+                + "      <button class=\"btn-auth-submit\" type=\"submit\" style=\"margin-top:12px;\">+ Thêm Vào Kho Hàng</button>\r\n"
                 + "    </form>\r\n";
         pw.println(form);
     }

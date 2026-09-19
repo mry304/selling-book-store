@@ -351,4 +351,15 @@ public class StoreUtil {
             saveUserCart(session, username);
         }
     }
+
+    /**
+     * Format currency in VNĐ standard
+     */
+    public static String formatPrice(double price) {
+        if (price % 1 == 0) {
+            return String.format(java.util.Locale.GERMANY, "%,.0f đ", price);
+        } else {
+            return String.format(java.util.Locale.GERMANY, "%,.2f đ", price);
+        }
+    }
 }

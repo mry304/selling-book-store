@@ -26,18 +26,18 @@
       <div class="dashboard-title-box">
         <span class="dashboard-pill-tag">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-          Executive Analytics
+          Phân tích Điều hành
         </span>
-        <h1>Store Analytics & Performance</h1>
-        <p>Real-time transaction tracking, revenue trajectory, and inventory monitoring.</p>
+        <h1>Thống kê & Hiệu quả Cửa hàng</h1>
+        <p>Theo dõi giao dịch trực tiếp, biểu đồ doanh thu và giám sát kho sách.</p>
       </div>
 
       <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
         <span style="background:#fff; border:1px solid rgba(197,137,64,0.25); border-radius:var(--radius-pill); padding:8px 16px; font-size:0.85rem; font-weight:600; color:var(--text-secondary); box-shadow:0 2px 8px rgba(0,0,0,0.03);">
-          📅 <%= new java.text.SimpleDateFormat("EEEE, dd MMM yyyy").format(new java.util.Date()) %>
+          📅 <%= new java.text.SimpleDateFormat("EEEE, dd/MM/yyyy", new java.util.Locale("vi", "VN")).format(new java.util.Date()) %>
         </span>
-        <a href="storebooks" class="nav-pill-btn" style="background:#fff; font-size:0.86rem; padding:8px 18px;">Catalog</a>
-        <a href="addbook" class="nav-pill-btn" style="background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); font-size:0.86rem; padding:8px 18px;">+ Add Book</a>
+        <a href="storebooks" class="nav-pill-btn" style="background:#fff; font-size:0.86rem; padding:8px 18px;">Danh mục</a>
+        <a href="addbook" class="nav-pill-btn" style="background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); font-size:0.86rem; padding:8px 18px;">+ Thêm sách</a>
       </div>
     </div>
 
@@ -46,7 +46,7 @@
       <!-- Card 1: Revenue -->
       <div class="stat-kpi-card">
         <div class="stat-kpi-header">
-          <span class="stat-kpi-label">Total Revenue</span>
+          <span class="stat-kpi-label">Tổng Doanh Thu</span>
           <div class="stat-kpi-icon-box icon-emerald">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
           </div>
@@ -55,15 +55,15 @@
           <%= String.format("%,.0f đ", (Double)request.getAttribute("totalRevenue")) %>
         </div>
         <div class="stat-kpi-footer">
-          <span class="stat-trend-badge trend-up">▲ Active</span>
-          <span>From completed orders</span>
+          <span class="stat-trend-badge trend-up">▲ Hoạt động</span>
+          <span>Từ các đơn hoàn tất</span>
         </div>
       </div>
 
       <!-- Card 2: Total Orders -->
       <div class="stat-kpi-card">
         <div class="stat-kpi-header">
-          <span class="stat-kpi-label">Total Orders</span>
+          <span class="stat-kpi-label">Tổng Đơn Hàng</span>
           <div class="stat-kpi-icon-box icon-blue">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
           </div>
@@ -72,32 +72,32 @@
           <%= request.getAttribute("totalOrders") %>
         </div>
         <div class="stat-kpi-footer">
-          <span class="stat-trend-badge trend-up">▲ Orders</span>
-          <span>Customer checkouts</span>
+          <span class="stat-trend-badge trend-up">▲ Đơn hàng</span>
+          <span>Khách đã thanh toán</span>
         </div>
       </div>
 
       <!-- Card 3: Books Sold -->
       <div class="stat-kpi-card">
         <div class="stat-kpi-header">
-          <span class="stat-kpi-label">Books Sold</span>
+          <span class="stat-kpi-label">Số Sách Đã Bán</span>
           <div class="stat-kpi-icon-box icon-purple">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
           </div>
         </div>
         <div class="stat-kpi-value">
-          <%= request.getAttribute("totalBooksSold") %> <span style="font-size:0.9rem; font-weight:600; color:var(--text-secondary);">copies</span>
+          <%= request.getAttribute("totalBooksSold") %> <span style="font-size:0.9rem; font-weight:600; color:var(--text-secondary);">cuốn</span>
         </div>
         <div class="stat-kpi-footer">
-          <span class="stat-trend-badge trend-neutral">&bull; Volume</span>
-          <span>Total volume dispatched</span>
+          <span class="stat-trend-badge trend-neutral">&bull; Sản lượng</span>
+          <span>Tổng số bản đã xuất</span>
         </div>
       </div>
 
       <!-- Card 4: Customers -->
       <div class="stat-kpi-card">
         <div class="stat-kpi-header">
-          <span class="stat-kpi-label">Customers</span>
+          <span class="stat-kpi-label">Khách Hàng</span>
           <div class="stat-kpi-icon-box icon-amber">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
           </div>
@@ -106,25 +106,25 @@
           <%= request.getAttribute("totalCustomers") %>
         </div>
         <div class="stat-kpi-footer">
-          <span class="stat-trend-badge trend-up">▲ Accounts</span>
-          <span>Registered readers</span>
+          <span class="stat-trend-badge trend-up">▲ Độc giả</span>
+          <span>Tài khoản đã đăng ký</span>
         </div>
       </div>
 
       <!-- Card 5: Inventory Stock -->
       <div class="stat-kpi-card">
         <div class="stat-kpi-header">
-          <span class="stat-kpi-label">Warehouse Stock</span>
+          <span class="stat-kpi-label">Tồn Kho Hiện Tại</span>
           <div class="stat-kpi-icon-box icon-teal">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
           </div>
         </div>
         <div class="stat-kpi-value">
-          <%= request.getAttribute("totalStock") %> <span style="font-size:0.9rem; font-weight:600; color:var(--text-secondary);">units</span>
+          <%= request.getAttribute("totalStock") %> <span style="font-size:0.9rem; font-weight:600; color:var(--text-secondary);">cuốn</span>
         </div>
         <div class="stat-kpi-footer">
-          <span class="stat-trend-badge trend-neutral"><%= request.getAttribute("totalTitles") %> Titles</span>
-          <span>In active store inventory</span>
+          <span class="stat-trend-badge trend-neutral"><%= request.getAttribute("totalTitles") %> Đầu sách</span>
+          <span>Đang bày bán trong kho</span>
         </div>
       </div>
     </div>
@@ -135,12 +135,12 @@
       <div class="chart-card">
         <div class="chart-card-header">
           <div>
-            <h3 class="chart-card-title">Revenue Trajectory</h3>
-            <p class="chart-card-subtitle">Sales volume and daily earnings over recent periods</p>
+            <h3 class="chart-card-title">Biểu đồ Tăng trưởng Doanh thu</h3>
+            <p class="chart-card-subtitle">Doanh thu và xu hướng giao dịch theo các mốc thời gian gần nhất</p>
           </div>
           <div style="display:flex; gap:8px;">
             <span style="font-size:0.75rem; font-weight:700; background:rgba(197,137,64,0.14); color:var(--accent-hover); padding:4px 10px; border-radius:var(--radius-pill);">
-              ● Daily Revenue (đ)
+              ● Doanh thu (đ)
             </span>
           </div>
         </div>
@@ -153,8 +153,8 @@
       <div class="chart-card">
         <div class="chart-card-header">
           <div>
-            <h3 class="chart-card-title">Order Statuses</h3>
-            <p class="chart-card-subtitle">Fulfillment distribution</p>
+            <h3 class="chart-card-title">Trạng thái Đơn hàng</h3>
+            <p class="chart-card-subtitle">Tỷ lệ xử lý & hoàn tất</p>
           </div>
         </div>
         <div class="chart-box-relative" style="display:flex; align-items:center; justify-content:center;">
@@ -169,11 +169,11 @@
       <div class="chart-card">
         <div class="chart-card-header">
           <div>
-            <h3 class="chart-card-title">Top 5 Bestsellers by Sales Volume</h3>
-            <p class="chart-card-subtitle">Titles with highest number of copies sold</p>
+            <h3 class="chart-card-title">Top 5 Tựa Sách Bán Chạy Nhất</h3>
+            <p class="chart-card-subtitle">Những đầu sách có số lượng tiêu thụ cao nhất</p>
           </div>
           <span style="font-size:0.75rem; font-weight:700; background:rgba(16,185,129,0.12); color:#059669; padding:4px 10px; border-radius:var(--radius-pill);">
-            Best Performing Titles
+            Sản Phẩm Xuất Sắc Nhất
           </span>
         </div>
         <div class="chart-box-relative">
@@ -186,8 +186,8 @@
         <div>
           <div class="chart-card-header">
             <div>
-              <h3 class="chart-card-title">Storefront Health</h3>
-              <p class="chart-card-subtitle">Business operational ratios</p>
+              <h3 class="chart-card-title">Chỉ số Vận hành Cửa hàng</h3>
+              <p class="chart-card-subtitle">Tỷ số hiệu quả kinh doanh</p>
             </div>
           </div>
 
@@ -202,7 +202,7 @@
             %>
             <div style="padding:14px 18px; background:var(--bg-board); border-radius:12px; border:1px solid rgba(197,137,64,0.18); display:flex; justify-content:space-between; align-items:center;">
               <div>
-                <div style="font-size:0.8rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase;">Avg. Order Value (AOV)</div>
+                <div style="font-size:0.8rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase;">Giá trị đơn trung bình (AOV)</div>
                 <div style="font-size:1.3rem; font-weight:800; color:var(--text-primary); margin-top:2px;">
                   <%= String.format("%,.0f đ", avgOrderValue) %>
                 </div>
@@ -212,9 +212,9 @@
 
             <div style="padding:14px 18px; background:var(--bg-board); border-radius:12px; border:1px solid rgba(197,137,64,0.18); display:flex; justify-content:space-between; align-items:center;">
               <div>
-                <div style="font-size:0.8rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase;">Catalog Availability</div>
+                <div style="font-size:0.8rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase;">Tình trạng kho hàng</div>
                 <div style="font-size:1.3rem; font-weight:800; color:#059669; margin-top:2px;">
-                  <%= (Integer)request.getAttribute("totalStock") > 0 ? "In Stock & Ready" : "Restock Needed" %>
+                  <%= (Integer)request.getAttribute("totalStock") > 0 ? "Còn Hàng & Sẵn Sàng" : "Cần Nhập Thêm" %>
                 </div>
               </div>
               <div style="font-size:1.5rem;">📦</div>
@@ -222,9 +222,9 @@
 
             <div style="padding:14px 18px; background:var(--bg-board); border-radius:12px; border:1px solid rgba(197,137,64,0.18); display:flex; justify-content:space-between; align-items:center;">
               <div>
-                <div style="font-size:0.8rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase;">Admin Status</div>
+                <div style="font-size:0.8rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase;">Hệ thống Quản trị</div>
                 <div style="font-size:1.1rem; font-weight:700; color:var(--accent-hover); margin-top:2px;">
-                  Full Database Sync Active
+                  Đồng Bộ Dữ Liệu Trực Tiếp
                 </div>
               </div>
               <div style="font-size:1.5rem;">⚡</div>
@@ -234,7 +234,7 @@
 
         <div style="margin-top:20px; text-align:center;">
           <a href="storebooks" class="btn-auth-submit" style="text-decoration:none; padding:11px 20px; font-size:0.92rem;">
-            <span>Manage Store Inventory</span> &rarr;
+            <span>Quản Lý Kho Sách Cửa Hàng</span> &rarr;
           </a>
         </div>
       </div>
@@ -246,20 +246,20 @@
       <div class="chart-card">
         <div class="chart-card-header">
           <div>
-            <h3 class="chart-card-title">⚠️ Low Stock Warning (≤ 5 units)</h3>
-            <p class="chart-card-subtitle">Titles requiring inventory replenishment</p>
+            <h3 class="chart-card-title">⚠️ Cảnh Báo Sắp Hết Hàng (≤ 5 cuốn)</h3>
+            <p class="chart-card-subtitle">Các đầu sách cần bổ sung số lượng trong kho</p>
           </div>
-          <a href="addbook" class="nav-pill-btn" style="font-size:0.8rem; padding:6px 14px;">+ Restock</a>
+          <a href="addbook" class="nav-pill-btn" style="font-size:0.8rem; padding:6px 14px;">+ Nhập thêm</a>
         </div>
 
         <div class="table-responsive">
           <table class="table table-hover align-middle" style="margin:0; font-size:0.9rem;">
             <thead style="background:var(--shelf-surface);">
               <tr>
-                <th style="padding:10px 14px;">Book Title</th>
-                <th style="padding:10px 14px;">Price</th>
-                <th style="padding:10px 14px; text-align:center;">Stock</th>
-                <th style="padding:10px 14px; text-align:center;">Action</th>
+                <th style="padding:10px 14px;">Tựa sách</th>
+                <th style="padding:10px 14px;">Đơn giá</th>
+                <th style="padding:10px 14px; text-align:center;">Tồn kho</th>
+                <th style="padding:10px 14px; text-align:center;">Thao tác</th>
               </tr>
             </thead>
             <tbody>
@@ -269,7 +269,7 @@
               %>
                 <tr>
                   <td colspan="4" class="text-center py-4" style="color:var(--text-secondary);">
-                    🎉 <strong>Great!</strong> All catalog books currently have healthy stock levels.
+                    🎉 <strong>Tuyệt vời!</strong> Tất cả các đầu sách hiện đều có lượng tồn kho dồi dào.
                   </td>
                 </tr>
               <%
@@ -286,13 +286,13 @@
                   </td>
                   <td style="vertical-align:middle; text-align:center; padding:12px 14px;">
                     <span class="badge-low-stock-urgent">
-                      <%= b.get("quantity") %> left
+                      Còn <%= b.get("quantity") %> cuốn
                     </span>
                   </td>
                   <td style="vertical-align:middle; text-align:center; padding:12px 14px;">
                     <form method="post" action="updatebook" style="margin:0;">
                       <input type="hidden" name="bookId" value="<%= b.get("barcode") %>">
-                      <button type="submit" class="nav-pill-btn" style="padding:5px 12px; font-size:0.8rem; background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); cursor:pointer;">Update</button>
+                      <button type="submit" class="nav-pill-btn" style="padding:5px 12px; font-size:0.8rem; background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); cursor:pointer;">Cập nhật</button>
                     </form>
                   </td>
                 </tr>
@@ -309,20 +309,20 @@
       <div class="chart-card">
         <div class="chart-card-header">
           <div>
-            <h3 class="chart-card-title">🕒 Recent Orders</h3>
-            <p class="chart-card-subtitle">Latest customer transactions</p>
+            <h3 class="chart-card-title">🕒 Đơn Hàng Gần Đây</h3>
+            <p class="chart-card-subtitle">Các giao dịch mua sách mới nhất</p>
           </div>
-          <a href="orders" class="nav-pill-btn" style="font-size:0.8rem; padding:6px 14px;">All Orders &rarr;</a>
+          <a href="orders" class="nav-pill-btn" style="font-size:0.8rem; padding:6px 14px;">Tất cả đơn &rarr;</a>
         </div>
 
         <div class="table-responsive">
           <table class="table table-hover align-middle" style="margin:0; font-size:0.9rem;">
             <thead style="background:var(--shelf-surface);">
               <tr>
-                <th style="padding:10px 14px;">Order ID</th>
-                <th style="padding:10px 14px;">Customer</th>
-                <th style="padding:10px 14px;">Amount</th>
-                <th style="padding:10px 14px; text-align:center;">Status</th>
+                <th style="padding:10px 14px;">Mã đơn</th>
+                <th style="padding:10px 14px;">Khách hàng</th>
+                <th style="padding:10px 14px;">Tổng tiền</th>
+                <th style="padding:10px 14px; text-align:center;">Trạng thái</th>
               </tr>
             </thead>
             <tbody>
@@ -332,7 +332,7 @@
               %>
                 <tr>
                   <td colspan="4" class="text-center py-4" style="color:var(--text-secondary);">
-                    No orders placed yet. Orders will appear here as customers complete checkouts.
+                    Chưa có đơn hàng nào. Đơn sẽ hiển thị tại đây ngay khi khách đặt sách.
                   </td>
                 </tr>
               <%
@@ -340,7 +340,15 @@
                   for (Map<String, Object> o : recOrders) {
                     String st = (String) o.get("status");
                     String badgeClass = "status-paid";
-                    if ("PROCESSING".equalsIgnoreCase(st)) badgeClass = "status-processing";
+                    String stVi = "ĐÃ THANH TOÁN";
+                    if ("PROCESSING".equalsIgnoreCase(st)) {
+                        badgeClass = "status-processing";
+                        stVi = "ĐANG XỬ LÝ";
+                    } else if ("SHIPPED".equalsIgnoreCase(st)) {
+                        stVi = "ĐÃ GIAO HÀNG";
+                    } else if ("CANCELLED".equalsIgnoreCase(st)) {
+                        stVi = "ĐÃ HỦY";
+                    }
               %>
                 <tr>
                   <td style="vertical-align:middle; padding:12px 14px;">
@@ -355,7 +363,7 @@
                   </td>
                   <td style="vertical-align:middle; text-align:center; padding:12px 14px;">
                     <span class="badge-order-status-pill <%= badgeClass %>">
-                      <%= st != null ? st : "PAID" %>
+                      <%= stVi %>
                     </span>
                   </td>
                 </tr>
@@ -519,7 +527,7 @@ document.addEventListener("DOMContentLoaded", function() {
             data: {
                 labels: topNames,
                 datasets: [{
-                    label: 'Copies Sold',
+                    label: 'Số lượng bán (cuốn)',
                     data: topSales,
                     backgroundColor: 'rgba(197, 137, 64, 0.85)',
                     hoverBackgroundColor: '#AE7634',
@@ -540,7 +548,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         padding: 10,
                         callbacks: {
                             label: function(context) {
-                                return ' Sold: ' + context.parsed.x + ' copies';
+                                return ' Đã bán: ' + context.parsed.x + ' cuốn';
                             }
                         }
                     }

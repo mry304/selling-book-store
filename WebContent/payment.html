@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-<meta charset="ISO-8859-1">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Checkout — Book Store</title>
+<title>Thanh toán — Book Store</title>
 <link rel="apple-touch-icon" sizes="180x180" href="./favicons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./favicons/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="./favicons/favicon-16x16.png">
@@ -103,19 +103,19 @@
 		<nav class="navbar-bookshelf">
 			<a class="brand" href="viewbook">BOOKS</a>
 			<div class="pill-tabs">
-				<a href="viewbook" id="home">Home</a>
-				<a href="viewbook" id="books">Available Books</a>
-				<a href="orders" id="orders">Orders History</a>
-				<a href="about" id="about">About Us</a>
+				<a href="viewbook" id="home">Trang chủ</a>
+				<a href="viewbook" id="books">Sách có sẵn</a>
+				<a href="orders" id="orders">Lịch sử đơn hàng</a>
+				<a href="about" id="about">Giới thiệu</a>
 			</div>
 			<div class="nav-icon-group">
-				<a href="cart" id="cart" class="nav-pill-btn active" title="View Cart">
+				<a href="cart" id="cart" class="nav-pill-btn active" title="Xem giỏ hàng">
 					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-					<span>Cart</span>
+					<span>Giỏ hàng</span>
 				</a>
-				<a href="logout" id="logout" class="nav-pill-btn nav-logout-btn" title="Logout">
+				<a href="logout" id="logout" class="nav-pill-btn nav-logout-btn" title="Đăng xuất">
 					<span class="nav-avatar"></span>
-					<span>Logout</span>
+					<span>Đăng xuất</span>
 				</a>
 			</div>
 		</nav>
@@ -124,8 +124,8 @@
 	<div class="bookshelf-page-container">
 		<div class="bookshelf-page-card">
 			<header class="bookshelf-page-header">
-				<h1>Secure Checkout</h1>
-				<p>Provide your delivery and payment details to complete your book purchase.</p>
+				<h1>Thanh toán an toàn</h1>
+				<p>Nhập thông tin giao hàng và thanh toán để hoàn tất đơn đặt hàng.</p>
 			</header>
 
 			<div class="checkout-form-container">
@@ -133,39 +133,39 @@
 					<div class="checkout-form-grid">
 						<!-- Billing Address Column -->
 						<div>
-							<h3 class="checkout-section-title"><i class="fa fa-map-marker"></i> Billing Address</h3>
+							<h3 class="checkout-section-title"><i class="fa fa-map-marker"></i> Địa chỉ nhận hàng & thanh toán</h3>
 							<div class="checkout-input-field">
-								<label for="fname">Full Name</label>
-								<input type="text" id="fname" name="firstname" placeholder="John M. Doe" required>
+								<label for="fname">Họ và tên</label>
+								<input type="text" id="fname" name="firstname" placeholder="Nguyễn Văn A" required>
 							</div>
 							<div class="checkout-input-field">
-								<label for="email">Email Address</label>
-								<input type="text" id="email" name="email" placeholder="john@example.com" required>
+								<label for="email">Địa chỉ Email</label>
+								<input type="text" id="email" name="email" placeholder="nguyenvana@example.com" required>
 							</div>
 							<div class="checkout-input-field">
-								<label for="adr">Street Address</label>
-								<input type="text" id="adr" name="address" placeholder="542 W. 15th Street" required>
+								<label for="adr">Địa chỉ (Số nhà, tên đường)</label>
+								<input type="text" id="adr" name="address" placeholder="Số 123 đường Cầu Giấy" required>
 							</div>
 							<div class="checkout-input-field">
-								<label for="city">City</label>
-								<input type="text" id="city" name="city" placeholder="New York" required>
+								<label for="city">Tỉnh / Thành phố</label>
+								<input type="text" id="city" name="city" placeholder="Hà Nội" required>
 							</div>
 							<div class="checkout-row-2">
 								<div class="checkout-input-field">
-									<label for="state">State</label>
-									<input type="text" id="state" name="state" placeholder="NY" required>
+									<label for="state">Quận / Huyện</label>
+									<input type="text" id="state" name="state" placeholder="Cầu Giấy" required>
 								</div>
 								<div class="checkout-input-field">
-									<label for="zip">Zip Code</label>
-									<input type="text" id="zip" name="zip" placeholder="10001" required>
+									<label for="zip">Mã bưu điện</label>
+									<input type="text" id="zip" name="zip" placeholder="100000" required>
 								</div>
 							</div>
 						</div>
 
 						<!-- Payment Details Column -->
 						<div>
-							<h3 class="checkout-section-title"><i class="fa fa-credit-card"></i> Payment Method</h3>
-							<label style="font-weight:600; font-size:0.88rem;">Accepted Cards</label>
+							<h3 class="checkout-section-title"><i class="fa fa-credit-card"></i> Phương thức thanh toán</h3>
+							<label style="font-weight:600; font-size:0.88rem;">Thẻ được chấp nhận</label>
 							<div class="card-icons-wrap">
 								<i class="fa fa-cc-visa" style="color: #1a1f71;"></i>
 								<i class="fa fa-cc-amex" style="color: #006fcf;"></i>
@@ -174,32 +174,32 @@
 							</div>
 
 							<div class="checkout-input-field">
-								<label for="cname">Name on Card</label>
-								<input type="text" id="cname" name="cardname" placeholder="John More Doe" required>
+								<label for="cname">Tên in trên thẻ</label>
+								<input type="text" id="cname" name="cardname" placeholder="NGUYEN VAN A" required>
 							</div>
 							<div class="checkout-input-field">
-								<label for="ccnum">Credit Card Number</label>
+								<label for="ccnum">Số thẻ tín dụng</label>
 								<input type="text" id="ccnum" name="cardnumber" placeholder="1111-2222-3333-4444" required>
 							</div>
 							<div class="checkout-row-2">
 								<div class="checkout-input-field">
-									<label for="expmonth">Exp Month</label>
-									<input type="text" id="expmonth" name="expmonth" placeholder="September" required>
+									<label for="expmonth">Tháng hết hạn</label>
+									<input type="text" id="expmonth" name="expmonth" placeholder="09" required>
 								</div>
 								<div class="checkout-input-field">
-									<label for="expyear">Exp Year</label>
+									<label for="expyear">Năm hết hạn</label>
 									<input type="text" id="expyear" name="expyear" placeholder="2026" required>
 								</div>
 							</div>
 							<div class="checkout-input-field">
-								<label for="cvv">CVV</label>
+								<label for="cvv">Mã CVV</label>
 								<input type="text" id="cvv" name="cvv" placeholder="352" required>
 							</div>
 						</div>
 					</div>
 
 					<label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-bottom:20px; font-size:0.9rem;">
-						<input type="checkbox" checked="checked" name="sameadr"> Shipping address same as billing
+						<input type="checkbox" checked="checked" name="sameadr"> Địa chỉ nhận hàng trùng với địa chỉ thanh toán
 					</label>
 
 					<div class="checkout-total-bar">

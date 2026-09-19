@@ -22,11 +22,11 @@ public class BuyBooksServlet extends HttpServlet {
 
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         PrintWriter pw = res.getWriter();
-        res.setContentType(BookStoreConstants.CONTENT_TYPE_TEXT_HTML);
+        res.setContentType("text/html; charset=UTF-8");
         if (!StoreUtil.isLoggedIn(UserRole.CUSTOMER, req.getSession())) {
             RequestDispatcher rd = req.getRequestDispatcher("CustomerLogin.html");
             rd.include(req, res);
-            pw.println("<table class=\"tab\"><tr><td>Please Login First to Continue!!</td></tr></table>");
+            pw.println("<table class=\"tab\"><tr><td>Vui lòng đăng nhập để tiếp tục!</td></tr></table>");
             return;
         }
         try {
@@ -34,17 +34,17 @@ public class BuyBooksServlet extends HttpServlet {
             RequestDispatcher rd = req.getRequestDispatcher("CustomerHome.html");
             rd.include(req, res);
             StoreUtil.setActiveTab(pw, "cart");
-            pw.println("<div class=\"tab hd brown \">Books Available In Our Store</div>");
+            pw.println("<div class=\"tab hd brown \">Sách Có Sẵn Trong Cửa Hàng</div>");
             pw.println("<div class=\"tab\"><form action=\"buys\" method=\"post\">");
             pw.println("<table>\r\n" +
                     "			<tr>\r\n" +
-                    "				<th>Books</th>\r\n" +
-                    "				<th>Code</th>\r\n" +
-                    "				<th>Name</th>\r\n" +
-                    "				<th>Author</th>\r\n" +
-                    "				<th>Price</th>\r\n" +
-                    "				<th>Avail</th>\r\n" +
-                    "				<th>Qty</th>\r\n" +
+                    "				<th>Chọn</th>\r\n" +
+                    "				<th>Mã</th>\r\n" +
+                    "				<th>Tựa sách</th>\r\n" +
+                    "				<th>Tác giả</th>\r\n" +
+                    "				<th>Đơn giá</th>\r\n" +
+                    "				<th>Còn lại</th>\r\n" +
+                    "				<th>Số lượng</th>\r\n" +
                     "			</tr>");
             int i = 0;
             for (Book book : books) {
@@ -58,19 +58,17 @@ public class BuyBooksServlet extends HttpServlet {
                 String q = "qty" + Integer.toString(i);
                 pw.println("<tr>\r\n" +
                         "				<td>\r\n" +
-                        "					<input type=\"checkbox\" name=" + n + " value=\"pay\">\r\n" + // Value is
-                                                                                                          // made equal
-                                                                                                          // to bcode
+                        "					<input type=\"checkbox\" name=" + n + " value=\"pay\">\r\n" +
                         "				</td>");
                 pw.println("<td>" + bCode + "</td>");
                 pw.println("<td>" + bName + "</td>");
                 pw.println("<td>" + bAuthor + "</td>");
-                pw.println("<td>" + bPrice + "</td>");
+                pw.println("<td>" + StoreUtil.formatPrice(bPrice) + "</td>");
                 pw.println("<td>" + bAvl + "</td>");
                 pw.println("<td><input type=\"text\" name=" + q + " value=\"0\" text-align=\"center\"></td></tr>");
 
             }
-            pw.println("</table>\r\n" + "<input type=\"submit\" value=\" PAY NOW \">" + "<br/>" +
+            pw.println("</table>\r\n" + "<input type=\"submit\" value=\" THANH TOÁN NGAY \">" + "<br/>" +
                     "	</form>\r\n" +
                     "	</div>");
             // pw.println("<div class=\"tab\"><a href=\"AddBook.html\">Add More

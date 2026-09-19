@@ -21,7 +21,7 @@ public class SellerLoginServlet extends HttpServlet {
     UserService userService = new UserServiceImpl();
 
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-        res.setContentType(BookStoreConstants.CONTENT_TYPE_TEXT_HTML);
+        res.setContentType("text/html; charset=UTF-8");
         String uName = req.getParameter(UsersDBConstants.COLUMN_USERNAME);
         String pWord = req.getParameter(UsersDBConstants.COLUMN_PASSWORD);
         try {
@@ -32,7 +32,7 @@ public class SellerLoginServlet extends HttpServlet {
                 PrintWriter pw = res.getWriter();
                 RequestDispatcher rd = req.getRequestDispatcher("SellerLogin.html");
                 rd.include(req, res);
-                pw.println("<div class='bookshelf-auth-wrap' style='margin-top:-20px; margin-bottom:20px;'><div class='alert alert-danger text-center' style='border-radius:12px;'>Incorrect Username or Password. Please try again!</div></div>");
+                pw.println("<div class='bookshelf-auth-wrap' style='margin-top:-20px; margin-bottom:20px;'><div class='alert alert-danger text-center' style='border-radius:12px;'>Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng thử lại!</div></div>");
             }
 
         } catch (Exception e) {
@@ -40,7 +40,7 @@ public class SellerLoginServlet extends HttpServlet {
             PrintWriter pw = res.getWriter();
             RequestDispatcher rd = req.getRequestDispatcher("SellerLogin.html");
             rd.include(req, res);
-            pw.println("<div class='bookshelf-auth-wrap' style='margin-top:-20px; margin-bottom:20px;'><div class='alert alert-danger text-center' style='border-radius:12px;'>Database error: Unable to connect to database. Please check MySQL service!</div></div>");
+            pw.println("<div class='bookshelf-auth-wrap' style='margin-top:-20px; margin-bottom:20px;'><div class='alert alert-danger text-center' style='border-radius:12px;'>Lỗi cơ sở dữ liệu: Không thể kết nối đến MySQL. Vui lòng kiểm tra dịch vụ MySQL!</div></div>");
         }
     }
 }

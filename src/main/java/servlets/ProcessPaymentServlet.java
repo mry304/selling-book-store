@@ -28,11 +28,11 @@ public class ProcessPaymentServlet extends HttpServlet {
     @SuppressWarnings("unchecked")
     public void service(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         PrintWriter pw = res.getWriter();
-        res.setContentType(BookStoreConstants.CONTENT_TYPE_TEXT_HTML);
+        res.setContentType("text/html; charset=UTF-8");
         if (!StoreUtil.isLoggedIn(UserRole.CUSTOMER, req.getSession())) {
             RequestDispatcher rd = req.getRequestDispatcher("CustomerLogin.html");
             rd.include(req, res);
-            pw.println("<table class=\"tab\"><tr><td>Please Login First to Continue!!</td></tr></table>");
+            pw.println("<table class=\"tab\"><tr><td>Vui lòng đăng nhập để tiếp tục!</td></tr></table>");
             return;
         }
         try {
@@ -67,19 +67,19 @@ public class ProcessPaymentServlet extends HttpServlet {
             pw.println("  <div class=\"bookshelf-page-card\">");
             pw.println("    <header class=\"bookshelf-page-header\" style=\"text-align:center;\">");
             pw.println("      <div style=\"font-size:3rem; color:#16a34a; margin-bottom:12px;\">&#10003;</div>");
-            pw.println("      <h1>Order Placed Successfully!</h1>");
-            pw.println("      <p>Order Reference: <strong>" + (createdOrderId != null ? createdOrderId : "ORD-NEW") + "</strong> | Total Paid: <strong style='color:#2e6648;'>&#8377; " + String.format("%.2f", totalAmount) + "</strong></p>");
+            pw.println("      <h1>Đặt Hàng Thành Công!</h1>");
+            pw.println("      <p>Mã đơn hàng: <strong>" + (createdOrderId != null ? createdOrderId : "ORD-NEW") + "</strong> | Tổng thanh toán: <strong style='color:#2e6648;'>" + StoreUtil.formatPrice(totalAmount) + "</strong></p>");
             pw.println("    </header>");
 
             pw.println("    <div class=\"table-responsive\">");
             pw.println("      <table class=\"bookshelf-table\">");
             pw.println("        <thead>");
             pw.println("          <tr>");
-            pw.println("            <th>Item</th>");
-            pw.println("            <th>Author</th>");
-            pw.println("            <th>Quantity</th>");
-            pw.println("            <th>Amount</th>");
-            pw.println("            <th>Status</th>");
+            pw.println("            <th>Tựa sách</th>");
+            pw.println("            <th>Tác giả</th>");
+            pw.println("            <th>Số lượng</th>");
+            pw.println("            <th>Thành tiền</th>");
+            pw.println("            <th>Trạng thái</th>");
             pw.println("          </tr>");
             pw.println("        </thead>");
             pw.println("        <tbody>");
@@ -100,8 +100,8 @@ public class ProcessPaymentServlet extends HttpServlet {
                     pw.println("            <td class=\"book-title-cell\">" + bName + "</td>");
                     pw.println("            <td>" + bAuthor + "</td>");
                     pw.println("            <td><strong>" + qtToBuy + "</strong></td>");
-                    pw.println("            <td class=\"price-cell\">&#8377; " + String.format("%.2f", (bPrice * qtToBuy)) + "</td>");
-                    pw.println("            <td><span class=\"badge-order-success\">Processing Shipment</span></td>");
+                    pw.println("            <td class=\"price-cell\">" + StoreUtil.formatPrice(bPrice * qtToBuy) + "</td>");
+                    pw.println("            <td><span class=\"badge-order-success\">Đang xử lý giao hàng</span></td>");
                     pw.println("          </tr>");
 
                     session.removeAttribute("qty_" + bCode);
@@ -113,8 +113,8 @@ public class ProcessPaymentServlet extends HttpServlet {
             pw.println("    </div>");
 
             pw.println("    <div style=\"display:flex; justify-content:center; gap:20px; margin-top:32px; flex-wrap:wrap;\">");
-            pw.println("      <a href=\"orders\" class=\"btn-checkout-shelf\">View Order History &rarr;</a>");
-            pw.println("      <a href=\"viewbook\" class=\"btn-pill-secondary\">&larr; Continue Exploring Books</a>");
+            pw.println("      <a href=\"orders\" class=\"btn-checkout-shelf\">Xem lịch sử đơn hàng &rarr;</a>");
+            pw.println("      <a href=\"viewbook\" class=\"btn-pill-secondary\">&larr; Tiếp tục khám phá sách</a>");
             pw.println("    </div>");
 
             // Clear cart from session, database user_cart, and memory cache

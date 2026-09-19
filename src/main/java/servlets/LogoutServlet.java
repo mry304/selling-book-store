@@ -20,7 +20,7 @@ public class LogoutServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         PrintWriter pw = res.getWriter();
-        res.setContentType(BookStoreConstants.CONTENT_TYPE_TEXT_HTML);
+        res.setContentType("text/html; charset=UTF-8");
         try {
 
             // Save user's current cart before session invalidation
@@ -35,7 +35,7 @@ public class LogoutServlet extends HttpServlet {
             rd.include(req, res);
 //            StoreUtil.setActiveTab(pw, "logout");
             if (logout) {
-                pw.println("<table class=\"tab\"><tr><td>Successfully logged out!</td></tr></table>");
+                pw.println("<div class='bookshelf-auth-wrap' style='margin-top:-20px; margin-bottom:20px;'><div class='alert alert-success text-center' style='border-radius:12px;'>Đăng xuất thành công!</div></div>");
             }
 
         } catch (Exception e) {

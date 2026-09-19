@@ -26,7 +26,7 @@ public class OrdersServlet extends HttpServlet {
 
     public void service(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         PrintWriter pw = res.getWriter();
-        res.setContentType(BookStoreConstants.CONTENT_TYPE_TEXT_HTML);
+        res.setContentType("text/html; charset=UTF-8");
 
         HttpSession session = req.getSession();
         boolean isCustomer = StoreUtil.isLoggedIn(UserRole.CUSTOMER, session);
@@ -35,7 +35,7 @@ public class OrdersServlet extends HttpServlet {
         if (!isCustomer && !isSeller) {
             RequestDispatcher rd = req.getRequestDispatcher("CustomerLogin.html");
             rd.include(req, res);
-            pw.println("<table class=\"tab\"><tr><td>Please Login First to Continue!!</td></tr></table>");
+            pw.println("<table class=\"tab\"><tr><td>Vui lòng đăng nhập để tiếp tục!</td></tr></table>");
             return;
         }
 
@@ -56,35 +56,35 @@ public class OrdersServlet extends HttpServlet {
             pw.println("<div class=\"bookshelf-page-container\">");
             pw.println("  <div class=\"bookshelf-page-card\">");
             pw.println("    <header class=\"bookshelf-page-header\">");
-            pw.println("      <h1>" + (isCustomer ? "My Orders History" : "Customer Orders Management") + "</h1>");
-            pw.println("      <p>" + (isCustomer ? "Review your purchased books and shipment status." : "Manage all customer orders and transaction histories.") + "</p>");
+            pw.println("      <h1>" + (isCustomer ? "Lịch Sử Đơn Hàng Của Tôi" : "Quản Lý Đơn Đặt Hàng") + "</h1>");
+            pw.println("      <p>" + (isCustomer ? "Xem lại các tựa sách đã mua và tiến độ giao hàng." : "Quản lý toàn bộ danh sách đơn đặt hàng và doanh thu từ khách hàng.") + "</p>");
             pw.println("    </header>");
 
             if (orders == null || orders.isEmpty()) {
                 pw.println("    <div class=\"bookshelf-empty-state\">");
                 pw.println("      <div class=\"empty-icon\">&#128220;</div>");
-                pw.println("      <h3>No orders placed yet</h3>");
-                pw.println("      <p>When you purchase books from our shelf, your order receipts will appear here.</p>");
-                pw.println("      <a href=\"viewbook\" class=\"btn-checkout-shelf\">&larr; Browse Available Books</a>");
+                pw.println("      <h3>Chưa có đơn hàng nào</h3>");
+                pw.println("      <p>Khi bạn đặt mua sách, biên lai và trạng thái đơn hàng sẽ hiển thị tại đây.</p>");
+                pw.println("      <a href=\"viewbook\" class=\"btn-checkout-shelf\">&larr; Khám phá danh mục sách</a>");
                 pw.println("    </div>");
             } else {
                 pw.println("    <div class=\"table-responsive\">");
                 pw.println("      <table class=\"bookshelf-table\">");
                 pw.println("        <thead>");
                 pw.println("          <tr>");
-                pw.println("            <th>Order ID</th>");
+                pw.println("            <th>Mã đơn</th>");
                 if (isSeller) {
-                    pw.println("            <th>Customer</th>");
+                    pw.println("            <th>Khách hàng</th>");
                 }
-                pw.println("            <th>Date</th>");
-                pw.println("            <th>Purchased Books</th>");
-                pw.println("            <th>Total Amount</th>");
-                pw.println("            <th>Status</th>");
+                pw.println("            <th>Thời gian</th>");
+                pw.println("            <th>Sách đã mua</th>");
+                pw.println("            <th>Tổng thanh toán</th>");
+                pw.println("            <th>Trạng thái</th>");
                 pw.println("          </tr>");
                 pw.println("        </thead>");
                 pw.println("        <tbody>");
 
-                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
                 for (Order order : orders) {
                     pw.println("          <tr>");
@@ -97,13 +97,19 @@ public class OrdersServlet extends HttpServlet {
                     // Items list
                     pw.println("            <td><ul style=\"margin:0; padding-left:18px; line-height:1.6;\">");
                     for (OrderDetail item : order.getItems()) {
-                        String name = item.getBookName() != null ? item.getBookName() : ("Book (" + item.getBookBarcode() + ")");
-                        pw.println("              <li><span class=\"book-title-cell\" style=\"font-size:0.95rem;\">" + name + "</span> &times; <strong>" + item.getQuantity() + "</strong> (&#8377; " + item.getAmount() + ")</li>");
+                        String name = item.getBookName() != null ? item.getBookName() : ("Sách (" + item.getBookBarcode() + ")");
+                        pw.println("              <li><span class=\"book-title-cell\" style=\"font-size:0.95rem;\">" + name + "</span> &times; <strong>" + item.getQuantity() + "</strong> (" + StoreUtil.formatPrice(item.getAmount()) + ")</li>");
                     }
                     pw.println("            </ul></td>");
 
-                    pw.println("            <td class=\"price-cell\">&#8377; " + String.format("%.2f", order.getTotalAmount()) + "</td>");
-                    pw.println("            <td><span class=\"badge-order-success\">" + order.getStatus() + "</span></td>");
+                    String st = order.getStatus();
+                    String stVi = "ĐÃ THANH TOÁN";
+                    if ("PROCESSING".equalsIgnoreCase(st)) stVi = "ĐANG XỬ LÝ";
+                    else if ("SHIPPED".equalsIgnoreCase(st)) stVi = "ĐÃ GIAO HÀNG";
+                    else if ("CANCELLED".equalsIgnoreCase(st)) stVi = "ĐÃ HỦY";
+
+                    pw.println("            <td class=\"price-cell\">" + StoreUtil.formatPrice(order.getTotalAmount()) + "</td>");
+                    pw.println("            <td><span class=\"badge-order-success\">" + stVi + "</span></td>");
                     pw.println("          </tr>");
                 }
 
