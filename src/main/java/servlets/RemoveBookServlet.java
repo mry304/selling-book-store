@@ -23,8 +23,9 @@ public class RemoveBookServlet extends HttpServlet {
     BookService bookService = new BookServiceImpl();
 
     public void service(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-        PrintWriter pw = res.getWriter();
+        req.setCharacterEncoding("UTF-8");
         res.setContentType("text/html; charset=UTF-8");
+        PrintWriter pw = res.getWriter();
         if (!StoreUtil.isLoggedIn(UserRole.SELLER, req.getSession())) {
             RequestDispatcher rd = req.getRequestDispatcher("SellerLogin.html");
             rd.include(req, res);
@@ -36,7 +37,7 @@ public class RemoveBookServlet extends HttpServlet {
             String bookId = req.getParameter("bookId");
             String alertHtml = "";
 
-            if (bookId != null && !bookId.isBlank()) {
+            if (bookId != null && !bookId.trim().isEmpty()) {
                 String responseCode = bookService.deleteBookById(bookId.trim());
                 if (ResponseCode.SUCCESS.name().equalsIgnoreCase(responseCode)) {
                     alertHtml = "<div class='alert alert-success text-center' style='border-radius:12px; margin-bottom:20px;'>"
