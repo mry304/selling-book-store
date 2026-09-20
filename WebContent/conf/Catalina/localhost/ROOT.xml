@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Context docBase="D:\CNJava\selling-book-store\WebContent">
+  <Resources cacheMaxSize="10240">
+    <PreResources base="D:/CNJava/selling-book-store/target/classes" className="org.apache.catalina.webresources.DirResourceSet" webAppMount="/WEB-INF/classes"/>
+    <PostResources base="C:/Users/Admin/.m2/repository/org/postgresql/postgresql/42.3.7/postgresql-42.3.7.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/postgresql-42.3.7.jar"/>
+    <PostResources base="C:/Users/Admin/.m2/repository/org/checkerframework/checker-qual/3.5.0/checker-qual-3.5.0.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/checker-qual-3.5.0.jar"/>
+    <PostResources base="C:/Users/Admin/.m2/repository/mysql/mysql-connector-java/8.0.28/mysql-connector-java-8.0.28.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/mysql-connector-java-8.0.28.jar"/>
+    <PostResources base="C:/Users/Admin/.m2/repository/com/google/protobuf/protobuf-java/3.11.4/protobuf-java-3.11.4.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/protobuf-java-3.11.4.jar"/>
+  </Resources>
+</Context>

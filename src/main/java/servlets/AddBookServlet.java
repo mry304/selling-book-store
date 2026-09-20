@@ -90,7 +90,7 @@ public class AddBookServlet extends HttpServlet {
                 + "        <label for=\"bookQuantity\">Số lượng nhập kho</label>\r\n"
                 + "        <input type=\"number\" name=\"quantity\" id=\"bookQuantity\" placeholder=\"Ví dụ: 50\" required min=\"1\">\r\n"
                 + "      </div>\r\n"
-                + "      <button class=\"btn-auth-submit\" type=\"submit\" style=\"margin-top:12px;\">+ Thêm Vào Kho Hàng</button>\r\n"
+                + "      <button class=\"btn-pill-buy\" type=\"submit\" style=\"margin-top:12px; width:100%; padding:13px 24px; font-size:1rem; font-weight:700;\">+ Thêm Vào Kho Hàng</button>\r\n"
                 + "    </form>\r\n";
         pw.println(form);
     }
