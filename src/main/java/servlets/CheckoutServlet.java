@@ -14,6 +14,10 @@ import com.bittercode.model.UserRole;
 import com.bittercode.util.StoreUtil;
 
 public class CheckoutServlet extends HttpServlet {
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+        doPost(req, res);
+    }
+
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         PrintWriter pw = res.getWriter();
         res.setContentType("text/html; charset=UTF-8");
@@ -39,17 +43,9 @@ public class CheckoutServlet extends HttpServlet {
                 } catch (Exception ignored) {}
             }
 
-            pw.println("<div style=\"font-size:1.1rem; font-weight:700; color:var(--text-primary);\">Tổng thanh toán: <span class=\"price\" style=\"color: var(--accent-hover); font-size:1.25rem;\"><b>"
-                    + StoreUtil.formatPrice(amount)
-                    + "</b></span></div>");
-
-            pw.println("<input type=\"submit\" value=\"Thanh toán &amp; Đặt hàng\" class=\"btn\">"
-                    + "</form>");
-
-            pw.println("</div>\r\n"
-                    + " </div>\r\n"
-                    + " </div>\r\n"
-                    + " </div>");
+            pw.println("<script>document.getElementById('checkoutTotal').textContent = 'Tổng thanh toán: "
+                    + StoreUtil.formatPrice(amount).replace("'", "\\\\'")
+                    + "';</script>");
         } catch (Exception e) {
             e.printStackTrace();
         }

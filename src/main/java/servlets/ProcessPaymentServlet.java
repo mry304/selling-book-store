@@ -2,7 +2,12 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -27,6 +32,19 @@ public class ProcessPaymentServlet extends HttpServlet {
 
     BookService bookService = new BookServiceImpl();
 
+    private static final Map<String, Set<String>> DELIVERY_AREAS = Map.of(
+            "Hà Nội", Set.of("Ba Đình", "Cầu Giấy", "Đống Đa", "Hà Đông", "Hoàn Kiếm", "Hoàng Mai", "Long Biên", "Nam Từ Liêm", "Thanh Xuân", "Tây Hồ"),
+            "TP. Hồ Chí Minh", Set.of("Quận 1", "Quận 3", "Quận 5", "Quận 7", "Quận 10", "Bình Thạnh", "Gò Vấp", "Tân Bình", "Thủ Đức"),
+            "Đà Nẵng", Set.of("Hải Châu", "Thanh Khê", "Sơn Trà", "Ngũ Hành Sơn", "Liên Chiểu", "Cẩm Lệ"),
+            "Hải Phòng", Set.of("Hồng Bàng", "Lê Chân", "Ngô Quyền", "Hải An", "Kiến An", "Dương Kinh"),
+            "Cần Thơ", Set.of("Ninh Kiều", "Bình Thủy", "Cái Răng", "Ô Môn", "Thốt Nốt"),
+            "Bình Dương", Set.of("Thủ Dầu Một", "Dĩ An", "Thuận An", "Tân Uyên", "Bến Cát"),
+            "Đồng Nai", Set.of("Biên Hòa", "Long Khánh", "Nhơn Trạch", "Trảng Bom", "Long Thành"),
+            "Quảng Ninh", Set.of("Hạ Long", "Cẩm Phả", "Uông Bí", "Móng Cái", "Quảng Yên"),
+            "Khánh Hòa", Set.of("Nha Trang", "Cam Ranh", "Ninh Hòa", "Diên Khánh", "Vạn Ninh"),
+            "Nghệ An", Set.of("Vinh", "Cửa Lò", "Hoàng Mai", "Thái Hòa", "Hưng Nguyên")
+    );
+
     @SuppressWarnings("unchecked")
     public void service(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         PrintWriter pw = res.getWriter();
@@ -37,6 +55,14 @@ public class ProcessPaymentServlet extends HttpServlet {
             pw.println("<table class=\"tab\"><tr><td>Vui lòng đăng nhập để tiếp tục!</td></tr></table>");
             return;
         }
+
+        String validationError = validateCheckout(req);
+        if (validationError != null) {
+            res.sendRedirect(req.getContextPath() + "/checkout?error="
+                    + URLEncoder.encode(validationError, StandardCharsets.UTF_8));
+            return;
+        }
+
         try {
 
             RequestDispatcher rd = req.getRequestDispatcher("CustomerHome.html");
@@ -149,6 +175,72 @@ public class ProcessPaymentServlet extends HttpServlet {
         appendAddressPart(address, req.getParameter("city"));
         appendAddressPart(address, req.getParameter("zip"));
         return address.toString();
+    }
+
+    private String validateCheckout(HttpServletRequest req) {
+        String fullName = trim(req.getParameter("firstname"));
+        String email = trim(req.getParameter("email"));
+        String address = trim(req.getParameter("address"));
+        String city = trim(req.getParameter("city"));
+        String district = trim(req.getParameter("state"));
+        String zipCode = trim(req.getParameter("zip"));
+        String cardName = trim(req.getParameter("cardname"));
+        String cardNumber = trim(req.getParameter("cardnumber")).replaceAll("[ -]", "");
+        String monthValue = trim(req.getParameter("expmonth"));
+        String yearValue = trim(req.getParameter("expyear"));
+        String cvv = trim(req.getParameter("cvv"));
+
+        if (fullName.length() < 2 || email.isEmpty() || address.length() < 5) {
+            return "Vui lòng điền đầy đủ họ tên, email và địa chỉ nhận hàng.";
+        }
+        if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+            return "Địa chỉ email không đúng định dạng.";
+        }
+        if (city.isEmpty() || district.isEmpty()) {
+            return "Vui lòng chọn tỉnh/thành phố và quận/huyện hợp lệ.";
+        }
+        if (!zipCode.matches("\\d{5,6}")) {
+            return "Mã bưu điện phải gồm 5 hoặc 6 chữ số.";
+        }
+        if (!cardName.matches("^[\\p{L} .'-]{2,100}$")) {
+            return "Tên in trên thẻ không hợp lệ.";
+        }
+        if (!cardNumber.matches("\\d{13,19}") || !isValidCardNumber(cardNumber)) {
+            return "Số thẻ không hợp lệ. Vui lòng kiểm tra lại số thẻ.";
+        }
+        if (!cvv.matches("\\d{3,4}")) {
+            return "Mã CVV phải gồm 3 hoặc 4 chữ số.";
+        }
+
+        try {
+            int month = Integer.parseInt(monthValue);
+            int year = Integer.parseInt(yearValue);
+            if (month < 1 || month > 12 || yearValue.length() != 4 || YearMonth.of(year, month).isBefore(YearMonth.now())) {
+                return "Thẻ đã hết hạn hoặc ngày hết hạn không hợp lệ.";
+            }
+        } catch (RuntimeException e) {
+            return "Tháng hoặc năm hết hạn không hợp lệ.";
+        }
+        return null;
+    }
+
+    private boolean isValidCardNumber(String cardNumber) {
+        int sum = 0;
+        boolean doubleDigit = false;
+        for (int index = cardNumber.length() - 1; index >= 0; index--) {
+            int digit = cardNumber.charAt(index) - '0';
+            if (doubleDigit) {
+                digit *= 2;
+                if (digit > 9) digit -= 9;
+            }
+            sum += digit;
+            doubleDigit = !doubleDigit;
+        }
+        return sum % 10 == 0;
+    }
+
+    private String trim(String value) {
+        return value == null ? "" : value.trim();
     }
 
     private void appendAddressPart(StringBuilder address, String value) {

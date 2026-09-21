@@ -43,7 +43,8 @@
 	color: var(--text-primary);
 	margin-bottom: 6px;
 }
-.checkout-input-field input {
+.checkout-input-field input,
+.checkout-input-field select {
 	width: 100%;
 	padding: 11px 15px;
 	border: 1px solid rgba(197, 137, 64, 0.25);
@@ -53,9 +54,24 @@
 	transition: all 0.2s ease;
 	background: #fff;
 }
-.checkout-input-field input:focus {
+.checkout-input-field input:focus,
+.checkout-input-field select:focus {
 	border-color: var(--accent-primary);
 	box-shadow: 0 0 0 3px rgba(197, 137, 64, 0.15);
+}
+.checkout-input-field select:disabled {
+	background: #f7f2eb;
+	cursor: not-allowed;
+}
+.checkout-error {
+	display: none;
+	margin: 0 0 20px;
+	padding: 12px 16px;
+	border: 1px solid #f0b5ad;
+	border-radius: 10px;
+	background: #fff2f0;
+	color: #a42d22;
+	font-size: 0.92rem;
 }
 .checkout-row-2 {
 	display: grid;
@@ -129,7 +145,8 @@
 			</header>
 
 			<div class="checkout-form-container">
-				<form action="pay" method="post">
+				<div id="checkoutError" class="checkout-error" role="alert" aria-live="polite"></div>
+				<form action="pay" method="post" id="checkoutForm" onsubmit="return validateCheckoutForm()">
 					<div class="checkout-form-grid">
 						<!-- Billing Address Column -->
 						<div>
@@ -140,7 +157,7 @@
 							</div>
 							<div class="checkout-input-field">
 								<label for="email">Địa chỉ Email</label>
-								<input type="text" id="email" name="email" placeholder="nguyenvana@example.com" required>
+								<input type="email" id="email" name="email" placeholder="nguyenvana@example.com" autocomplete="email" required>
 							</div>
 							<div class="checkout-input-field">
 								<label for="adr">Địa chỉ (Số nhà, tên đường)</label>
@@ -148,16 +165,83 @@
 							</div>
 							<div class="checkout-input-field">
 								<label for="city">Tỉnh / Thành phố</label>
-								<input type="text" id="city" name="city" placeholder="Hà Nội" required>
+								<select id="city" name="city" required onchange="updateDistrictOptions()">
+									<option value="">Chọn tỉnh / thành phố</option>
+									<option value="Hà Nội">Hà Nội</option>
+									<option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
+									<option value="Đà Nẵng">Đà Nẵng</option>
+									<option value="Hải Phòng">Hải Phòng</option>
+									<option value="Cần Thơ">Cần Thơ</option>
+									<option value="Bình Dương">Bình Dương</option>
+									<option value="Đồng Nai">Đồng Nai</option>
+									<option value="Quảng Ninh">Quảng Ninh</option>
+									<option value="Khánh Hòa">Khánh Hòa</option>
+									<option value="Nghệ An">Nghệ An</option>
+									<option value="An Giang">An Giang</option>
+									<option value="Bà Rịa - Vũng Tàu">Bà Rịa - Vũng Tàu</option>
+									<option value="Bắc Giang">Bắc Giang</option>
+									<option value="Bắc Kạn">Bắc Kạn</option>
+									<option value="Bạc Liêu">Bạc Liêu</option>
+									<option value="Bắc Ninh">Bắc Ninh</option>
+									<option value="Bến Tre">Bến Tre</option>
+									<option value="Bình Định">Bình Định</option>
+									<option value="Bình Phước">Bình Phước</option>
+									<option value="Bình Thuận">Bình Thuận</option>
+									<option value="Cà Mau">Cà Mau</option>
+									<option value="Cao Bằng">Cao Bằng</option>
+									<option value="Đắk Lắk">Đắk Lắk</option>
+									<option value="Đắk Nông">Đắk Nông</option>
+									<option value="Điện Biên">Điện Biên</option>
+									<option value="Đồng Tháp">Đồng Tháp</option>
+									<option value="Gia Lai">Gia Lai</option>
+									<option value="Hà Giang">Hà Giang</option>
+									<option value="Hà Nam">Hà Nam</option>
+									<option value="Hà Tĩnh">Hà Tĩnh</option>
+									<option value="Hải Dương">Hải Dương</option>
+									<option value="Hậu Giang">Hậu Giang</option>
+									<option value="Hòa Bình">Hòa Bình</option>
+									<option value="Hưng Yên">Hưng Yên</option>
+									<option value="Kiên Giang">Kiên Giang</option>
+									<option value="Kon Tum">Kon Tum</option>
+									<option value="Lai Châu">Lai Châu</option>
+									<option value="Lâm Đồng">Lâm Đồng</option>
+									<option value="Lạng Sơn">Lạng Sơn</option>
+									<option value="Lào Cai">Lào Cai</option>
+									<option value="Long An">Long An</option>
+									<option value="Nam Định">Nam Định</option>
+									<option value="Ninh Bình">Ninh Bình</option>
+									<option value="Ninh Thuận">Ninh Thuận</option>
+									<option value="Phú Thọ">Phú Thọ</option>
+									<option value="Phú Yên">Phú Yên</option>
+									<option value="Quảng Bình">Quảng Bình</option>
+									<option value="Quảng Nam">Quảng Nam</option>
+									<option value="Quảng Ngãi">Quảng Ngãi</option>
+									<option value="Quảng Trị">Quảng Trị</option>
+									<option value="Sóc Trăng">Sóc Trăng</option>
+									<option value="Sơn La">Sơn La</option>
+									<option value="Tây Ninh">Tây Ninh</option>
+									<option value="Thái Bình">Thái Bình</option>
+									<option value="Thái Nguyên">Thái Nguyên</option>
+									<option value="Thanh Hóa">Thanh Hóa</option>
+									<option value="Thừa Thiên Huế">Thừa Thiên Huế</option>
+									<option value="Tiền Giang">Tiền Giang</option>
+									<option value="Trà Vinh">Trà Vinh</option>
+									<option value="Tuyên Quang">Tuyên Quang</option>
+									<option value="Vĩnh Long">Vĩnh Long</option>
+									<option value="Vĩnh Phúc">Vĩnh Phúc</option>
+									<option value="Yên Bái">Yên Bái</option>
+								</select>
 							</div>
 							<div class="checkout-row-2">
 								<div class="checkout-input-field">
 									<label for="state">Quận / Huyện</label>
-									<input type="text" id="state" name="state" placeholder="Cầu Giấy" required>
+									<select id="state" name="state" required disabled>
+										<option value="">Chọn tỉnh / thành phố trước</option>
+									</select>
 								</div>
 								<div class="checkout-input-field">
 									<label for="zip">Mã bưu điện</label>
-									<input type="text" id="zip" name="zip" placeholder="100000" required>
+									<input type="text" id="zip" name="zip" placeholder="100000" inputmode="numeric" pattern="[0-9]{5,6}" maxlength="6" required>
 								</div>
 							</div>
 						</div>
@@ -175,25 +259,25 @@
 
 							<div class="checkout-input-field">
 								<label for="cname">Tên in trên thẻ</label>
-								<input type="text" id="cname" name="cardname" placeholder="NGUYEN VAN A" required>
+								<input type="text" id="cname" name="cardname" placeholder="NGUYEN VAN A" autocomplete="cc-name" minlength="2" maxlength="100" required>
 							</div>
 							<div class="checkout-input-field">
 								<label for="ccnum">Số thẻ tín dụng</label>
-								<input type="text" id="ccnum" name="cardnumber" placeholder="1111-2222-3333-4444" required>
+								<input type="text" id="ccnum" name="cardnumber" placeholder="1111 2222 3333 4444" inputmode="numeric" autocomplete="cc-number" maxlength="23" required>
 							</div>
 							<div class="checkout-row-2">
 								<div class="checkout-input-field">
 									<label for="expmonth">Tháng hết hạn</label>
-									<input type="text" id="expmonth" name="expmonth" placeholder="09" required>
+									<input type="text" id="expmonth" name="expmonth" placeholder="09" inputmode="numeric" pattern="[0-9]{1,2}" maxlength="2" autocomplete="cc-exp-month" required>
 								</div>
 								<div class="checkout-input-field">
 									<label for="expyear">Năm hết hạn</label>
-									<input type="text" id="expyear" name="expyear" placeholder="2026" required>
+									<input type="text" id="expyear" name="expyear" placeholder="2026" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="cc-exp-year" required>
 								</div>
 							</div>
 							<div class="checkout-input-field">
 								<label for="cvv">Mã CVV</label>
-								<input type="text" id="cvv" name="cvv" placeholder="352" required>
+								<input type="password" id="cvv" name="cvv" placeholder="352" inputmode="numeric" autocomplete="cc-csc" pattern="[0-9]{3,4}" maxlength="4" required>
 							</div>
 						</div>
 					</div>
@@ -206,6 +290,7 @@
 					<div class="checkout-total-bar">
 						<div>
 							<strong style="display:block; font-size:1.1rem;">Xác nhận đặt hàng</strong>
+							<strong id="checkoutTotal" style="display:block; margin-top:4px; color:var(--accent-hover);">Tổng thanh toán: --</strong>
 							<span style="font-size:0.86rem; color:var(--text-secondary);">Chúng tôi sẽ gửi email xác nhận ngay sau khi đặt hàng.</span>
 						</div>
 						<button type="submit" class="btn">Đặt hàng ngay &rarr;</button>
@@ -215,6 +300,87 @@
 		</div>
 	</div>
 
-				
+
+<script>
+const districtsByCity = {
+  'Hà Nội': ['Ba Đình', 'Cầu Giấy', 'Đống Đa', 'Hà Đông', 'Hoàn Kiếm', 'Hoàng Mai', 'Long Biên', 'Nam Từ Liêm', 'Thanh Xuân', 'Tây Hồ'],
+  'TP. Hồ Chí Minh': ['Quận 1', 'Quận 3', 'Quận 5', 'Quận 7', 'Quận 10', 'Bình Thạnh', 'Gò Vấp', 'Tân Bình', 'Thủ Đức'],
+  'Đà Nẵng': ['Hải Châu', 'Thanh Khê', 'Sơn Trà', 'Ngũ Hành Sơn', 'Liên Chiểu', 'Cẩm Lệ'],
+  'Hải Phòng': ['Hồng Bàng', 'Lê Chân', 'Ngô Quyền', 'Hải An', 'Kiến An', 'Dương Kinh'],
+  'Cần Thơ': ['Ninh Kiều', 'Bình Thủy', 'Cái Răng', 'Ô Môn', 'Thốt Nốt'],
+  'Bình Dương': ['Thủ Dầu Một', 'Dĩ An', 'Thuận An', 'Tân Uyên', 'Bến Cát'],
+  'Đồng Nai': ['Biên Hòa', 'Long Khánh', 'Nhơn Trạch', 'Trảng Bom', 'Long Thành'],
+  'Quảng Ninh': ['Hạ Long', 'Cẩm Phả', 'Uông Bí', 'Móng Cái', 'Quảng Yên'],
+  'Khánh Hòa': ['Nha Trang', 'Cam Ranh', 'Ninh Hòa', 'Diên Khánh', 'Vạn Ninh'],
+  'Nghệ An': ['Vinh', 'Cửa Lò', 'Hoàng Mai', 'Thái Hòa', 'Hưng Nguyên']
+};
+
+function updateDistrictOptions() {
+  const city = document.getElementById('city').value;
+  const district = document.getElementById('state');
+  district.innerHTML = '';
+  if (!city) {
+    district.disabled = true;
+    district.add(new Option('Chọn tỉnh / thành phố trước', ''));
+    return;
+  }
+  district.disabled = false;
+  district.add(new Option('Chọn quận / huyện', ''));
+  const districts = districtsByCity[city] || ['Thành phố / thị xã trung tâm', 'Huyện / khu vực khác'];
+  districts.forEach(function (name) { district.add(new Option(name, name)); });
+}
+
+function showCheckoutError(message) {
+  const errorBox = document.getElementById('checkoutError');
+  errorBox.textContent = message;
+  errorBox.style.display = 'block';
+  errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function isValidCardNumber(number) {
+  const digits = number.replace(/\D/g, '');
+  if (!/^\d{13,19}$/.test(digits)) return false;
+  let sum = 0;
+  let doubleDigit = false;
+  for (let index = digits.length - 1; index >= 0; index--) {
+    let digit = Number(digits[index]);
+    if (doubleDigit && (digit *= 2) > 9) digit -= 9;
+    sum += digit;
+    doubleDigit = !doubleDigit;
+  }
+  return sum % 10 === 0;
+}
+
+function validateCheckoutForm() {
+  const city = document.getElementById('city').value;
+  const district = document.getElementById('state').value;
+  const cardNumber = document.getElementById('ccnum');
+  const month = Number(document.getElementById('expmonth').value);
+  const year = Number(document.getElementById('expyear').value);
+  const cvv = document.getElementById('cvv').value;
+  document.getElementById('checkoutError').style.display = 'none';
+
+  if (!city || !district) { showCheckoutError('Vui lòng chọn đầy đủ tỉnh/thành phố và quận/huyện nhận hàng.'); return false; }
+  if (!isValidCardNumber(cardNumber.value)) { showCheckoutError('Số thẻ không hợp lệ. Vui lòng kiểm tra lại số thẻ.'); cardNumber.focus(); return false; }
+  const today = new Date();
+  if (!Number.isInteger(month) || month < 1 || month > 12 || !Number.isInteger(year) || year < today.getFullYear() || (year === today.getFullYear() && month < today.getMonth() + 1)) {
+    showCheckoutError('Thẻ đã hết hạn hoặc ngày hết hạn không hợp lệ.'); return false;
+  }
+  if (!/^\d{3,4}$/.test(cvv)) { showCheckoutError('Mã CVV phải gồm 3 hoặc 4 chữ số.'); return false; }
+  cardNumber.value = cardNumber.value.replace(/\D/g, '');
+  return true;
+}
+
+document.getElementById('ccnum').addEventListener('input', function () {
+  const digits = this.value.replace(/\D/g, '').slice(0, 19);
+  this.value = digits.replace(/(.{4})/g, '$1 ').trim();
+});
+
+const checkoutError = new URLSearchParams(window.location.search).get('error');
+if (checkoutError) {
+  showCheckoutError(checkoutError);
+  window.history.replaceState({}, document.title, window.location.pathname);
+}
+</script>
 </body>
 </html>
