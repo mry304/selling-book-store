@@ -17,6 +17,9 @@ public class Order implements Serializable {
     private String cancelledBy;
     private Date cancelledAt;
     private Date shippedAt;
+    private String shippingEmail;
+    private String shippingAddress;
+    private String paymentMethod;
     private List<OrderDetail> items = new ArrayList<>();
 
     public Order() {
@@ -100,6 +103,30 @@ public class Order implements Serializable {
 
     public void setShippedAt(Date shippedAt) {
         this.shippedAt = shippedAt;
+    }
+
+    public String getShippingEmail() {
+        return shippingEmail;
+    }
+
+    public void setShippingEmail(String shippingEmail) {
+        this.shippingEmail = shippingEmail;
+    }
+
+    public String getShippingAddress() {
+        return shippingAddress;
+    }
+
+    public void setShippingAddress(String shippingAddress) {
+        this.shippingAddress = shippingAddress;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
     public List<OrderDetail> getItems() {

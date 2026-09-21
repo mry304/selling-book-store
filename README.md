@@ -124,3 +124,19 @@ Step 8: The default Username And Password For User Is "shashi" And "shashi"
 
 Note:- Considering this as a Sample Project, we have not much considered of web security.
 
+### SMTP email configuration
+
+Copy `.env.example` to `.env` in the project root and set the SMTP credentials. The `.env` file is ignored by Git and must never be committed. For production, set the same values as environment variables instead of deploying a `.env` file.
+
+```properties
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your-email@gmail.com
+SMTP_PASSWORD=your-smtp-app-password
+SMTP_FROM=your-email@gmail.com
+SMTP_FROM_NAME=BOOKS
+SMTP_STARTTLS=true
+APP_BASE_URL=http://localhost:8080/onlinebookstore
+```
+
+Run `setup/AlterOrdersTable.sql` once before deploying. It adds the delivery-email, delivery-address, and payment-method snapshot fields required by order emails.

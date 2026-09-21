@@ -35,6 +35,27 @@ BEGIN
     ) THEN
         ALTER TABLE orders ADD COLUMN shipped_at TIMESTAMP NULL;
     END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = DATABASE() AND table_name = 'orders' AND column_name = 'shipping_email'
+    ) THEN
+        ALTER TABLE orders ADD COLUMN shipping_email VARCHAR(255) NULL;
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = DATABASE() AND table_name = 'orders' AND column_name = 'shipping_address'
+    ) THEN
+        ALTER TABLE orders ADD COLUMN shipping_address TEXT NULL;
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = DATABASE() AND table_name = 'orders' AND column_name = 'payment_method'
+    ) THEN
+        ALTER TABLE orders ADD COLUMN payment_method VARCHAR(100) NULL;
+    END IF;
 END //
 
 DELIMITER ;

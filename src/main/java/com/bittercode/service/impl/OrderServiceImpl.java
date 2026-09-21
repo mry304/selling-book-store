@@ -16,16 +16,24 @@ import com.bittercode.model.OrderStatus;
 import com.bittercode.model.StoreException;
 import com.bittercode.service.OrderService;
 import com.bittercode.util.DBUtil;
+import com.bittercode.util.OrderEmailService;
 
 public class OrderServiceImpl implements OrderService {
 
     @Override
     public String createOrder(String username, List<Cart> cartItems, double totalAmount) throws StoreException {
+        return createOrder(username, cartItems, totalAmount, null, null, null);
+    }
+
+    @Override
+    public String createOrder(String username, List<Cart> cartItems, double totalAmount,
+                              String shippingEmail, String shippingAddress, String paymentMethod) throws StoreException {
         Connection con = DBUtil.getConnection();
         String orderId = "ORD" + System.currentTimeMillis();
         String validUsername = resolveUsername(con, username);
 
-        String insertOrderQuery = "INSERT INTO orders (order_id, username, total_amount, status) VALUES (?, ?, ?, ?)";
+        String insertOrderQuery = "INSERT INTO orders (order_id, username, total_amount, status, shipping_email, shipping_address, payment_method) " +
+                                  "VALUES (?, ?, ?, ?, ?, ?, ?)";
         String insertDetailQuery = "INSERT INTO order_details (order_id, book_barcode, quantity, amount) VALUES (?, ?, ?, ?)";
 
         try {
@@ -36,6 +44,9 @@ public class OrderServiceImpl implements OrderService {
                 psOrder.setString(2, validUsername);
                 psOrder.setDouble(3, totalAmount);
                 psOrder.setString(4, OrderStatus.PENDING.name());
+                psOrder.setString(5, normalizeOptionalValue(shippingEmail));
+                psOrder.setString(6, normalizeOptionalValue(shippingAddress));
+                psOrder.setString(7, normalizeOptionalValue(paymentMethod));
                 psOrder.executeUpdate();
             }
 
@@ -210,6 +221,9 @@ public class OrderServiceImpl implements OrderService {
             }
 
             con.commit();
+            OrderEmailService.getInstance().sendOrderCancelledEmail(order,
+                    cancelReason != null && !cancelReason.trim().isEmpty() ? cancelReason.trim() : "Khách hàng hủy đơn",
+                    "CUSTOMER");
             return true;
         } catch (SQLException e) {
             try {
@@ -337,8 +351,11 @@ public class OrderServiceImpl implements OrderService {
                     }
                 }
 
-                con.commit();
-                return true;
+            con.commit();
+            OrderEmailService.getInstance().sendOrderCancelledEmail(order,
+                    cancelReason != null && !cancelReason.trim().isEmpty() ? cancelReason.trim() : "Người bán hủy đơn",
+                    "SELLER");
+            return true;
             } catch (SQLException e) {
                 try {
                     con.rollback();
@@ -401,6 +418,18 @@ public class OrderServiceImpl implements OrderService {
             order.setShippedAt(rs.getTimestamp("shipped_at"));
         } catch (SQLException ignored) {}
 
+        try {
+            order.setShippingEmail(rs.getString("shipping_email"));
+        } catch (SQLException ignored) {}
+
+        try {
+            order.setShippingAddress(rs.getString("shipping_address"));
+        } catch (SQLException ignored) {}
+
+        try {
+            order.setPaymentMethod(rs.getString("payment_method"));
+        } catch (SQLException ignored) {}
+
         return order;
     }
 
@@ -445,5 +474,9 @@ public class OrderServiceImpl implements OrderService {
             e.printStackTrace();
         }
         return username;
+    }
+
+    private String normalizeOptionalValue(String value) {
+        return value != null && !value.trim().isEmpty() ? value.trim() : null;
     }
 }

@@ -9,11 +9,11 @@
         <module name="onlinebookstore" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="onlinebookstore" target="17" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_STRING" value="-encoding UTF-8" />
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="onlinebookstore" options="" />
+    </option>
   </component>
 </project>

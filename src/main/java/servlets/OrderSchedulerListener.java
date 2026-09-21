@@ -9,6 +9,8 @@ import jakarta.servlet.ServletContextListener;
 
 import com.bittercode.service.OrderService;
 import com.bittercode.service.impl.OrderServiceImpl;
+import com.bittercode.util.EmailConfig;
+import com.bittercode.util.OrderEmailService;
 
 public class OrderSchedulerListener implements ServletContextListener {
 
@@ -17,6 +19,7 @@ public class OrderSchedulerListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
+        EmailConfig.initialize(sce.getServletContext().getRealPath("/"));
         scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread t = new Thread(r, "Order-Auto-Complete-Thread");
             t.setDaemon(true);
@@ -44,5 +47,6 @@ public class OrderSchedulerListener implements ServletContextListener {
             scheduler.shutdownNow();
             System.out.println("[OrderSchedulerListener] Order auto-complete scheduler shut down.");
         }
+        OrderEmailService.getInstance().shutdown();
     }
 }

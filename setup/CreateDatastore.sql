@@ -33,6 +33,9 @@ CREATE TABLE if not exists books
      cancelled_by ENUM('CUSTOMER', 'SELLER', 'SYSTEM') NULL,
      cancelled_at TIMESTAMP NULL,
      shipped_at TIMESTAMP NULL,
+     shipping_email VARCHAR(255) NULL,
+     shipping_address TEXT NULL,
+     payment_method VARCHAR(100) NULL,
      FOREIGN KEY (username) REFERENCES users(username)
   );
 
