@@ -11,6 +11,10 @@ public interface BookService {
 
     public List<Book> getAllBooks() throws StoreException;
 
+    public List<Book> getBooksPage(int page, int pageSize) throws StoreException;
+
+    public int getBookCount() throws StoreException;
+
     public List<Book> getBooksByCommaSeperatedBookIds(String commaSeperatedBookIds) throws StoreException;
 
     public String deleteBookById(String bookId) throws StoreException;

@@ -55,8 +55,12 @@ public class ViewBookServlet extends HttpServlet {
             // Add or Remove items from the cart, if requested
             StoreUtil.updateCartItems(req);
 
-            // Read All available books from the database
-            List<Book> books = bookService.getAllBooks();
+            int page = getPage(req);
+            final int pageSize = 12;
+            int totalBooks = bookService.getBookCount();
+            int totalPages = Math.max(1, (int) Math.ceil((double) totalBooks / pageSize));
+            page = Math.min(page, totalPages);
+            List<Book> books = bookService.getBooksPage(page, pageSize);
 
             // Select matching header based on logged in role
             String homeHeader = StoreUtil.isLoggedIn(UserRole.SELLER, req.getSession()) ? "SellerHome.html" : "CustomerHome.html";
@@ -124,6 +128,7 @@ public class ViewBookServlet extends HttpServlet {
             pw.println("          <span class=\"book-author\">" + escapeHtml(secondAuthor) + "</span>");
             pw.println("        </div>");
             pw.println("      </section>");
+            renderPagination(pw, page, totalPages, totalBooks);
 
             // --- 3D Shelf Divider ---
             pw.println("      <div class=\"shelf-divider\"></div>");
@@ -171,6 +176,27 @@ public class ViewBookServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private int getPage(HttpServletRequest req) {
+        try {
+            return Math.max(1, Integer.parseInt(req.getParameter("page")));
+        } catch (Exception ignored) {
+            return 1;
+        }
+    }
+
+    private void renderPagination(PrintWriter pw, int page, int totalPages, int totalBooks) {
+        if (totalPages <= 1) return;
+        pw.println("      <nav class=\"pagination-nav bookshelf-pagination\" aria-label=\"Phân trang danh mục sách\">");
+        pw.println("        <span class=\"pagination-summary\">" + totalBooks + " đầu sách · Trang " + page + "/" + totalPages + "</span>");
+        pw.println("        <div class=\"pagination-links\">");
+        if (page > 1) pw.println("<a href=\"viewbook?page=" + (page - 1) + "\">&larr; Trước</a>");
+        for (int i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) {
+            pw.println("<a class=\"" + (i == page ? "active" : "") + "\" href=\"viewbook?page=" + i + "\">" + i + "</a>");
+        }
+        if (page < totalPages) pw.println("<a href=\"viewbook?page=" + (page + 1) + "\">Tiếp &rarr;</a>");
+        pw.println("        </div></nav>");
     }
 
     public String addBookToCard(HttpSession session, Book book) {

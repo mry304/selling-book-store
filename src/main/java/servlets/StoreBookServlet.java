@@ -51,7 +51,12 @@ public class StoreBookServlet extends HttpServlet {
             pw.println("        </div>");
             pw.println("      </header>");
 
-            List<Book> books = bookService.getAllBooks();
+            int page = getPage(req);
+            final int pageSize = 12;
+            int totalBooks = bookService.getBookCount();
+            int totalPages = Math.max(1, (int) Math.ceil((double) totalBooks / pageSize));
+            page = Math.min(page, totalPages);
+            List<Book> books = bookService.getBooksPage(page, pageSize);
             pw.println("      <div class=\"table-responsive\">");
             pw.println("        <table class=\"table table-hover align-middle\" style=\"border-radius:12px; overflow:hidden;\">");
             pw.println("          <thead style=\"background:var(--shelf-surface); color:var(--text-primary);\">");
@@ -76,6 +81,7 @@ public class StoreBookServlet extends HttpServlet {
             pw.println("          </tbody>");
             pw.println("        </table>");
             pw.println("      </div>");
+            renderPagination(pw, page, totalPages, totalBooks);
             pw.println("    </div>");
             pw.println("  </div>");
             pw.println("</main>");
@@ -97,6 +103,27 @@ public class StoreBookServlet extends HttpServlet {
                 + "          <button type='submit' class='nav-pill-btn' style='background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); padding:6px 18px; font-size:0.84rem; cursor:pointer;'>Cập nhật</button>"
                 + "          </form></td>\r\n"
                 + "    </tr>\r\n";
+    }
+
+    private int getPage(HttpServletRequest req) {
+        try {
+            return Math.max(1, Integer.parseInt(req.getParameter("page")));
+        } catch (Exception ignored) {
+            return 1;
+        }
+    }
+
+    private void renderPagination(PrintWriter pw, int page, int totalPages, int totalBooks) {
+        if (totalPages <= 1) return;
+        pw.println("      <nav class=\"pagination-nav\" aria-label=\"Phân trang kho sách\">");
+        pw.println("        <span class=\"pagination-summary\">" + totalBooks + " đầu sách · Trang " + page + "/" + totalPages + "</span>");
+        pw.println("        <div class=\"pagination-links\">");
+        if (page > 1) pw.println("<a href=\"storebooks?page=" + (page - 1) + "\">&larr; Trước</a>");
+        for (int i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) {
+            pw.println("<a class=\"" + (i == page ? "active" : "") + "\" href=\"storebooks?page=" + i + "\">" + i + "</a>");
+        }
+        if (page < totalPages) pw.println("<a href=\"storebooks?page=" + (page + 1) + "\">Tiếp &rarr;</a>");
+        pw.println("        </div></nav>");
     }
 
 }

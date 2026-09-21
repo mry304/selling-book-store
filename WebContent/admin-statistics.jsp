@@ -642,14 +642,17 @@
                 </div>
               </div>
 
-              <div style="display:flex; flex-direction:column; gap:16px; margin-top:10px;">
+              <div class="store-operations-metrics">
                 <% double avgOrderValue=0.0; int ordersCount=(Integer)request.getAttribute("totalOrders"); double
                   revVal=(Double)request.getAttribute("totalRevenue"); if (ordersCount> 0) {
                   avgOrderValue = revVal / ordersCount;
                   }
+                  int pendingOrders = (Integer)request.getAttribute("pendingOrders");
+                  int confirmedOrders = (Integer)request.getAttribute("confirmedOrders");
+                  int actionableOrders = pendingOrders + confirmedOrders;
+                  int lowStockTitleCount = (Integer)request.getAttribute("lowStockTitleCount");
                   %>
-                  <div
-                    style="padding:14px 18px; background:var(--bg-board); border-radius:12px; border:1px solid rgba(197,137,64,0.18); display:flex; justify-content:space-between; align-items:center;">
+                  <div class="store-operation-metric">
                     <div>
                       <div
                         style="font-size:0.8rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase;">
@@ -658,34 +661,30 @@
                         <%= String.format("%,.0f đ", avgOrderValue) %>
                       </div>
                     </div>
-                    <div style="font-size:1.5rem;">💳</div>
+                    <div class="store-operation-icon metric-aov">💳</div>
                   </div>
 
-                  <div
-                    style="padding:14px 18px; background:var(--bg-board); border-radius:12px; border:1px solid rgba(197,137,64,0.18); display:flex; justify-content:space-between; align-items:center;">
+                  <a href="orders?status=PENDING" class="store-operation-metric store-operation-link">
                     <div>
-                      <div
-                        style="font-size:0.8rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase;">
-                        Tình trạng kho hàng</div>
-                      <div style="font-size:1.3rem; font-weight:800; color:#059669; margin-top:2px;">
-                        <%= (Integer)request.getAttribute("totalStock")> 0 ? "Còn Hàng & Sẵn Sàng" : "Cần Nhập Thêm" %>
+                      <div class="store-operation-label">Đơn cần xử lý</div>
+                      <div class="store-operation-value <%= actionableOrders > 0 ? "metric-alert" : "metric-good" %>">
+                        <%= actionableOrders %> đơn
                       </div>
+                      <div class="store-operation-detail"><%= pendingOrders %> chờ xác nhận · <%= confirmedOrders %> chờ giao</div>
                     </div>
-                    <div style="font-size:1.5rem;">📦</div>
-                  </div>
+                    <div class="store-operation-icon metric-orders">📋</div>
+                  </a>
 
-                  <div
-                    style="padding:14px 18px; background:var(--bg-board); border-radius:12px; border:1px solid rgba(197,137,64,0.18); display:flex; justify-content:space-between; align-items:center;">
+                  <a href="#low-stock-alerts" class="store-operation-metric store-operation-link">
                     <div>
-                      <div
-                        style="font-size:0.8rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase;">
-                        Hệ thống Quản trị</div>
-                      <div style="font-size:1.1rem; font-weight:700; color:var(--accent-hover); margin-top:2px;">
-                        Đồng Bộ Dữ Liệu Trực Tiếp
+                      <div class="store-operation-label">Cảnh báo tồn kho</div>
+                      <div class="store-operation-value <%= lowStockTitleCount > 0 ? "metric-alert" : "metric-good" %>">
+                        <%= lowStockTitleCount > 0 ? lowStockTitleCount + " đầu sách" : "Kho ổn định" %>
                       </div>
+                      <div class="store-operation-detail"><%= lowStockTitleCount > 0 ? "Tồn kho từ 5 cuốn trở xuống" : "Chưa có đầu sách cần nhập thêm" %></div>
                     </div>
-                    <div style="font-size:1.5rem;">⚡</div>
-                  </div>
+                    <div class="store-operation-icon metric-stock">📦</div>
+                  </a>
               </div>
             </div>
 
@@ -701,7 +700,7 @@
         <!-- Tables Row: Low Stock Alerts & Recent Orders -->
         <div class="stats-tables-row">
           <!-- Low Stock Alerts Table -->
-          <div class="chart-card">
+          <div class="chart-card" id="low-stock-alerts">
             <div class="chart-card-header">
               <div>
                 <h3 class="chart-card-title">⚠️ Cảnh Báo Sắp Hết Hàng (≤ 5 cuốn)</h3>

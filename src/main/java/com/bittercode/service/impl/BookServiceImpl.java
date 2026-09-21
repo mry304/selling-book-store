@@ -87,6 +87,39 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public List<Book> getBooksPage(int page, int pageSize) throws StoreException {
+        List<Book> books = new ArrayList<Book>();
+        int safePage = Math.max(1, page);
+        int safePageSize = Math.max(1, pageSize);
+        String query = getAllBooksQuery + " ORDER BY " + BooksDBConstants.COLUMN_NAME + " ASC LIMIT ? OFFSET ?";
+
+        try (PreparedStatement ps = DBUtil.getConnection().prepareStatement(query)) {
+            ps.setInt(1, safePageSize);
+            ps.setInt(2, (safePage - 1) * safePageSize);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    books.add(new Book(rs.getString(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5)));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return books;
+    }
+
+    @Override
+    public int getBookCount() throws StoreException {
+        String query = "SELECT COUNT(*) FROM " + BooksDBConstants.TABLE_BOOK;
+        try (PreparedStatement ps = DBUtil.getConnection().prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
+            return rs.next() ? rs.getInt(1) : 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @Override
     public String deleteBookById(String bookId) throws StoreException {
         String response = ResponseCode.FAILURE.name();
         Connection con = DBUtil.getConnection();

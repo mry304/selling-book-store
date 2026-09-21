@@ -1951,6 +1951,103 @@ body.admin-bookshelf-body .bookshelf-canvas .bookshelf-page-container {
   min-height: 280px;
 }
 
+/* Shared server-side pagination */
+.pagination-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(197, 137, 64, 0.16);
+}
+.pagination-summary { color: var(--text-secondary); font-size: 0.82rem; }
+.pagination-links { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.pagination-links a {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 10px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(197, 137, 64, 0.25);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+.pagination-links a:hover { color: var(--accent-hover); border-color: var(--accent-primary); transform: translateY(-1px); }
+.pagination-links a.active { color: #fff; background: var(--accent-primary); border-color: var(--accent-primary); }
+.bookshelf-pagination { margin: 18px 24px 0; }
+@media (max-width: 560px) {
+  .pagination-nav { align-items: flex-start; flex-direction: column; }
+  .bookshelf-pagination { margin-right: 0; margin-left: 0; }
+}
+
+/* Seller dashboard: actionable store operations metrics */
+.store-operations-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+.store-operation-metric {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 15px 16px;
+  border: 1px solid rgba(197, 137, 64, 0.18);
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fffdf9, var(--bg-board));
+}
+.store-operation-link {
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.store-operation-link:hover {
+  color: inherit;
+  text-decoration: none;
+  border-color: rgba(197, 137, 64, 0.45);
+  box-shadow: 0 8px 18px rgba(86, 67, 46, 0.10);
+  transform: translateY(-2px);
+}
+.store-operation-label {
+  color: var(--text-secondary);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.store-operation-value {
+  margin-top: 3px;
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+.store-operation-detail {
+  margin-top: 3px;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+}
+.metric-alert { color: #c2410c; }
+.metric-good { color: #15803d; }
+.store-operation-icon {
+  display: grid;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 12px;
+  font-size: 1.18rem;
+}
+.metric-aov { background: #f4e7d7; }
+.metric-orders { background: #ffedd5; }
+.metric-stock { background: #dcfce7; }
+
 /* Tables in Dashboard */
 .stats-tables-row {
   display: grid;

@@ -139,6 +139,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<Order> getOrdersByUsername(String username, String statusFilter, int page, int pageSize) throws StoreException {
+        return getOrdersPage(username, statusFilter, page, pageSize, true);
+    }
+
+    @Override
+    public int getOrderCountByUsername(String username, String statusFilter) throws StoreException {
+        Connection con = DBUtil.getConnection();
+        String validUsername = resolveUsername(con, username);
+        return getOrderCountInternal(con, validUsername, statusFilter, true);
+    }
+
+    @Override
     public List<Order> getAllOrders() throws StoreException {
         return getAllOrders(null);
     }
@@ -171,6 +183,65 @@ public class OrderServiceImpl implements OrderService {
             throw new StoreException(ResponseCode.INTERNAL_SERVER_ERROR);
         }
         return orders;
+    }
+
+    @Override
+    public List<Order> getAllOrders(String statusFilter, int page, int pageSize) throws StoreException {
+        return getOrdersPage(null, statusFilter, page, pageSize, false);
+    }
+
+    @Override
+    public int getOrderCount(String statusFilter) throws StoreException {
+        return getOrderCountInternal(DBUtil.getConnection(), null, statusFilter, false);
+    }
+
+    private List<Order> getOrdersPage(String username, String statusFilter, int page, int pageSize, boolean byUsername) throws StoreException {
+        checkAndAutoCompleteOrders();
+        Connection con = DBUtil.getConnection();
+        List<Order> orders = new ArrayList<>();
+        String validUsername = byUsername ? resolveUsername(con, username) : null;
+        boolean hasStatus = statusFilter != null && !statusFilter.trim().isEmpty() && !"ALL".equalsIgnoreCase(statusFilter);
+        StringBuilder query = new StringBuilder("SELECT * FROM orders ");
+        if (byUsername) query.append("WHERE username = ? ");
+        if (hasStatus) query.append(byUsername ? "AND status = ? " : "WHERE status = ? ");
+        query.append("ORDER BY order_date DESC LIMIT ? OFFSET ?");
+
+        try (PreparedStatement ps = con.prepareStatement(query.toString())) {
+            int index = 1;
+            if (byUsername) ps.setString(index++, validUsername);
+            if (hasStatus) ps.setString(index++, statusFilter.trim().toUpperCase());
+            ps.setInt(index++, Math.max(1, pageSize));
+            ps.setInt(index, (Math.max(1, page) - 1) * Math.max(1, pageSize));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Order order = mapOrder(rs);
+                    order.setItems(getOrderDetailsByOrderId(order.getOrderId(), con));
+                    orders.add(order);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new StoreException(ResponseCode.INTERNAL_SERVER_ERROR);
+        }
+        return orders;
+    }
+
+    private int getOrderCountInternal(Connection con, String username, String statusFilter, boolean byUsername) throws StoreException {
+        boolean hasStatus = statusFilter != null && !statusFilter.trim().isEmpty() && !"ALL".equalsIgnoreCase(statusFilter);
+        StringBuilder query = new StringBuilder("SELECT COUNT(*) FROM orders ");
+        if (byUsername) query.append("WHERE username = ? ");
+        if (hasStatus) query.append(byUsername ? "AND status = ?" : "WHERE status = ?");
+        try (PreparedStatement ps = con.prepareStatement(query.toString())) {
+            int index = 1;
+            if (byUsername) ps.setString(index++, username);
+            if (hasStatus) ps.setString(index, statusFilter.trim().toUpperCase());
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new StoreException(ResponseCode.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override

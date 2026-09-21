@@ -18,9 +18,17 @@ public interface OrderService {
 
     public List<Order> getOrdersByUsername(String username, String statusFilter) throws StoreException;
 
+    public List<Order> getOrdersByUsername(String username, String statusFilter, int page, int pageSize) throws StoreException;
+
+    public int getOrderCountByUsername(String username, String statusFilter) throws StoreException;
+
     public List<Order> getAllOrders() throws StoreException;
 
     public List<Order> getAllOrders(String statusFilter) throws StoreException;
+
+    public List<Order> getAllOrders(String statusFilter, int page, int pageSize) throws StoreException;
+
+    public int getOrderCount(String statusFilter) throws StoreException;
 
     public boolean cancelOrderByCustomer(String orderId, String username, String cancelReason) throws StoreException;
 

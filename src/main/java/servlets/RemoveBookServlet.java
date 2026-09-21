@@ -52,7 +52,12 @@ public class RemoveBookServlet extends HttpServlet {
             rd.include(req, res);
             StoreUtil.setActiveTab(pw, "removebook");
 
-            List<Book> books = bookService.getAllBooks();
+            int page = getPage(req);
+            final int pageSize = 12;
+            int totalBooks = bookService.getBookCount();
+            int totalPages = Math.max(1, (int) Math.ceil((double) totalBooks / pageSize));
+            page = Math.min(page, totalPages);
+            List<Book> books = bookService.getBooksPage(page, pageSize);
 
             pw.println("<main class=\"bookshelf-canvas\" style=\"padding-top:28px;\">");
             pw.println("  <div class=\"bookshelf-page-container\" style=\"max-width:1200px; margin: 0 auto;\">");
@@ -98,6 +103,7 @@ public class RemoveBookServlet extends HttpServlet {
             pw.println("          </tbody>");
             pw.println("        </table>");
             pw.println("      </div>");
+            renderPagination(pw, page, totalPages, totalBooks);
 
             pw.println("      <script>");
             pw.println("        function filterRemoveTable() {");
@@ -141,5 +147,26 @@ public class RemoveBookServlet extends HttpServlet {
                 + "        </form>\r\n"
                 + "      </td>\r\n"
                 + "    </tr>\r\n";
+    }
+
+    private int getPage(HttpServletRequest req) {
+        try {
+            return Math.max(1, Integer.parseInt(req.getParameter("page")));
+        } catch (Exception ignored) {
+            return 1;
+        }
+    }
+
+    private void renderPagination(PrintWriter pw, int page, int totalPages, int totalBooks) {
+        if (totalPages <= 1) return;
+        pw.println("      <nav class=\"pagination-nav\" aria-label=\"Phân trang xóa sách\">");
+        pw.println("        <span class=\"pagination-summary\">" + totalBooks + " đầu sách · Trang " + page + "/" + totalPages + "</span>");
+        pw.println("        <div class=\"pagination-links\">");
+        if (page > 1) pw.println("<a href=\"removebook?page=" + (page - 1) + "\">&larr; Trước</a>");
+        for (int i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) {
+            pw.println("<a class=\"" + (i == page ? "active" : "") + "\" href=\"removebook?page=" + i + "\">" + i + "</a>");
+        }
+        if (page < totalPages) pw.println("<a href=\"removebook?page=" + (page + 1) + "\">Tiếp &rarr;</a>");
+        pw.println("        </div></nav>");
     }
 }

@@ -55,28 +55,6 @@ public class OrdersServlet extends HttpServlet {
 
             String username = isCustomer ? (String) session.getAttribute(UserRole.CUSTOMER.toString()) : null;
             
-            // Query all orders of user or all orders in system to calculate badge counts
-            List<Order> allOrders = isCustomer ? orderService.getOrdersByUsername(username) : orderService.getAllOrders();
-            if (allOrders == null) {
-                allOrders = new ArrayList<>();
-            }
-
-            int countAll = allOrders.size();
-            int countPending = 0;
-            int countConfirmed = 0;
-            int countShipping = 0;
-            int countCompleted = 0;
-            int countCancelled = 0;
-
-            for (Order o : allOrders) {
-                OrderStatus os = o.getOrderStatus();
-                if (os == OrderStatus.PENDING) countPending++;
-                else if (os == OrderStatus.CONFIRMED) countConfirmed++;
-                else if (os == OrderStatus.SHIPPING) countShipping++;
-                else if (os == OrderStatus.COMPLETED) countCompleted++;
-                else if (os == OrderStatus.CANCELLED) countCancelled++;
-            }
-
             // Current filter tab
             String currentFilter = req.getParameter("status");
             if (currentFilter == null || currentFilter.trim().isEmpty()) {
@@ -85,16 +63,20 @@ public class OrdersServlet extends HttpServlet {
                 currentFilter = currentFilter.trim().toUpperCase();
             }
 
-            List<Order> displayOrders = new ArrayList<>();
-            if ("ALL".equalsIgnoreCase(currentFilter)) {
-                displayOrders = allOrders;
-            } else {
-                for (Order o : allOrders) {
-                    if (o.getOrderStatus().name().equalsIgnoreCase(currentFilter)) {
-                        displayOrders.add(o);
-                    }
-                }
-            }
+            int page = getPage(req);
+            final int pageSize = 10;
+            int countAll = getOrderCount(username, isCustomer, "ALL");
+            int countPending = getOrderCount(username, isCustomer, "PENDING");
+            int countConfirmed = getOrderCount(username, isCustomer, "CONFIRMED");
+            int countShipping = getOrderCount(username, isCustomer, "SHIPPING");
+            int countCompleted = getOrderCount(username, isCustomer, "COMPLETED");
+            int countCancelled = getOrderCount(username, isCustomer, "CANCELLED");
+            int filteredCount = getOrderCount(username, isCustomer, currentFilter);
+            int totalPages = Math.max(1, (int) Math.ceil((double) filteredCount / pageSize));
+            page = Math.min(page, totalPages);
+            List<Order> displayOrders = isCustomer
+                    ? orderService.getOrdersByUsername(username, currentFilter, page, pageSize)
+                    : orderService.getAllOrders(currentFilter, page, pageSize);
 
             pw.println("<div class=\"bookshelf-page-container\">");
             pw.println("  <div class=\"bookshelf-page-card\">");
@@ -257,6 +239,7 @@ public class OrdersServlet extends HttpServlet {
                 pw.println("        </tbody>");
                 pw.println("      </table>");
                 pw.println("    </div>"); // end table-responsive
+                renderPagination(pw, "orders", currentFilter, page, totalPages, filteredCount);
             }
 
             pw.println("  </div>"); // end bookshelf-page-card
@@ -328,11 +311,36 @@ public class OrdersServlet extends HttpServlet {
     private void renderFilterBtn(PrintWriter pw, String statusKey, String title, int count, String currentFilter) {
         boolean active = statusKey.equalsIgnoreCase(currentFilter);
         String icon = getOrderFilterIcon(statusKey);
-        pw.println("      <a href=\"orders?status=" + statusKey + "\" class=\"order-filter-btn order-filter-" + statusKey.toLowerCase() + " " + (active ? "active" : "") + "\"" + (active ? " aria-current=\"page\"" : "") + ">");
+        pw.println("      <a href=\"orders?status=" + statusKey + "&page=1\" class=\"order-filter-btn order-filter-" + statusKey.toLowerCase() + " " + (active ? "active" : "") + "\"" + (active ? " aria-current=\"page\"" : "") + ">");
         pw.println("        <span class=\"order-filter-icon\" aria-hidden=\"true\">" + icon + "</span>");
         pw.println("        <span class=\"order-filter-label\">" + title + "</span>");
         pw.println("        <span class=\"order-filter-badge\">" + count + "</span>");
         pw.println("      </a>");
+    }
+
+    private int getOrderCount(String username, boolean isCustomer, String status) throws Exception {
+        return isCustomer ? orderService.getOrderCountByUsername(username, status) : orderService.getOrderCount(status);
+    }
+
+    private int getPage(HttpServletRequest req) {
+        try {
+            return Math.max(1, Integer.parseInt(req.getParameter("page")));
+        } catch (Exception ignored) {
+            return 1;
+        }
+    }
+
+    private void renderPagination(PrintWriter pw, String baseUrl, String status, int page, int totalPages, int totalItems) {
+        if (totalPages <= 1) return;
+        pw.println("    <nav class=\"pagination-nav\" aria-label=\"Phân trang đơn hàng\">");
+        pw.println("      <span class=\"pagination-summary\">" + totalItems + " đơn hàng · Trang " + page + "/" + totalPages + "</span>");
+        pw.println("      <div class=\"pagination-links\">");
+        if (page > 1) pw.println("<a href=\"" + baseUrl + "?status=" + status + "&page=" + (page - 1) + "\">&larr; Trước</a>");
+        for (int i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) {
+            pw.println("<a class=\"" + (i == page ? "active" : "") + "\" href=\"" + baseUrl + "?status=" + status + "&page=" + i + "\">" + i + "</a>");
+        }
+        if (page < totalPages) pw.println("<a href=\"" + baseUrl + "?status=" + status + "&page=" + (page + 1) + "\">Tiếp &rarr;</a>");
+        pw.println("      </div></nav>");
     }
 
     private String getOrderFilterIcon(String statusKey) {

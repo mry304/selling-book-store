@@ -55,6 +55,9 @@ public class AdminStatisticsServlet extends HttpServlet {
         int totalCustomers = 0;
         int totalStock = 0;
         int totalTitles = 0;
+        int pendingOrders = 0;
+        int confirmedOrders = 0;
+        int lowStockTitleCount = 0;
 
         List<String> revDates = new ArrayList<>();
         List<Double> revAmounts = new ArrayList<>();
@@ -108,6 +111,24 @@ public class AdminStatisticsServlet extends HttpServlet {
                         totalTitles = rs.getInt(1);
                         totalStock = rs.getInt(2);
                     }
+                }
+            }
+
+            // Actionable operations metrics for the seller dashboard.
+            try (PreparedStatement ps = con.prepareStatement(
+                    "SELECT COALESCE(SUM(status = 'PENDING'), 0) AS pending_count, " +
+                    "COALESCE(SUM(status = 'CONFIRMED'), 0) AS confirmed_count FROM orders")) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        pendingOrders = rs.getInt("pending_count");
+                        confirmedOrders = rs.getInt("confirmed_count");
+                    }
+                }
+            }
+
+            try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM books WHERE quantity <= 5")) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) lowStockTitleCount = rs.getInt(1);
                 }
             }
 
@@ -236,6 +257,9 @@ public class AdminStatisticsServlet extends HttpServlet {
         req.setAttribute("totalCustomers", totalCustomers);
         req.setAttribute("totalStock", totalStock);
         req.setAttribute("totalTitles", totalTitles);
+        req.setAttribute("pendingOrders", pendingOrders);
+        req.setAttribute("confirmedOrders", confirmedOrders);
+        req.setAttribute("lowStockTitleCount", lowStockTitleCount);
 
         req.setAttribute("revenueDatesJson", toJsonArrayStrings(revDates));
         req.setAttribute("revenueAmountsJson", toJsonArrayNumbers(revAmounts));
