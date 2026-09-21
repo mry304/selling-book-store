@@ -30,6 +30,11 @@ public interface OrderService {
 
     public int getOrderCount(String statusFilter) throws StoreException;
 
+    public List<Order> searchAllOrders(String statusFilter, String keyword, String dateFrom, String dateTo,
+                                       int page, int pageSize) throws StoreException;
+
+    public int getSearchOrderCount(String statusFilter, String keyword, String dateFrom, String dateTo) throws StoreException;
+
     public boolean cancelOrderByCustomer(String orderId, String username, String cancelReason) throws StoreException;
 
     public boolean completeOrderByCustomer(String orderId, String username) throws StoreException;

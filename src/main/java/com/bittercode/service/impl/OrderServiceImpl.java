@@ -195,6 +195,71 @@ public class OrderServiceImpl implements OrderService {
         return getOrderCountInternal(DBUtil.getConnection(), null, statusFilter, false);
     }
 
+    @Override
+    public List<Order> searchAllOrders(String statusFilter, String keyword, String dateFrom, String dateTo,
+                                       int page, int pageSize) throws StoreException {
+        checkAndAutoCompleteOrders();
+        Connection con = DBUtil.getConnection();
+        List<Order> orders = new ArrayList<>();
+        StringBuilder query = new StringBuilder("SELECT DISTINCT o.* FROM orders o LEFT JOIN order_details od ON od.order_id = o.order_id LEFT JOIN books b ON b.barcode = od.book_barcode WHERE 1=1 ");
+        List<String> values = appendSearchConditions(query, statusFilter, keyword, dateFrom, dateTo);
+        query.append(" ORDER BY o.order_date DESC LIMIT ? OFFSET ?");
+        try (PreparedStatement ps = con.prepareStatement(query.toString())) {
+            int index = bindSearchValues(ps, values);
+            ps.setInt(index++, Math.max(1, pageSize));
+            ps.setInt(index, (Math.max(1, page) - 1) * Math.max(1, pageSize));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Order order = mapOrder(rs);
+                    order.setItems(getOrderDetailsByOrderId(order.getOrderId(), con));
+                    orders.add(order);
+                }
+            }
+            return orders;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new StoreException(ResponseCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public int getSearchOrderCount(String statusFilter, String keyword, String dateFrom, String dateTo) throws StoreException {
+        Connection con = DBUtil.getConnection();
+        StringBuilder query = new StringBuilder("SELECT COUNT(DISTINCT o.order_id) FROM orders o LEFT JOIN order_details od ON od.order_id = o.order_id LEFT JOIN books b ON b.barcode = od.book_barcode WHERE 1=1 ");
+        List<String> values = appendSearchConditions(query, statusFilter, keyword, dateFrom, dateTo);
+        try (PreparedStatement ps = con.prepareStatement(query.toString())) {
+            bindSearchValues(ps, values);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new StoreException(ResponseCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private List<String> appendSearchConditions(StringBuilder query, String statusFilter, String keyword, String dateFrom, String dateTo) {
+        List<String> values = new ArrayList<>();
+        if (statusFilter != null && !statusFilter.trim().isEmpty() && !"ALL".equalsIgnoreCase(statusFilter)) {
+            query.append("AND o.status = ? ");
+            values.add(statusFilter.trim().toUpperCase());
+        }
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            query.append("AND (o.order_id LIKE ? OR o.username LIKE ? OR b.name LIKE ?) ");
+            String term = "%" + keyword.trim() + "%";
+            values.add(term); values.add(term); values.add(term);
+        }
+        if (dateFrom != null && dateFrom.matches("\\d{4}-\\d{2}-\\d{2}")) { query.append("AND DATE(o.order_date) >= ? "); values.add(dateFrom); }
+        if (dateTo != null && dateTo.matches("\\d{4}-\\d{2}-\\d{2}")) { query.append("AND DATE(o.order_date) <= ? "); values.add(dateTo); }
+        return values;
+    }
+
+    private int bindSearchValues(PreparedStatement ps, List<String> values) throws SQLException {
+        int index = 1;
+        for (String value : values) ps.setString(index++, value);
+        return index;
+    }
+
     private List<Order> getOrdersPage(String username, String statusFilter, int page, int pageSize, boolean byUsername) throws StoreException {
         checkAndAutoCompleteOrders();
         Connection con = DBUtil.getConnection();

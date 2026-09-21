@@ -1951,6 +1951,26 @@ body.admin-bookshelf-body .bookshelf-canvas .bookshelf-page-container {
   min-height: 280px;
 }
 
+.seller-order-search {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.7fr) minmax(135px, 0.75fr) minmax(135px, 0.75fr) auto auto;
+  gap: 10px;
+  align-items: end;
+  margin: 18px 0;
+  padding: 14px;
+  border: 1px solid rgba(197, 137, 64, 0.20);
+  border-radius: 14px;
+  background: var(--bg-board);
+}
+.seller-order-search-field label { display:block; margin:0 0 5px; color:var(--text-secondary); font-size:0.76rem; font-weight:700; }
+.seller-order-search-field input { width:100%; height:39px; padding:0 11px; border:1px solid rgba(197, 137, 64, 0.28); border-radius:9px; background:#fff; color:var(--text-primary); font-size:0.88rem; }
+.seller-order-search-field input:focus { outline:none; border-color:var(--accent-primary); box-shadow:0 0 0 3px rgba(197, 137, 64, 0.13); }
+.seller-order-search-submit, .seller-order-search-reset { height:39px; padding:0 14px; border-radius:9px; font-size:0.84rem; font-weight:700; white-space:nowrap; }
+.seller-order-search-submit { border:0; background:var(--accent-primary); color:#fff; cursor:pointer; }
+.seller-order-search-reset { display:inline-flex; align-items:center; color:var(--text-secondary); border:1px solid rgba(197, 137, 64, 0.25); background:#fff; text-decoration:none; }
+@media (max-width: 850px) { .seller-order-search { grid-template-columns:1fr 1fr; } .seller-order-search-keyword { grid-column:1 / -1; } }
+@media (max-width: 520px) { .seller-order-search { grid-template-columns:1fr; } .seller-order-search-keyword { grid-column:auto; } .seller-order-search-submit, .seller-order-search-reset { width:100%; justify-content:center; } }
+
 /* Shared server-side pagination */
 .pagination-nav {
   display: flex;

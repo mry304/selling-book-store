@@ -2,6 +2,8 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,18 +67,26 @@ public class OrdersServlet extends HttpServlet {
 
             int page = getPage(req);
             final int pageSize = 10;
+            String searchKeyword = isSeller ? getTrimmedParameter(req, "q") : "";
+            String dateFrom = isSeller ? getTrimmedParameter(req, "from") : "";
+            String dateTo = isSeller ? getTrimmedParameter(req, "to") : "";
             int countAll = getOrderCount(username, isCustomer, "ALL");
             int countPending = getOrderCount(username, isCustomer, "PENDING");
             int countConfirmed = getOrderCount(username, isCustomer, "CONFIRMED");
             int countShipping = getOrderCount(username, isCustomer, "SHIPPING");
             int countCompleted = getOrderCount(username, isCustomer, "COMPLETED");
             int countCancelled = getOrderCount(username, isCustomer, "CANCELLED");
-            int filteredCount = getOrderCount(username, isCustomer, currentFilter);
+            boolean hasSellerSearch = isSeller && (!searchKeyword.isEmpty() || !dateFrom.isEmpty() || !dateTo.isEmpty());
+            int filteredCount = hasSellerSearch
+                    ? orderService.getSearchOrderCount(currentFilter, searchKeyword, dateFrom, dateTo)
+                    : getOrderCount(username, isCustomer, currentFilter);
             int totalPages = Math.max(1, (int) Math.ceil((double) filteredCount / pageSize));
             page = Math.min(page, totalPages);
             List<Order> displayOrders = isCustomer
                     ? orderService.getOrdersByUsername(username, currentFilter, page, pageSize)
-                    : orderService.getAllOrders(currentFilter, page, pageSize);
+                    : (hasSellerSearch
+                        ? orderService.searchAllOrders(currentFilter, searchKeyword, dateFrom, dateTo, page, pageSize)
+                        : orderService.getAllOrders(currentFilter, page, pageSize));
 
             pw.println("<div class=\"bookshelf-page-container\">");
             pw.println("  <div class=\"bookshelf-page-card\">");
@@ -96,6 +106,10 @@ public class OrdersServlet extends HttpServlet {
             renderFilterBtn(pw, "COMPLETED", "Hoàn thành", countCompleted, currentFilter);
             renderFilterBtn(pw, "CANCELLED", "Đã hủy", countCancelled, currentFilter);
             pw.println("    </nav>");
+
+            if (isSeller) {
+                renderSellerSearchForm(pw, currentFilter, searchKeyword, dateFrom, dateTo);
+            }
 
             if (displayOrders.isEmpty()) {
                 pw.println("    <div class=\"bookshelf-empty-state\">");
@@ -239,7 +253,7 @@ public class OrdersServlet extends HttpServlet {
                 pw.println("        </tbody>");
                 pw.println("      </table>");
                 pw.println("    </div>"); // end table-responsive
-                renderPagination(pw, "orders", currentFilter, page, totalPages, filteredCount);
+                renderPagination(pw, "orders", currentFilter, searchKeyword, dateFrom, dateTo, page, totalPages, filteredCount);
             }
 
             pw.println("  </div>"); // end bookshelf-page-card
@@ -330,18 +344,42 @@ public class OrdersServlet extends HttpServlet {
         }
     }
 
-    private void renderPagination(PrintWriter pw, String baseUrl, String status, int page, int totalPages, int totalItems) {
+    private void renderPagination(PrintWriter pw, String baseUrl, String status, String keyword, String dateFrom, String dateTo, int page, int totalPages, int totalItems) {
         if (totalPages <= 1) return;
+        String query = "?status=" + status + buildSellerSearchQuery(keyword, dateFrom, dateTo);
         pw.println("    <nav class=\"pagination-nav\" aria-label=\"Phân trang đơn hàng\">");
         pw.println("      <span class=\"pagination-summary\">" + totalItems + " đơn hàng · Trang " + page + "/" + totalPages + "</span>");
         pw.println("      <div class=\"pagination-links\">");
-        if (page > 1) pw.println("<a href=\"" + baseUrl + "?status=" + status + "&page=" + (page - 1) + "\">&larr; Trước</a>");
+        if (page > 1) pw.println("<a href=\"" + baseUrl + query + "&page=" + (page - 1) + "\">&larr; Trước</a>");
         for (int i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) {
-            pw.println("<a class=\"" + (i == page ? "active" : "") + "\" href=\"" + baseUrl + "?status=" + status + "&page=" + i + "\">" + i + "</a>");
+            pw.println("<a class=\"" + (i == page ? "active" : "") + "\" href=\"" + baseUrl + query + "&page=" + i + "\">" + i + "</a>");
         }
-        if (page < totalPages) pw.println("<a href=\"" + baseUrl + "?status=" + status + "&page=" + (page + 1) + "\">Tiếp &rarr;</a>");
+        if (page < totalPages) pw.println("<a href=\"" + baseUrl + query + "&page=" + (page + 1) + "\">Tiếp &rarr;</a>");
         pw.println("      </div></nav>");
     }
+
+    private void renderSellerSearchForm(PrintWriter pw, String status, String keyword, String dateFrom, String dateTo) {
+        pw.println("    <form method=\"get\" action=\"orders\" class=\"seller-order-search\">");
+        pw.println("      <input type=\"hidden\" name=\"status\" value=\"" + status + "\">");
+        pw.println("      <div class=\"seller-order-search-field seller-order-search-keyword\"><label for=\"orderSearch\">Tìm đơn</label><input id=\"orderSearch\" name=\"q\" value=\"" + escapeHtml(keyword) + "\" placeholder=\"Mã đơn, khách hàng hoặc tên sách\"></div>");
+        pw.println("      <div class=\"seller-order-search-field\"><label for=\"orderFrom\">Từ ngày</label><input id=\"orderFrom\" type=\"date\" name=\"from\" value=\"" + escapeHtml(dateFrom) + "\"></div>");
+        pw.println("      <div class=\"seller-order-search-field\"><label for=\"orderTo\">Đến ngày</label><input id=\"orderTo\" type=\"date\" name=\"to\" value=\"" + escapeHtml(dateTo) + "\"></div>");
+        pw.println("      <button type=\"submit\" class=\"seller-order-search-submit\">&#128269; Lọc đơn</button>");
+        if (!keyword.isEmpty() || !dateFrom.isEmpty() || !dateTo.isEmpty()) pw.println("      <a href=\"orders?status=" + status + "\" class=\"seller-order-search-reset\">Xóa lọc</a>");
+        pw.println("    </form>");
+    }
+
+    private String getTrimmedParameter(HttpServletRequest req, String name) { String value = req.getParameter(name); return value == null ? "" : value.trim(); }
+
+    private String buildSellerSearchQuery(String keyword, String dateFrom, String dateTo) {
+        StringBuilder query = new StringBuilder();
+        if (!keyword.isEmpty()) query.append("&q=").append(URLEncoder.encode(keyword, StandardCharsets.UTF_8));
+        if (!dateFrom.isEmpty()) query.append("&from=").append(URLEncoder.encode(dateFrom, StandardCharsets.UTF_8));
+        if (!dateTo.isEmpty()) query.append("&to=").append(URLEncoder.encode(dateTo, StandardCharsets.UTF_8));
+        return query.toString();
+    }
+
+    private String escapeHtml(String value) { return value.replace("&", "&amp;").replace("\"", "&quot;").replace("<", "&lt;").replace(">", "&gt;"); }
 
     private String getOrderFilterIcon(String statusKey) {
         if ("PENDING".equals(statusKey)) return "&#128337;";
