@@ -6,9 +6,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import jakarta.servlet.ServletException;
@@ -27,7 +31,21 @@ public class AdminStatisticsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         HttpSession session = req.getSession();
         if (!StoreUtil.isLoggedIn(UserRole.SELLER, session)) {
+            String ajax = req.getParameter("ajax");
+            if ("revenue".equalsIgnoreCase(ajax) || "filterRevenue".equalsIgnoreCase(req.getParameter("action"))) {
+                res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                res.setContentType("application/json;charset=UTF-8");
+                res.getWriter().write("{\"status\":\"error\",\"message\":\"Chưa đăng nhập quản trị viên\"}");
+                return;
+            }
             res.sendRedirect("SellerLogin.html");
+            return;
+        }
+
+        String ajax = req.getParameter("ajax");
+        String action = req.getParameter("action");
+        if ("revenue".equalsIgnoreCase(ajax) || "filterRevenue".equalsIgnoreCase(action)) {
+            handleRevenueFilterAjax(req, res);
             return;
         }
 
@@ -275,5 +293,317 @@ public class AdminStatisticsServlet extends HttpServlet {
         }
         sb.append("]");
         return sb.toString();
+    }
+
+    private void handleRevenueFilterAjax(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        res.setCharacterEncoding("UTF-8");
+        res.setContentType("application/json; charset=UTF-8");
+        String filterType = req.getParameter("filterType");
+        String filterValue = req.getParameter("filterValue");
+
+        if (filterType == null || filterType.trim().isEmpty()) {
+            filterType = "all";
+        }
+
+        double periodRevenue = 0.0;
+        int periodOrders = 0;
+        int periodBooksSold = 0;
+        List<String> timelineLabels = new ArrayList<>();
+        List<Double> timelineAmounts = new ArrayList<>();
+        String filterLabel = "Toàn bộ thời gian";
+
+        try (Connection con = DBUtil.getConnection()) {
+            LocalDate today = LocalDate.now();
+
+            if ("day".equalsIgnoreCase(filterType)) {
+                LocalDate date;
+                try {
+                    date = LocalDate.parse(filterValue);
+                } catch (Exception e) {
+                    date = today;
+                }
+                filterLabel = "Ngày " + date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+                // 1. Revenue & Orders
+                String sqlRev = "SELECT COALESCE(SUM(total_amount), 0), COUNT(*) FROM orders WHERE status != 'CANCELLED' AND DATE(order_date) = ?";
+                try (PreparedStatement ps = con.prepareStatement(sqlRev)) {
+                    ps.setString(1, date.toString());
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            periodRevenue = rs.getDouble(1);
+                            periodOrders = rs.getInt(2);
+                        }
+                    }
+                }
+
+                // 2. Books Sold
+                String sqlBooks = "SELECT COALESCE(SUM(od.quantity), 0) FROM order_details od JOIN orders o ON od.order_id = o.order_id WHERE o.status != 'CANCELLED' AND DATE(o.order_date) = ?";
+                try (PreparedStatement ps = con.prepareStatement(sqlBooks)) {
+                    ps.setString(1, date.toString());
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            periodBooksSold = rs.getInt(1);
+                        }
+                    }
+                }
+
+                // 3. Hourly timeline for day
+                String[] timeSlots = new String[]{"00:00", "04:00", "08:00", "12:00", "16:00", "20:00", "23:59"};
+                double[] slotAmounts = new double[timeSlots.length];
+
+                String sqlTimeline = "SELECT HOUR(order_date) AS hr, COALESCE(SUM(total_amount), 0) AS rev FROM orders WHERE status != 'CANCELLED' AND DATE(order_date) = ? GROUP BY HOUR(order_date)";
+                try (PreparedStatement ps = con.prepareStatement(sqlTimeline)) {
+                    ps.setString(1, date.toString());
+                    try (ResultSet rs = ps.executeQuery()) {
+                        while (rs.next()) {
+                            int hr = rs.getInt("hr");
+                            double rev = rs.getDouble("rev");
+                            int slotIdx = Math.min(hr / 4, 5);
+                            slotAmounts[slotIdx] += rev;
+                        }
+                    }
+                }
+
+                for (int i = 0; i < timeSlots.length; i++) {
+                    timelineLabels.add(timeSlots[i]);
+                    timelineAmounts.add(slotAmounts[i]);
+                }
+
+            } else if ("month".equalsIgnoreCase(filterType)) {
+                int month = today.getMonthValue();
+                int year = today.getYear();
+                if (filterValue != null && filterValue.contains("-")) {
+                    String[] parts = filterValue.split("-");
+                    try {
+                        if (parts[0].length() == 4) {
+                            year = Integer.parseInt(parts[0]);
+                            month = Integer.parseInt(parts[1]);
+                        } else {
+                            month = Integer.parseInt(parts[0]);
+                            year = Integer.parseInt(parts[1]);
+                        }
+                    } catch (Exception ignored) {}
+                }
+                filterLabel = String.format(Locale.US, "Tháng %02d/%d", month, year);
+
+                // 1. Revenue & Orders
+                String sqlRev = "SELECT COALESCE(SUM(total_amount), 0), COUNT(*) FROM orders WHERE status != 'CANCELLED' AND MONTH(order_date) = ? AND YEAR(order_date) = ?";
+                try (PreparedStatement ps = con.prepareStatement(sqlRev)) {
+                    ps.setInt(1, month);
+                    ps.setInt(2, year);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            periodRevenue = rs.getDouble(1);
+                            periodOrders = rs.getInt(2);
+                        }
+                    }
+                }
+
+                // 2. Books Sold
+                String sqlBooks = "SELECT COALESCE(SUM(od.quantity), 0) FROM order_details od JOIN orders o ON od.order_id = o.order_id WHERE o.status != 'CANCELLED' AND MONTH(o.order_date) = ? AND YEAR(o.order_date) = ?";
+                try (PreparedStatement ps = con.prepareStatement(sqlBooks)) {
+                    ps.setInt(1, month);
+                    ps.setInt(2, year);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            periodBooksSold = rs.getInt(1);
+                        }
+                    }
+                }
+
+                // 3. Timeline for month
+                int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
+                double[] dayAmounts = new double[daysInMonth + 1];
+
+                String sqlTimeline = "SELECT DAY(order_date) AS d, COALESCE(SUM(total_amount), 0) AS rev FROM orders WHERE status != 'CANCELLED' AND MONTH(order_date) = ? AND YEAR(order_date) = ? GROUP BY DAY(order_date)";
+                try (PreparedStatement ps = con.prepareStatement(sqlTimeline)) {
+                    ps.setInt(1, month);
+                    ps.setInt(2, year);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        while (rs.next()) {
+                            int d = rs.getInt("d");
+                            if (d >= 1 && d <= daysInMonth) {
+                                dayAmounts[d] = rs.getDouble("rev");
+                            }
+                        }
+                    }
+                }
+
+                for (int d = 1; d <= daysInMonth; d++) {
+                    timelineLabels.add(String.format(Locale.US, "%02d/%02d", d, month));
+                    timelineAmounts.add(dayAmounts[d]);
+                }
+
+            } else if ("quarter".equalsIgnoreCase(filterType)) {
+                int quarter = (today.getMonthValue() - 1) / 3 + 1;
+                int year = today.getYear();
+                if (filterValue != null && filterValue.contains("-")) {
+                    String[] parts = filterValue.split("-");
+                    try {
+                        quarter = Integer.parseInt(parts[0]);
+                        year = Integer.parseInt(parts[1]);
+                    } catch (Exception ignored) {}
+                }
+                filterLabel = "Quý " + quarter + "/" + year;
+
+                // 1. Revenue & Orders
+                String sqlRev = "SELECT COALESCE(SUM(total_amount), 0), COUNT(*) FROM orders WHERE status != 'CANCELLED' AND QUARTER(order_date) = ? AND YEAR(order_date) = ?";
+                try (PreparedStatement ps = con.prepareStatement(sqlRev)) {
+                    ps.setInt(1, quarter);
+                    ps.setInt(2, year);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            periodRevenue = rs.getDouble(1);
+                            periodOrders = rs.getInt(2);
+                        }
+                    }
+                }
+
+                // 2. Books Sold
+                String sqlBooks = "SELECT COALESCE(SUM(od.quantity), 0) FROM order_details od JOIN orders o ON od.order_id = o.order_id WHERE o.status != 'CANCELLED' AND QUARTER(o.order_date) = ? AND YEAR(o.order_date) = ?";
+                try (PreparedStatement ps = con.prepareStatement(sqlBooks)) {
+                    ps.setInt(1, quarter);
+                    ps.setInt(2, year);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            periodBooksSold = rs.getInt(1);
+                        }
+                    }
+                }
+
+                // 3. Timeline for quarter: 3 months
+                int startM = (quarter - 1) * 3 + 1;
+                Map<Integer, Double> qMap = new HashMap<>();
+                String sqlTimeline = "SELECT MONTH(order_date) AS m, COALESCE(SUM(total_amount), 0) AS rev FROM orders WHERE status != 'CANCELLED' AND QUARTER(order_date) = ? AND YEAR(order_date) = ? GROUP BY MONTH(order_date)";
+                try (PreparedStatement ps = con.prepareStatement(sqlTimeline)) {
+                    ps.setInt(1, quarter);
+                    ps.setInt(2, year);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        while (rs.next()) {
+                            qMap.put(rs.getInt("m"), rs.getDouble("rev"));
+                        }
+                    }
+                }
+
+                for (int m = startM; m <= startM + 2; m++) {
+                    timelineLabels.add(String.format(Locale.US, "Tháng %02d", m));
+                    timelineAmounts.add(qMap.getOrDefault(m, 0.0));
+                }
+
+            } else if ("year".equalsIgnoreCase(filterType)) {
+                int year = today.getYear();
+                if (filterValue != null && !filterValue.trim().isEmpty()) {
+                    try {
+                        year = Integer.parseInt(filterValue.trim());
+                    } catch (Exception ignored) {}
+                }
+                filterLabel = "Năm " + year;
+
+                // 1. Revenue & Orders
+                String sqlRev = "SELECT COALESCE(SUM(total_amount), 0), COUNT(*) FROM orders WHERE status != 'CANCELLED' AND YEAR(order_date) = ?";
+                try (PreparedStatement ps = con.prepareStatement(sqlRev)) {
+                    ps.setInt(1, year);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            periodRevenue = rs.getDouble(1);
+                            periodOrders = rs.getInt(2);
+                        }
+                    }
+                }
+
+                // 2. Books Sold
+                String sqlBooks = "SELECT COALESCE(SUM(od.quantity), 0) FROM order_details od JOIN orders o ON od.order_id = o.order_id WHERE o.status != 'CANCELLED' AND YEAR(o.order_date) = ?";
+                try (PreparedStatement ps = con.prepareStatement(sqlBooks)) {
+                    ps.setInt(1, year);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            periodBooksSold = rs.getInt(1);
+                        }
+                    }
+                }
+
+                // 3. Timeline for year: 12 months
+                Map<Integer, Double> yMap = new HashMap<>();
+                String sqlTimeline = "SELECT MONTH(order_date) AS m, COALESCE(SUM(total_amount), 0) AS rev FROM orders WHERE status != 'CANCELLED' AND YEAR(order_date) = ? GROUP BY MONTH(order_date)";
+                try (PreparedStatement ps = con.prepareStatement(sqlTimeline)) {
+                    ps.setInt(1, year);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        while (rs.next()) {
+                            yMap.put(rs.getInt("m"), rs.getDouble("rev"));
+                        }
+                    }
+                }
+
+                for (int m = 1; m <= 12; m++) {
+                    timelineLabels.add(String.format(Locale.US, "Tháng %02d", m));
+                    timelineAmounts.add(yMap.getOrDefault(m, 0.0));
+                }
+
+            } else {
+                filterLabel = "Toàn bộ thời gian";
+                try (PreparedStatement ps = con.prepareStatement("SELECT COALESCE(SUM(total_amount), 0), COUNT(*) FROM orders WHERE status != 'CANCELLED'")) {
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            periodRevenue = rs.getDouble(1);
+                            periodOrders = rs.getInt(2);
+                        }
+                    }
+                }
+
+                try (PreparedStatement ps = con.prepareStatement("SELECT COALESCE(SUM(quantity), 0) FROM order_details od JOIN orders o ON od.order_id = o.order_id WHERE o.status != 'CANCELLED'")) {
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) periodBooksSold = rs.getInt(1);
+                    }
+                }
+
+                String revQuery = "SELECT DATE_FORMAT(order_date, '%d/%m') AS day_label, "
+                        + "COALESCE(SUM(total_amount), 0) AS daily_rev "
+                        + "FROM orders "
+                        + "WHERE status != 'CANCELLED' "
+                        + "GROUP BY DATE(order_date), DATE_FORMAT(order_date, '%d/%m') "
+                        + "ORDER BY DATE(order_date) ASC LIMIT 10";
+                try (PreparedStatement ps = con.prepareStatement(revQuery);
+                     ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        timelineLabels.add(rs.getString("day_label"));
+                        timelineAmounts.add(rs.getDouble("daily_rev"));
+                    }
+                }
+
+                if (timelineLabels.isEmpty()) {
+                    for (int i = 6; i >= 0; i--) {
+                        LocalDate d = today.minusDays(i);
+                        timelineLabels.add(d.format(DateTimeFormatter.ofPattern("dd/MM")));
+                        timelineAmounts.add(0.0);
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        String formattedRevenue = String.format(new Locale("vi", "VN"), "%,.0f đ", periodRevenue);
+
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        json.append("\"status\":\"success\",");
+        json.append("\"filterType\":\"").append(escapeJson(filterType)).append("\",");
+        json.append("\"filterValue\":\"").append(escapeJson(filterValue != null ? filterValue : "")).append("\",");
+        json.append("\"filterLabel\":\"").append(escapeJson(filterLabel)).append("\",");
+        json.append("\"periodRevenue\":").append(String.format(Locale.US, "%.2f", periodRevenue)).append(",");
+        json.append("\"periodRevenueFormatted\":\"").append(escapeJson(formattedRevenue)).append("\",");
+        json.append("\"periodOrders\":").append(periodOrders).append(",");
+        json.append("\"periodBooksSold\":").append(periodBooksSold).append(",");
+        json.append("\"timelineLabels\":").append(toJsonArrayStrings(timelineLabels)).append(",");
+        json.append("\"timelineAmounts\":").append(toJsonArrayNumbers(timelineAmounts));
+        json.append("}");
+
+        res.getWriter().write(json.toString());
+    }
+
+    private static String escapeJson(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "");
     }
 }

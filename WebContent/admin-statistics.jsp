@@ -18,6 +18,343 @@
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
+    <style>
+      /* Bookshelf Interactive Calendar Revenue Filter */
+      .cal-dropdown-container {
+        position: relative;
+        display: inline-block;
+      }
+      .bookshelf-cal-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: #ffffff;
+        border: 1.5px solid rgba(197, 137, 64, 0.28);
+        border-radius: var(--radius-pill);
+        padding: 5px 16px 5px 6px;
+        box-shadow: 0 3px 12px rgba(86, 67, 46, 0.06);
+        cursor: pointer;
+        transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+        outline: none;
+        user-select: none;
+      }
+      .bookshelf-cal-btn:hover {
+        border-color: var(--accent-primary);
+        box-shadow: 0 6px 18px rgba(197, 137, 64, 0.18);
+        transform: translateY(-1px);
+      }
+      .cal-dropdown-container.open .bookshelf-cal-btn {
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 3px rgba(197, 137, 64, 0.18);
+      }
+      .cal-btn-icon-box {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #FAF7F2, #F4EAD4);
+        color: var(--accent-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(197, 137, 64, 0.15);
+      }
+      .cal-btn-text-wrap {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        line-height: 1.18;
+      }
+      .cal-btn-hint {
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .cal-btn-current {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        white-space: nowrap;
+      }
+      .cal-chevron-icon {
+        color: var(--accent-primary);
+        transition: transform 0.22s ease;
+        margin-left: 2px;
+      }
+      .cal-dropdown-container.open .cal-chevron-icon {
+        transform: rotate(180deg);
+      }
+
+      /* Popover Card */
+      .bookshelf-cal-popover {
+        display: none;
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        z-index: 1050;
+        width: 325px;
+        background: #ffffff;
+        border: 1px solid rgba(197, 137, 64, 0.28);
+        border-radius: 20px;
+        padding: 14px;
+        box-shadow: 0 20px 42px rgba(63, 47, 31, 0.18), 0 5px 12px rgba(63, 47, 31, 0.08);
+        backdrop-filter: blur(8px);
+        animation: calPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      @keyframes calPopIn {
+        0% { opacity: 0; transform: translateY(-8px) scale(0.97); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      .cal-dropdown-container.open .bookshelf-cal-popover {
+        display: block;
+      }
+
+      /* Popover Tabs */
+      .cal-nav-tabs {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 4px;
+        background: #F5EFE6;
+        padding: 4px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+      }
+      .cal-tab-btn {
+        border: none;
+        background: transparent;
+        padding: 6px 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        border-radius: 9px;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        text-align: center;
+        font-family: inherit;
+      }
+      .cal-tab-btn:hover:not(.active) {
+        background: rgba(197, 137, 64, 0.12);
+        color: var(--text-primary);
+      }
+      .cal-tab-btn.active {
+        background: var(--accent-primary);
+        color: #ffffff;
+        font-weight: 700;
+        box-shadow: 0 2px 6px rgba(197, 137, 64, 0.3);
+      }
+
+      /* Header Controls in Pane */
+      .cal-header-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 0 4px;
+      }
+      .cal-title-current {
+        font-weight: 700;
+        font-size: 0.92rem;
+        color: var(--text-primary);
+      }
+      .cal-arrow-btn {
+        background: transparent;
+        border: 1px solid rgba(197, 137, 64, 0.2);
+        border-radius: 8px;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-secondary);
+        transition: all 0.15s ease;
+        font-size: 0.82rem;
+      }
+      .cal-arrow-btn:hover {
+        background: #F5EFE6;
+        color: var(--accent-primary);
+        border-color: var(--accent-primary);
+      }
+
+      /* Day View Grid */
+      .cal-day-names-row {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+      }
+      .cal-day-names-row .weekend {
+        color: #ef4444;
+      }
+      .cal-days-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 3px;
+      }
+      .cal-day-cell {
+        height: 33px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.82rem;
+        font-weight: 600;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        color: var(--text-primary);
+        border: 1.5px solid transparent;
+      }
+      .cal-day-cell:hover {
+        background: #F5EFE6;
+        color: var(--accent-primary);
+      }
+      .cal-day-cell.other-month {
+        color: #D1C9BE;
+      }
+      .cal-day-cell.today {
+        border-color: var(--accent-primary);
+        color: var(--accent-hover);
+      }
+      .cal-day-cell.selected {
+        background: var(--accent-primary) !important;
+        color: #ffffff !important;
+        font-weight: 700;
+        box-shadow: 0 3px 8px rgba(197, 137, 64, 0.35);
+      }
+
+      /* Month Grid */
+      .cal-grid-months {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+      }
+      .cal-month-chip {
+        padding: 10px 4px;
+        text-align: center;
+        font-size: 0.82rem;
+        font-weight: 600;
+        background: #FAF7F2;
+        border: 1px solid rgba(197, 137, 64, 0.16);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        color: var(--text-primary);
+      }
+      .cal-month-chip:hover {
+        background: #F4EAD4;
+        border-color: var(--accent-primary);
+        color: var(--accent-hover);
+      }
+      .cal-month-chip.selected {
+        background: var(--accent-primary) !important;
+        color: #fff !important;
+        border-color: var(--accent-primary);
+        font-weight: 700;
+        box-shadow: 0 3px 8px rgba(197, 137, 64, 0.3);
+      }
+
+      /* Quarter Grid */
+      .cal-grid-quarters {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 9px;
+      }
+      .cal-quarter-card {
+        padding: 12px 8px;
+        text-align: center;
+        background: #FAF7F2;
+        border: 1px solid rgba(197, 137, 64, 0.18);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.18s ease;
+      }
+      .cal-quarter-card:hover {
+        background: #F4EAD4;
+        border-color: var(--accent-primary);
+        transform: translateY(-1px);
+      }
+      .cal-quarter-card.selected {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover)) !important;
+        border-color: transparent;
+        box-shadow: 0 4px 10px rgba(197, 137, 64, 0.3);
+      }
+      .cal-quarter-card .q-title {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+      .cal-quarter-card .q-sub {
+        font-size: 0.72rem;
+        color: var(--text-secondary);
+        margin-top: 2px;
+      }
+      .cal-quarter-card.selected .q-title,
+      .cal-quarter-card.selected .q-sub {
+        color: #ffffff !important;
+      }
+
+      /* Year Grid */
+      .cal-grid-years {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+      }
+      .cal-year-chip {
+        padding: 11px 4px;
+        text-align: center;
+        font-size: 0.86rem;
+        font-weight: 600;
+        background: #FAF7F2;
+        border: 1px solid rgba(197, 137, 64, 0.16);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        color: var(--text-primary);
+      }
+      .cal-year-chip:hover {
+        background: #F4EAD4;
+        border-color: var(--accent-primary);
+        color: var(--accent-hover);
+      }
+      .cal-year-chip.selected {
+        background: var(--accent-primary) !important;
+        color: #fff !important;
+        border-color: var(--accent-primary);
+        font-weight: 700;
+        box-shadow: 0 3px 8px rgba(197, 137, 64, 0.3);
+      }
+
+      /* Footer Quick Actions */
+      .cal-popover-footer {
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(197, 137, 64, 0.12);
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .cal-preset-btn {
+        border: none;
+        background: transparent;
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: var(--accent-primary);
+        cursor: pointer;
+        padding: 5px 8px;
+        border-radius: 6px;
+        transition: background 0.15s ease, color 0.15s ease;
+        font-family: inherit;
+      }
+      .cal-preset-btn:hover {
+        background: #F4EAD4;
+        color: var(--accent-hover);
+      }
+    </style>
+
     <main class="bookshelf-canvas" style="padding-top: 26px;">
       <div class="bookshelf-page-container" style="max-width: 1340px; margin: 0 auto;">
 
@@ -36,17 +373,90 @@
             <p>Theo dõi giao dịch trực tiếp, biểu đồ doanh thu và giám sát kho sách.</p>
           </div>
 
-          <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-            <span
-              style="background:#fff; border:1px solid rgba(197,137,64,0.25); border-radius:var(--radius-pill); padding:8px 16px; font-size:0.85rem; font-weight:600; color:var(--text-secondary); box-shadow:0 2px 8px rgba(0,0,0,0.03);">
-              📅 <%= new java.text.SimpleDateFormat("EEEE, dd/MM/yyyy", new java.util.Locale("vi", "VN" )).format(new
-                java.util.Date()) %>
-            </span>
-            <a href="storebooks" class="nav-pill-btn" style="background:#fff; font-size:0.86rem; padding:8px 18px;">Danh
-              mục</a>
-            <a href="addbook" class="nav-pill-btn"
-              style="background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); font-size:0.86rem; padding:8px 18px;">+
-              Thêm sách</a>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; position:relative;">
+            <!-- Modern Interactive Calendar Revenue Filter -->
+            <div class="cal-dropdown-container" id="calDropdownContainer">
+              <button type="button" class="bookshelf-cal-btn" id="calTriggerBtn" onclick="toggleCalDropdown(event)" title="Nhấn để chọn mốc thời gian xem doanh thu">
+                <div class="cal-btn-icon-box">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                </div>
+                <div class="cal-btn-text-wrap">
+                  <span class="cal-btn-hint">Doanh thu theo</span>
+                  <span class="cal-btn-current" id="calActiveLabel">Toàn bộ thời gian</span>
+                </div>
+                <svg class="cal-chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+
+              <!-- Popover Card -->
+              <div class="bookshelf-cal-popover" id="calPopover">
+                <!-- 4 Mode Tabs -->
+                <div class="cal-nav-tabs">
+                  <button type="button" class="cal-tab-btn active" id="tabModeDay" onclick="switchCalView('day')">Ngày</button>
+                  <button type="button" class="cal-tab-btn" id="tabModeMonth" onclick="switchCalView('month')">Tháng</button>
+                  <button type="button" class="cal-tab-btn" id="tabModeQuarter" onclick="switchCalView('quarter')">Quý</button>
+                  <button type="button" class="cal-tab-btn" id="tabModeYear" onclick="switchCalView('year')">Năm</button>
+                </div>
+
+                <!-- Pane 1: Day Calendar -->
+                <div class="cal-view-section" id="viewSectionDay">
+                  <div class="cal-header-controls">
+                    <button type="button" class="cal-arrow-btn" onclick="shiftDayMonth(-1)" title="Tháng trước">&#10094;</button>
+                    <div class="cal-title-current" id="dayViewMonthTitle">Tháng 9, 2026</div>
+                    <button type="button" class="cal-arrow-btn" onclick="shiftDayMonth(1)" title="Tháng sau">&#10095;</button>
+                  </div>
+                  <div class="cal-day-names-row">
+                    <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span class="weekend">CN</span>
+                  </div>
+                  <div class="cal-days-grid" id="daysGridContainer"></div>
+                </div>
+
+                <!-- Pane 2: Month Grid -->
+                <div class="cal-view-section" id="viewSectionMonth" style="display:none;">
+                  <div class="cal-header-controls">
+                    <button type="button" class="cal-arrow-btn" onclick="shiftMonthYear(-1)" title="Năm trước">&#10094;</button>
+                    <div class="cal-title-current" id="monthViewYearTitle">Năm 2026</div>
+                    <button type="button" class="cal-arrow-btn" onclick="shiftMonthYear(1)" title="Năm sau">&#10095;</button>
+                  </div>
+                  <div class="cal-grid-months" id="monthsGridContainer"></div>
+                </div>
+
+                <!-- Pane 3: Quarter Grid -->
+                <div class="cal-view-section" id="viewSectionQuarter" style="display:none;">
+                  <div class="cal-header-controls">
+                    <button type="button" class="cal-arrow-btn" onclick="shiftQuarterYear(-1)" title="Năm trước">&#10094;</button>
+                    <div class="cal-title-current" id="quarterViewYearTitle">Năm 2026</div>
+                    <button type="button" class="cal-arrow-btn" onclick="shiftQuarterYear(1)" title="Năm sau">&#10095;</button>
+                  </div>
+                  <div class="cal-grid-quarters" id="quartersGridContainer"></div>
+                </div>
+
+                <!-- Pane 4: Year Grid -->
+                <div class="cal-view-section" id="viewSectionYear" style="display:none;">
+                  <div class="cal-header-controls">
+                    <button type="button" class="cal-arrow-btn" onclick="shiftYearDecade(-6)" title="Trước">&#10094;</button>
+                    <div class="cal-title-current" id="yearViewDecadeTitle">2021 - 2026</div>
+                    <button type="button" class="cal-arrow-btn" onclick="shiftYearDecade(6)" title="Sau">&#10095;</button>
+                  </div>
+                  <div class="cal-grid-years" id="yearsGridContainer"></div>
+                </div>
+
+                <!-- Quick Presets -->
+                <div class="cal-popover-footer">
+                  <button type="button" class="cal-preset-btn" onclick="quickSelectToday()">⚡ Hôm nay</button>
+                  <button type="button" class="cal-preset-btn" onclick="quickSelectAllTime()">🌐 Toàn bộ thời gian</button>
+                </div>
+              </div>
+            </div>
+
+            <a href="storebooks" class="nav-pill-btn" style="background:#fff; font-size:0.86rem; padding:8px 18px;">Danh mục</a>
+            <a href="addbook" class="nav-pill-btn" style="background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); font-size:0.86rem; padding:8px 18px;">+ Thêm sách</a>
           </div>
         </div>
 
@@ -64,12 +474,12 @@
                 </svg>
               </div>
             </div>
-            <div class="stat-kpi-value">
+            <div class="stat-kpi-value" id="kpiRevenueValue">
               <%= String.format("%,.0f đ", (Double)request.getAttribute("totalRevenue")) %>
             </div>
             <div class="stat-kpi-footer">
-              <span class="stat-trend-badge trend-up">▲ Hoạt động</span>
-              <span>Từ các đơn hoàn tất</span>
+              <span class="stat-trend-badge trend-up" id="kpiRevenueTrend">▲ Hoạt động</span>
+              <span id="kpiRevenueSub">Từ các đơn hoàn tất</span>
             </div>
           </div>
 
@@ -86,12 +496,12 @@
                 </svg>
               </div>
             </div>
-            <div class="stat-kpi-value">
+            <div class="stat-kpi-value" id="kpiOrdersValue">
               <%= request.getAttribute("totalOrders") %>
             </div>
             <div class="stat-kpi-footer">
-              <span class="stat-trend-badge trend-up">▲ Đơn hàng</span>
-              <span>Khách đã thanh toán</span>
+              <span class="stat-trend-badge trend-up" id="kpiOrdersTrend">▲ Đơn hàng</span>
+              <span id="kpiOrdersSub">Khách đã thanh toán</span>
             </div>
           </div>
 
@@ -108,12 +518,12 @@
               </div>
             </div>
             <div class="stat-kpi-value">
-              <%= request.getAttribute("totalBooksSold") %> <span
+              <span id="kpiBooksSoldValue"><%= request.getAttribute("totalBooksSold") %></span> <span
                   style="font-size:0.9rem; font-weight:600; color:var(--text-secondary);">cuốn</span>
             </div>
             <div class="stat-kpi-footer">
-              <span class="stat-trend-badge trend-neutral">&bull; Sản lượng</span>
-              <span>Tổng số bản đã xuất</span>
+              <span class="stat-trend-badge trend-neutral" id="kpiBooksSoldTrend">&bull; Sản lượng</span>
+              <span id="kpiBooksSoldSub">Tổng số bản đã xuất</span>
             </div>
           </div>
 
@@ -175,10 +585,10 @@
             <div class="chart-card-header">
               <div>
                 <h3 class="chart-card-title">Biểu đồ Tăng trưởng Doanh thu</h3>
-                <p class="chart-card-subtitle">Doanh thu và xu hướng giao dịch theo các mốc thời gian gần nhất</p>
+                <p class="chart-card-subtitle" id="chartRevenueSubtitle">Doanh thu và xu hướng giao dịch theo các mốc thời gian gần nhất</p>
               </div>
               <div style="display:flex; gap:8px;">
-                <span
+                <span id="chartFilterBadge"
                   style="font-size:0.75rem; font-weight:700; background:rgba(197,137,64,0.14); color:var(--accent-hover); padding:4px 10px; border-radius:var(--radius-pill);">
                   ● Doanh thu (đ)
                 </span>
@@ -446,7 +856,7 @@
           gradient.addColorStop(0.7, 'rgba(197, 137, 64, 0.12)');
           gradient.addColorStop(1, 'rgba(197, 137, 64, 0.0)');
 
-          new Chart(ctx, {
+          window.revenueSplineChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
               labels: revDates,
@@ -623,5 +1033,315 @@
             }
           });
         }
+
+        // --------------------------------------------------------------------------
+        // Interactive Calendar Revenue Filter Logic
+        // --------------------------------------------------------------------------
+        var calToday = new Date();
+        var calCurrentYear = calToday.getFullYear();
+        var calCurrentMonth = calToday.getMonth(); // 0-indexed
+        var calCurrentDate = calToday.getDate();
+
+        var viewDayYear = calCurrentYear;
+        var viewDayMonth = calCurrentMonth;
+
+        var viewMonthYear = calCurrentYear;
+        var viewQuarterYear = calCurrentYear;
+        var viewYearBase = calCurrentYear;
+
+        var currentSelectedPeriod = {
+          type: 'all',
+          value: '',
+          label: 'Toàn bộ thời gian'
+        };
+
+        window.toggleCalDropdown = function (e) {
+          if (e) e.stopPropagation();
+          var container = document.getElementById('calDropdownContainer');
+          if (container) {
+            container.classList.toggle('open');
+          }
+        };
+
+        window.closeCalDropdown = function () {
+          var container = document.getElementById('calDropdownContainer');
+          if (container) {
+            container.classList.remove('open');
+          }
+        };
+
+        document.addEventListener('click', function (e) {
+          var container = document.getElementById('calDropdownContainer');
+          if (container && !container.contains(e.target)) {
+            window.closeCalDropdown();
+          }
+        });
+
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') window.closeCalDropdown();
+        });
+
+        window.switchCalView = function (mode) {
+          ['day', 'month', 'quarter', 'year'].forEach(function (m) {
+            var tab = document.getElementById('tabMode' + m.charAt(0).toUpperCase() + m.slice(1));
+            var pane = document.getElementById('viewSection' + m.charAt(0).toUpperCase() + m.slice(1));
+            if (tab) tab.classList.toggle('active', m === mode);
+            if (pane) pane.style.display = (m === mode) ? 'block' : 'none';
+          });
+        };
+
+        window.renderDayCalendar = function () {
+          var title = document.getElementById('dayViewMonthTitle');
+          if (title) title.innerText = 'Tháng ' + (viewDayMonth + 1) + ', ' + viewDayYear;
+
+          var container = document.getElementById('daysGridContainer');
+          if (!container) return;
+          container.innerHTML = '';
+
+          var firstDayIndex = new Date(viewDayYear, viewDayMonth, 1).getDay();
+          var startDay = (firstDayIndex === 0) ? 6 : firstDayIndex - 1;
+
+          var daysInPrevMonth = new Date(viewDayYear, viewDayMonth, 0).getDate();
+          var daysInCurrentMonth = new Date(viewDayYear, viewDayMonth + 1, 0).getDate();
+
+          for (var i = startDay - 1; i >= 0; i--) {
+            var cell = document.createElement('div');
+            cell.className = 'cal-day-cell other-month';
+            cell.innerText = daysInPrevMonth - i;
+            container.appendChild(cell);
+          }
+
+          for (var d = 1; d <= daysInCurrentMonth; d++) {
+            (function (dayNum) {
+              var cell = document.createElement('div');
+              cell.className = 'cal-day-cell';
+              cell.innerText = dayNum;
+
+              if (viewDayYear === calCurrentYear && viewDayMonth === calCurrentMonth && dayNum === calCurrentDate) {
+                cell.classList.add('today');
+              }
+
+              var dateKey = viewDayYear + '-' + String(viewDayMonth + 1).padStart(2, '0') + '-' + String(dayNum).padStart(2, '0');
+              if (currentSelectedPeriod.type === 'day' && currentSelectedPeriod.value === dateKey) {
+                cell.classList.add('selected');
+              }
+
+              cell.onclick = function (e) {
+                e.stopPropagation();
+                var displayLbl = 'Ngày ' + String(dayNum).padStart(2, '0') + '/' + String(viewDayMonth + 1).padStart(2, '0') + '/' + viewDayYear;
+                if (viewDayYear === calCurrentYear && viewDayMonth === calCurrentMonth && dayNum === calCurrentDate) {
+                  displayLbl = 'Hôm nay (' + String(dayNum).padStart(2, '0') + '/' + String(viewDayMonth + 1).padStart(2, '0') + ')';
+                }
+                window.fetchRevenue(displayLbl, 'day', dateKey);
+              };
+
+              container.appendChild(cell);
+            })(d);
+          }
+
+          var totalCells = startDay + daysInCurrentMonth;
+          var remaining = (totalCells > 35) ? 42 - totalCells : 35 - totalCells;
+          for (var nextD = 1; nextD <= remaining; nextD++) {
+            var cell = document.createElement('div');
+            cell.className = 'cal-day-cell other-month';
+            cell.innerText = nextD;
+            container.appendChild(cell);
+          }
+        };
+
+        window.shiftDayMonth = function (delta) {
+          viewDayMonth += delta;
+          if (viewDayMonth < 0) {
+            viewDayMonth = 11;
+            viewDayYear--;
+          } else if (viewDayMonth > 11) {
+            viewDayMonth = 0;
+            viewDayYear++;
+          }
+          window.renderDayCalendar();
+        };
+
+        window.renderMonthGrid = function () {
+          var title = document.getElementById('monthViewYearTitle');
+          if (title) title.innerText = 'Năm ' + viewMonthYear;
+
+          var container = document.getElementById('monthsGridContainer');
+          if (!container) return;
+          container.innerHTML = '';
+
+          for (var m = 1; m <= 12; m++) {
+            (function (monthNum) {
+              var chip = document.createElement('div');
+              chip.className = 'cal-month-chip';
+              chip.innerText = 'Tháng ' + monthNum;
+
+              var monthKey = monthNum + '-' + viewMonthYear;
+              if (currentSelectedPeriod.type === 'month' && currentSelectedPeriod.value === monthKey) {
+                chip.classList.add('selected');
+              }
+
+              chip.onclick = function (e) {
+                e.stopPropagation();
+                window.fetchRevenue('Tháng ' + String(monthNum).padStart(2, '0') + '/' + viewMonthYear, 'month', monthKey);
+              };
+
+              container.appendChild(chip);
+            })(m);
+          }
+        };
+
+        window.shiftMonthYear = function (delta) {
+          viewMonthYear += delta;
+          window.renderMonthGrid();
+        };
+
+        window.renderQuarterGrid = function () {
+          var title = document.getElementById('quarterViewYearTitle');
+          if (title) title.innerText = 'Năm ' + viewQuarterYear;
+
+          var container = document.getElementById('quartersGridContainer');
+          if (!container) return;
+          container.innerHTML = '';
+
+          var quarterData = [
+            { q: 1, sub: 'Tháng 1 - Tháng 3' },
+            { q: 2, sub: 'Tháng 4 - Tháng 6' },
+            { q: 3, sub: 'Tháng 7 - Tháng 9' },
+            { q: 4, sub: 'Tháng 10 - Tháng 12' }
+          ];
+
+          quarterData.forEach(function (item) {
+            var card = document.createElement('div');
+            card.className = 'cal-quarter-card';
+
+            var qKey = item.q + '-' + viewQuarterYear;
+            if (currentSelectedPeriod.type === 'quarter' && currentSelectedPeriod.value === qKey) {
+              card.classList.add('selected');
+            }
+
+            card.innerHTML = '<div class="q-title">Quý ' + item.q + '</div><div class="q-sub">' + item.sub + '</div>';
+
+            card.onclick = function (e) {
+              e.stopPropagation();
+              window.fetchRevenue('Quý ' + item.q + '/' + viewQuarterYear, 'quarter', qKey);
+            };
+
+            container.appendChild(card);
+          });
+        };
+
+        window.shiftQuarterYear = function (delta) {
+          viewQuarterYear += delta;
+          window.renderQuarterGrid();
+        };
+
+        window.renderYearGrid = function () {
+          var title = document.getElementById('yearViewDecadeTitle');
+          var startY = viewYearBase - 5;
+          var endY = viewYearBase;
+          if (title) title.innerText = startY + ' - ' + endY;
+
+          var container = document.getElementById('yearsGridContainer');
+          if (!container) return;
+          container.innerHTML = '';
+
+          for (var y = startY; y <= endY; y++) {
+            (function (yearNum) {
+              var chip = document.createElement('div');
+              chip.className = 'cal-year-chip';
+              chip.innerText = yearNum;
+
+              if (currentSelectedPeriod.type === 'year' && currentSelectedPeriod.value === String(yearNum)) {
+                chip.classList.add('selected');
+              }
+
+              chip.onclick = function (e) {
+                e.stopPropagation();
+                window.fetchRevenue('Năm ' + yearNum, 'year', String(yearNum));
+              };
+
+              container.appendChild(chip);
+            })(y);
+          }
+        };
+
+        window.shiftYearDecade = function (delta) {
+          viewYearBase += delta;
+          window.renderYearGrid();
+        };
+
+        window.fetchRevenue = function (displayLabel, type, value) {
+          currentSelectedPeriod = { type: type, value: value, label: displayLabel };
+
+          var activeLabelEl = document.getElementById('calActiveLabel');
+          if (activeLabelEl) activeLabelEl.innerText = displayLabel;
+
+          var kpiRevEl = document.getElementById('kpiRevenueValue');
+          if (kpiRevEl) kpiRevEl.style.opacity = '0.45';
+
+          fetch('statistics?ajax=revenue&filterType=' + encodeURIComponent(type) + '&filterValue=' + encodeURIComponent(value))
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+              if (kpiRevEl) {
+                kpiRevEl.innerText = data.periodRevenueFormatted;
+                kpiRevEl.style.opacity = '1';
+              }
+
+              var kpiRevTrend = document.getElementById('kpiRevenueTrend');
+              if (kpiRevTrend) kpiRevTrend.innerText = '▲ ' + data.filterLabel;
+
+              var kpiRevSub = document.getElementById('kpiRevenueSub');
+              if (kpiRevSub) kpiRevSub.innerText = 'Doanh thu trong kỳ';
+
+              var kpiOrders = document.getElementById('kpiOrdersValue');
+              if (kpiOrders) kpiOrders.innerText = data.periodOrders;
+              var kpiOrdersSub = document.getElementById('kpiOrdersSub');
+              if (kpiOrdersSub) kpiOrdersSub.innerText = 'Đơn hàng trong kỳ';
+
+              var kpiBooks = document.getElementById('kpiBooksSoldValue');
+              if (kpiBooks) kpiBooks.innerText = data.periodBooksSold;
+              var kpiBooksSub = document.getElementById('kpiBooksSoldSub');
+              if (kpiBooksSub) kpiBooksSub.innerText = 'Sách bán trong kỳ';
+
+              var chartSub = document.getElementById('chartRevenueSubtitle');
+              if (chartSub) chartSub.innerText = 'Doanh thu và xu hướng giao dịch theo ' + data.filterLabel;
+
+              var chartBadge = document.getElementById('chartFilterBadge');
+              if (chartBadge) chartBadge.innerText = '● Doanh thu ' + data.filterLabel;
+
+              if (window.revenueSplineChartInstance) {
+                window.revenueSplineChartInstance.data.labels = data.timelineLabels;
+                window.revenueSplineChartInstance.data.datasets[0].data = data.timelineAmounts;
+                window.revenueSplineChartInstance.update();
+              }
+
+              window.renderDayCalendar();
+              window.renderMonthGrid();
+              window.renderQuarterGrid();
+              window.renderYearGrid();
+
+              window.closeCalDropdown();
+            })
+            .catch(function (err) {
+              console.error('Lỗi khi lấy dữ liệu doanh thu:', err);
+              if (kpiRevEl) kpiRevEl.style.opacity = '1';
+            });
+        };
+
+        window.quickSelectToday = function () {
+          var d = new Date();
+          var dStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+          window.fetchRevenue('Hôm nay (' + String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + ')', 'day', dStr);
+        };
+
+        window.quickSelectAllTime = function () {
+          window.fetchRevenue('Toàn bộ thời gian', 'all', '');
+        };
+
+        // Initialize Calendar Views
+        window.renderDayCalendar();
+        window.renderMonthGrid();
+        window.renderQuarterGrid();
+        window.renderYearGrid();
       });
     </script>
