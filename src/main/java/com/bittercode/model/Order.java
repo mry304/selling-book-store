@@ -13,6 +13,10 @@ public class Order implements Serializable {
     private Date orderDate;
     private double totalAmount;
     private String status;
+    private String cancelReason;
+    private String cancelledBy;
+    private Date cancelledAt;
+    private Date shippedAt;
     private List<OrderDetail> items = new ArrayList<>();
 
     public Order() {
@@ -66,11 +70,47 @@ public class Order implements Serializable {
         this.status = status;
     }
 
+    public String getCancelReason() {
+        return cancelReason;
+    }
+
+    public void setCancelReason(String cancelReason) {
+        this.cancelReason = cancelReason;
+    }
+
+    public String getCancelledBy() {
+        return cancelledBy;
+    }
+
+    public void setCancelledBy(String cancelledBy) {
+        this.cancelledBy = cancelledBy;
+    }
+
+    public Date getCancelledAt() {
+        return cancelledAt;
+    }
+
+    public void setCancelledAt(Date cancelledAt) {
+        this.cancelledAt = cancelledAt;
+    }
+
+    public Date getShippedAt() {
+        return shippedAt;
+    }
+
+    public void setShippedAt(Date shippedAt) {
+        this.shippedAt = shippedAt;
+    }
+
     public List<OrderDetail> getItems() {
         return items;
     }
 
     public void setItems(List<OrderDetail> items) {
         this.items = items;
+    }
+
+    public OrderStatus getOrderStatus() {
+        return OrderStatus.fromString(this.status);
     }
 }

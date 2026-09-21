@@ -1,6 +1,6 @@
 CREATE DATABASE if not exists onlinebookstore;
 
-\c onlinebookstore
+USE onlinebookstore;
 
 CREATE TABLE if not exists books 
   ( 
@@ -28,7 +28,11 @@ CREATE TABLE if not exists books
      username VARCHAR(100) NOT NULL,
      order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
      total_amount DOUBLE NOT NULL,
-     status VARCHAR(50) DEFAULT 'PAID',
+     status VARCHAR(50) DEFAULT 'PENDING',
+     cancel_reason TEXT NULL,
+     cancelled_by ENUM('CUSTOMER', 'SELLER', 'SYSTEM') NULL,
+     cancelled_at TIMESTAMP NULL,
+     shipped_at TIMESTAMP NULL,
      FOREIGN KEY (username) REFERENCES users(username)
   );
 

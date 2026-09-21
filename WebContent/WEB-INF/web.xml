@@ -132,6 +132,27 @@
 		<url-pattern>/orders</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>OrderActionServlet</servlet-name>
+		<servlet-class>servlets.OrderActionServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>OrderActionServlet</servlet-name>
+		<url-pattern>/orders-action</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>OrderActionServlet</servlet-name>
+		<url-pattern>/api/orders/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>OrderActionServlet</servlet-name>
+		<url-pattern>/api/admin/orders/*</url-pattern>
+	</servlet-mapping>
+
+	<listener>
+		<listener-class>servlets.OrderSchedulerListener</listener-class>
+	</listener>
+
 	<!-- Error Handlers -->
 	<servlet>
 		<servlet-name>ErrorHandlerServlet</servlet-name>

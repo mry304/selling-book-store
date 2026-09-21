@@ -183,17 +183,13 @@ public class AdminStatisticsServlet extends HttpServlet {
                  ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     String st = rs.getString("status");
-                    String label = "ĐÃ THANH TOÁN";
-                    if ("PROCESSING".equalsIgnoreCase(st)) label = "ĐANG XỬ LÝ";
-                    else if ("SHIPPED".equalsIgnoreCase(st)) label = "ĐÃ GIAO";
-                    else if ("CANCELLED".equalsIgnoreCase(st)) label = "ĐÃ HỦY";
-                    else if (st != null && !st.trim().isEmpty()) label = st;
-                    statusLabels.add(label);
+                    com.bittercode.model.OrderStatus os = com.bittercode.model.OrderStatus.fromString(st);
+                    statusLabels.add(os.getDisplayName());
                     statusCounts.add(rs.getInt("cnt"));
                 }
             }
             if (statusLabels.isEmpty()) {
-                statusLabels.add("ĐÃ THANH TOÁN");
+                statusLabels.add("Chờ xác nhận");
                 statusCounts.add(0);
             }
 

@@ -100,8 +100,7 @@ public class ProcessPaymentServlet extends HttpServlet {
                     pw.println("            <td class=\"book-title-cell\">" + bName + "</td>");
                     pw.println("            <td>" + bAuthor + "</td>");
                     pw.println("            <td><strong>" + qtToBuy + "</strong></td>");
-                    pw.println("            <td class=\"price-cell\">" + StoreUtil.formatPrice(bPrice * qtToBuy) + "</td>");
-                    pw.println("            <td><span class=\"badge-order-success\">Đang xử lý giao hàng</span></td>");
+                    pw.println("            <td><span class=\"badge-order-pending\">Chờ xác nhận</span></td>");
                     pw.println("          </tr>");
 
                     session.removeAttribute("qty_" + bCode);
