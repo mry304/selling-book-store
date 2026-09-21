@@ -286,6 +286,30 @@ body.customer-bookshelf-body {
   gap: clamp(20px, 2.2vw, 36px);
   padding: 38px 5% 35px;
 }
+.book-category-nav {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-bottom: 4px;
+}
+.book-category-link {
+  padding: 8px 13px;
+  border: 1px solid rgba(197, 137, 64, .24);
+  border-radius: 999px;
+  background: #fffdf9;
+  color: var(--text-secondary);
+  font-size: .82rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: .2s ease;
+}
+.book-category-link:hover, .book-category-link.active {
+  border-color: var(--accent-primary);
+  background: var(--accent-primary);
+  color: #fff;
+  box-shadow: 0 5px 12px rgba(174,118,52,.22);
+}
 
 .bottom-shelf-books {
   display: grid;

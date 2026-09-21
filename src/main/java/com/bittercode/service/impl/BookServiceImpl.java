@@ -23,7 +23,7 @@ public class BookServiceImpl implements BookService {
     private static final String deleteBookByIdQuery = "DELETE FROM " + BooksDBConstants.TABLE_BOOK + "  WHERE "
             + BooksDBConstants.COLUMN_BARCODE + "=?";
 
-    private static final String addBookQuery = "INSERT INTO " + BooksDBConstants.TABLE_BOOK + "  VALUES(?,?,?,?,?)";
+    private static final String addBookQuery = "INSERT INTO " + BooksDBConstants.TABLE_BOOK + " (barcode, name, author, price, quantity) VALUES(?,?,?,?,?)";
 
     private static final String updateBookQtyByIdQuery = "UPDATE " + BooksDBConstants.TABLE_BOOK + " SET "
             + BooksDBConstants.COLUMN_QUANTITY + "=? WHERE " + BooksDBConstants.COLUMN_BARCODE
@@ -117,6 +117,66 @@ public class BookServiceImpl implements BookService {
             e.printStackTrace();
             return 0;
         }
+    }
+
+    @Override
+    public List<Book> getBooksByCategory(String category, int page, int pageSize) throws StoreException {
+        String normalized = normalizeCategory(category);
+        if ("ALL".equals(normalized)) return getBooksPage(page, pageSize);
+
+        String query;
+        if ("BESTSELLER".equals(normalized)) {
+            query = "SELECT b.barcode, b.name, b.author, b.price, b.quantity FROM books b "
+                    + "JOIN order_details od ON od.book_barcode = b.barcode "
+                    + "JOIN orders o ON o.order_id = od.order_id AND o.status = 'COMPLETED' "
+                    + "GROUP BY b.barcode, b.name, b.author, b.price, b.quantity "
+                    + "ORDER BY SUM(od.quantity) DESC, MAX(o.order_date) DESC LIMIT ? OFFSET ?";
+        } else if ("NEW".equals(normalized)) {
+            query = "SELECT barcode, name, author, price, quantity FROM books ORDER BY created_at DESC, barcode DESC LIMIT ? OFFSET ?";
+        } else {
+            query = "SELECT barcode, name, author, price, quantity FROM books WHERE quantity > 0 ORDER BY quantity DESC, created_at DESC LIMIT ? OFFSET ?";
+        }
+        return executeBookPageQuery(query, page, pageSize);
+    }
+
+    @Override
+    public int getBookCountByCategory(String category) throws StoreException {
+        String normalized = normalizeCategory(category);
+        if ("ALL".equals(normalized)) return getBookCount();
+        String query;
+        if ("BESTSELLER".equals(normalized)) {
+            query = "SELECT COUNT(DISTINCT b.barcode) FROM books b JOIN order_details od ON od.book_barcode = b.barcode "
+                    + "JOIN orders o ON o.order_id = od.order_id AND o.status = 'COMPLETED'";
+        } else if ("NEW".equals(normalized)) {
+            query = "SELECT COUNT(*) FROM books";
+        } else {
+            query = "SELECT COUNT(*) FROM books WHERE quantity > 0";
+        }
+        try (PreparedStatement ps = DBUtil.getConnection().prepareStatement(query); ResultSet rs = ps.executeQuery()) {
+            return rs.next() ? rs.getInt(1) : 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    private List<Book> executeBookPageQuery(String query, int page, int pageSize) throws StoreException {
+        List<Book> books = new ArrayList<>();
+        try (PreparedStatement ps = DBUtil.getConnection().prepareStatement(query)) {
+            ps.setInt(1, Math.max(1, pageSize));
+            ps.setInt(2, (Math.max(1, page) - 1) * Math.max(1, pageSize));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) books.add(new Book(rs.getString(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5)));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return books;
+    }
+
+    private String normalizeCategory(String category) {
+        if ("BESTSELLER".equalsIgnoreCase(category) || "FEATURED".equalsIgnoreCase(category) || "NEW".equalsIgnoreCase(category)) return category.trim().toUpperCase();
+        return "ALL";
     }
 
     @Override

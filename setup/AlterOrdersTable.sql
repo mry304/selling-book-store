@@ -10,6 +10,13 @@ CREATE PROCEDURE migrate_orders_lifecycle()
 BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns
+        WHERE table_schema = DATABASE() AND table_name = 'books' AND column_name = 'created_at'
+    ) THEN
+        ALTER TABLE books ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
         WHERE table_schema = DATABASE() AND table_name = 'orders' AND column_name = 'cancel_reason'
     ) THEN
         ALTER TABLE orders ADD COLUMN cancel_reason TEXT NULL;

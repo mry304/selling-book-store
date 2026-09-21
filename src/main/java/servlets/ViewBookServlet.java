@@ -57,10 +57,11 @@ public class ViewBookServlet extends HttpServlet {
 
             int page = getPage(req);
             final int pageSize = 12;
-            int totalBooks = bookService.getBookCount();
+            String category = getCategory(req.getParameter("category"));
+            int totalBooks = bookService.getBookCountByCategory(category);
             int totalPages = Math.max(1, (int) Math.ceil((double) totalBooks / pageSize));
             page = Math.min(page, totalPages);
-            List<Book> books = bookService.getBooksPage(page, pageSize);
+            List<Book> books = bookService.getBooksByCategory(category, page, pageSize);
 
             // Select matching header based on logged in role
             String homeHeader = StoreUtil.isLoggedIn(UserRole.SELLER, req.getSession()) ? "SellerHome.html" : "CustomerHome.html";
@@ -128,14 +129,15 @@ public class ViewBookServlet extends HttpServlet {
             pw.println("          <span class=\"book-author\">" + escapeHtml(secondAuthor) + "</span>");
             pw.println("        </div>");
             pw.println("      </section>");
-            renderPagination(pw, page, totalPages, totalBooks);
+            renderPagination(pw, category, page, totalPages, totalBooks);
 
             // --- 3D Shelf Divider ---
             pw.println("      <div class=\"shelf-divider\"></div>");
 
             // --- Lower Shelf (Recent Bestsellers Grid) ---
             pw.println("      <section class=\"bottom-shelf-layout\">");
-            pw.println("        <span class=\"vertical-label\">Sách Bán Chạy Nhất</span>");
+            renderCategoryNavigation(pw, category);
+            pw.println("        <span class=\"vertical-label\">" + getCategoryTitle(category) + "</span>");
             pw.println("        <div class=\"bottom-shelf-books\" id=\"bookshelfContainer\">");
 
             if (books != null && !books.isEmpty()) {
@@ -186,17 +188,44 @@ public class ViewBookServlet extends HttpServlet {
         }
     }
 
-    private void renderPagination(PrintWriter pw, int page, int totalPages, int totalBooks) {
+    private void renderPagination(PrintWriter pw, String category, int page, int totalPages, int totalBooks) {
         if (totalPages <= 1) return;
+        String categoryQuery = "ALL".equals(category) ? "" : "&category=" + category;
         pw.println("      <nav class=\"pagination-nav bookshelf-pagination\" aria-label=\"Phân trang danh mục sách\">");
         pw.println("        <span class=\"pagination-summary\">" + totalBooks + " đầu sách · Trang " + page + "/" + totalPages + "</span>");
         pw.println("        <div class=\"pagination-links\">");
-        if (page > 1) pw.println("<a href=\"viewbook?page=" + (page - 1) + "\">&larr; Trước</a>");
+        if (page > 1) pw.println("<a href=\"viewbook?page=" + (page - 1) + categoryQuery + "\">&larr; Trước</a>");
         for (int i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) {
-            pw.println("<a class=\"" + (i == page ? "active" : "") + "\" href=\"viewbook?page=" + i + "\">" + i + "</a>");
+            pw.println("<a class=\"" + (i == page ? "active" : "") + "\" href=\"viewbook?page=" + i + categoryQuery + "\">" + i + "</a>");
         }
-        if (page < totalPages) pw.println("<a href=\"viewbook?page=" + (page + 1) + "\">Tiếp &rarr;</a>");
+        if (page < totalPages) pw.println("<a href=\"viewbook?page=" + (page + 1) + categoryQuery + "\">Tiếp &rarr;</a>");
         pw.println("        </div></nav>");
+    }
+
+    private void renderCategoryNavigation(PrintWriter pw, String category) {
+        pw.println("        <nav class=\"book-category-nav\" aria-label=\"Danh mục sách\">");
+        renderCategoryLink(pw, "ALL", "&#128218; Tất cả sách", category);
+        renderCategoryLink(pw, "BESTSELLER", "&#128293; Bán chạy", category);
+        renderCategoryLink(pw, "FEATURED", "&#10024; Nổi bật", category);
+        renderCategoryLink(pw, "NEW", "&#127775; Mới về", category);
+        pw.println("        </nav>");
+    }
+
+    private void renderCategoryLink(PrintWriter pw, String key, String label, String activeCategory) {
+        String href = "ALL".equals(key) ? "viewbook" : "viewbook?category=" + key;
+        pw.println("          <a href=\"" + href + "\" class=\"book-category-link " + (key.equals(activeCategory) ? "active" : "") + "\">" + label + "</a>");
+    }
+
+    private String getCategory(String category) {
+        if ("BESTSELLER".equalsIgnoreCase(category) || "FEATURED".equalsIgnoreCase(category) || "NEW".equalsIgnoreCase(category)) return category.trim().toUpperCase();
+        return "ALL";
+    }
+
+    private String getCategoryTitle(String category) {
+        if ("BESTSELLER".equals(category)) return "Sách Bán Chạy";
+        if ("FEATURED".equals(category)) return "Sách Nổi Bật";
+        if ("NEW".equals(category)) return "Sách Mới Về";
+        return "Danh Mục Sách";
     }
 
     public String addBookToCard(HttpSession session, Book book) {

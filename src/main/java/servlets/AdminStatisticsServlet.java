@@ -184,6 +184,7 @@ public class AdminStatisticsServlet extends HttpServlet {
                     + "COALESCE(SUM(od.amount), 0) AS total_amount "
                     + "FROM books b "
                     + "JOIN order_details od ON b.barcode = od.book_barcode "
+                    + "JOIN orders o ON o.order_id = od.order_id AND o.status = 'COMPLETED' "
                     + "GROUP BY b.barcode, b.name, b.author, b.price "
                     + "ORDER BY sold_qty DESC, total_amount DESC LIMIT 5";
 

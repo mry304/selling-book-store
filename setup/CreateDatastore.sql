@@ -8,7 +8,8 @@ CREATE TABLE if not exists books
      name      TEXT NOT NULL, 
      author    VARCHAR(100) NOT NULL, 
      price     INT, 
-     quantity  REAL
+     quantity  REAL,
+     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
   ); 
   
   CREATE TABLE if not exists users
