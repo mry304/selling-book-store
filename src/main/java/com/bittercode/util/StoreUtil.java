@@ -16,6 +16,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 import com.bittercode.model.UserRole;
+import com.bittercode.model.Book;
+import com.bittercode.service.BookService;
+import com.bittercode.service.impl.BookServiceImpl;
 
 /*
  * Store Util File To Store Commonly used methods & Persistent Cart Handling
@@ -294,10 +297,11 @@ public class StoreUtil {
 
         boolean isAdd = req.getParameter("addToCart") != null;
         boolean isRemove = req.getParameter("removeFromCart") != null;
+        boolean isSetQuantity = req.getParameter("setQuantity") != null;
 
-        // CRITICAL FIX: Only modify cart if addToCart OR removeFromCart is explicitly requested!
+        // Only modify cart when a quantity action is explicitly requested.
         // This prevents accidental removal when reloading pages or navigating.
-        if (!isAdd && !isRemove) {
+        if (!isAdd && !isRemove && !isSetQuantity) {
             return;
         }
 
@@ -313,7 +317,32 @@ public class StoreUtil {
             }
         }
 
-        if (isAdd) {
+        if (isSetQuantity) {
+            int requestedQuantity;
+            try {
+                requestedQuantity = Integer.parseInt(req.getParameter("quantity"));
+            } catch (NumberFormatException e) {
+                return;
+            }
+
+            Book book;
+            try {
+                BookService bookService = new BookServiceImpl();
+                book = bookService.getBookById(selectedBookId);
+            } catch (Exception e) {
+                return;
+            }
+            int availableQuantity = book != null ? book.getQuantity() : 0;
+            int finalQuantity = Math.min(requestedQuantity, availableQuantity);
+
+            if (finalQuantity <= 0) {
+                return;
+            } else {
+                itemSet.add(selectedBookId);
+                session.setAttribute("qty_" + selectedBookId, finalQuantity);
+            }
+            session.setAttribute("items", String.join(",", itemSet));
+        } else if (isAdd) {
             itemSet.add(selectedBookId);
             session.setAttribute("items", String.join(",", itemSet));
 

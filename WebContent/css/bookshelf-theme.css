@@ -354,17 +354,18 @@ body.customer-bookshelf-body {
 .cart-stepper {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 4px 8px;
+  gap: 5px;
+  background: #fffdfa;
+  padding: 4px;
   border-radius: var(--radius-pill);
-  border: 1px solid rgba(197, 137, 64, 0.25);
+  border: 1px solid rgba(197, 137, 64, 0.30);
+  box-shadow: 0 3px 8px rgba(86, 67, 46, 0.08);
   margin: 0;
 }
 
 .stepper-btn {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: 0;
   cursor: pointer;
@@ -372,7 +373,7 @@ body.customer-bookshelf-body {
   place-items: center;
   font-size: 1rem;
   font-weight: bold;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.16s ease;
 }
 
 .stepper-btn.minus {
@@ -393,11 +394,51 @@ body.customer-bookshelf-body {
   background: #bbf7d0;
 }
 
+.stepper-btn:hover { transform: scale(1.08); }
+.stepper-btn:active { transform: scale(0.92); }
+
 .stepper-qty {
   font-weight: 700;
   padding: 0 6px;
   font-size: 0.9rem;
   color: var(--text-primary);
+}
+
+.stepper-qty-input {
+  width: 31px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font: 700 0.82rem 'Plus Jakarta Sans', sans-serif;
+  text-align: center;
+  outline: none;
+}
+.stepper-qty-input:focus {
+  box-shadow: none;
+}
+.stepper-qty-input::-webkit-inner-spin-button,
+.stepper-qty-input::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+.stepper-quantity-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 30px;
+  padding: 0 7px;
+  border-radius: 10px;
+  background: #f8f2e9;
+  color: var(--text-secondary);
+  cursor: text;
+}
+.stepper-quantity-field span {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
 }
 
 .badge-out-of-stock {

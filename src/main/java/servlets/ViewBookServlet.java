@@ -197,7 +197,10 @@ public class ViewBookServlet extends HttpServlet {
                 button = "<form method='post' action='viewbook' class='cart-stepper'>"
                         + "<button type='submit' name='removeFromCart' class=\"stepper-btn minus\" title=\"Bớt một\">&minus;</button>"
                         + "<input type='hidden' name='selectedBookId' value='" + bCode + "'/>"
-                        + "<span class='stepper-qty'>" + cartItemQty + "</span>"
+                        + "<label class='stepper-quantity-field' title='Nhập số lượng rồi nhấn Enter hoặc rời khỏi ô'>"
+                        + "<span>SL</span><input type='number' name='quantity' class='stepper-qty-input' value='" + cartItemQty + "' min='1' max='" + bQty + "' inputmode='numeric' aria-label='Số lượng " + escapeHtml(book.getName()) + "' onkeydown=\"if(event.key==='Enter'){event.preventDefault();this.form.requestSubmit(this.form.querySelector('.quantity-update'));}\" onblur=\"this.form.requestSubmit(this.form.querySelector('.quantity-update'));\">"
+                        + "</label>"
+                        + "<button type='submit' name='setQuantity' class=\"quantity-update\" hidden aria-label=\"Cập nhật số lượng\"></button>"
                         + "<button type='submit' name='addToCart' class=\"stepper-btn plus\" title=\"Thêm một\">&plus;</button>"
                         + "</form>";
             }

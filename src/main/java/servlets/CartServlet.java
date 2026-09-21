@@ -145,12 +145,21 @@ public class CartServlet extends HttpServlet {
                 + "        <form method='post' action='cart' class='cart-stepper'>"
                 + "          <button type='submit' name='removeFromCart' class=\"stepper-btn minus\" title=\"Giảm một\">&minus;</button>"
                 + "          <input type='hidden' name='selectedBookId' value='" + book.getBarcode() + "'/>"
-                + "          <span class=\"stepper-qty\">" + cart.getQuantity() + "</span>"
+                + "          <label class='stepper-quantity-field' title='Nhập số lượng rồi nhấn Enter hoặc rời khỏi ô'>"
+                + "          <span>SL</span><input type='number' name='quantity' class='stepper-qty-input' value='" + cart.getQuantity() + "' min='1' max='" + book.getQuantity() + "' inputmode='numeric' aria-label='Số lượng " + escapeHtml(book.getName()) + "' onkeydown=\"if(event.key==='Enter'){event.preventDefault();this.form.requestSubmit(this.form.querySelector('.quantity-update'));}\" onblur=\"this.form.requestSubmit(this.form.querySelector('.quantity-update'));\">"
+                + "          </label>"
+                + "          <button type='submit' name='setQuantity' class=\"quantity-update\" hidden aria-label=\"Cập nhật số lượng\"></button>"
                 + "          <button type='submit' name='addToCart' class=\"stepper-btn plus\" title=\"Tăng một\">&plus;</button>"
                 + "        </form>"
                 + "      </td>"
                 + "      <td class=\"price-cell\"><strong>" + StoreUtil.formatPrice(book.getPrice() * cart.getQuantity()) + "</strong></td>"
                 + "    </tr>";
+    }
+
+    private String escapeHtml(String value) {
+        if (value == null) return "";
+        return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                .replace("\"", "&quot;").replace("'", "&#39;");
     }
 
 }
