@@ -58,6 +58,8 @@ public class AdminStatisticsServlet extends HttpServlet {
         int pendingOrders = 0;
         int confirmedOrders = 0;
         int lowStockTitleCount = 0;
+        int slowMovingStockCount = 0;
+        double slowMovingStockValue = 0.0;
 
         List<String> revDates = new ArrayList<>();
         List<Double> revAmounts = new ArrayList<>();
@@ -71,6 +73,7 @@ public class AdminStatisticsServlet extends HttpServlet {
         List<Integer> statusCounts = new ArrayList<>();
 
         List<Map<String, Object>> lowStockBooks = new ArrayList<>();
+        List<Map<String, Object>> slowMovingStockBooks = new ArrayList<>();
         List<Map<String, Object>> recentOrders = new ArrayList<>();
 
         try {
@@ -129,6 +132,20 @@ public class AdminStatisticsServlet extends HttpServlet {
             try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM books WHERE quantity <= 5")) {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) lowStockTitleCount = rs.getInt(1);
+                }
+            }
+
+            // Books still in stock with no completed sale in the last 90 days.
+            String slowMovingSummaryQuery = "SELECT COUNT(*), COALESCE(SUM(b.quantity * b.price), 0) "
+                    + "FROM books b WHERE b.quantity > 0 AND NOT EXISTS ("
+                    + "SELECT 1 FROM order_details od JOIN orders o ON o.order_id = od.order_id "
+                    + "WHERE od.book_barcode = b.barcode AND o.status = 'COMPLETED' "
+                    + "AND o.order_date >= DATE_SUB(CURDATE(), INTERVAL 90 DAY))";
+            try (PreparedStatement ps = con.prepareStatement(slowMovingSummaryQuery);
+                 ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    slowMovingStockCount = rs.getInt(1);
+                    slowMovingStockValue = rs.getDouble(2);
                 }
             }
 
@@ -229,6 +246,27 @@ public class AdminStatisticsServlet extends HttpServlet {
                 }
             }
 
+            String slowMovingBooksQuery = "SELECT b.barcode, b.name, b.author, b.price, b.quantity, "
+                    + "DATE_FORMAT(MAX(o.order_date), '%d/%m/%Y') AS last_sold "
+                    + "FROM books b LEFT JOIN order_details od ON od.book_barcode = b.barcode "
+                    + "LEFT JOIN orders o ON o.order_id = od.order_id AND o.status = 'COMPLETED' "
+                    + "WHERE b.quantity > 0 GROUP BY b.barcode, b.name, b.author, b.price, b.quantity "
+                    + "HAVING MAX(o.order_date) IS NULL OR MAX(o.order_date) < DATE_SUB(CURDATE(), INTERVAL 90 DAY) "
+                    + "ORDER BY (b.quantity * b.price) DESC LIMIT 8";
+            try (PreparedStatement ps = con.prepareStatement(slowMovingBooksQuery);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> b = new HashMap<>();
+                    b.put("barcode", rs.getString("barcode"));
+                    b.put("name", rs.getString("name"));
+                    b.put("author", rs.getString("author"));
+                    b.put("quantity", rs.getInt("quantity"));
+                    b.put("stockValue", rs.getDouble("price") * rs.getInt("quantity"));
+                    b.put("lastSold", rs.getString("last_sold"));
+                    slowMovingStockBooks.add(b);
+                }
+            }
+
             // 10. Recent Orders (Latest 8)
             String recentOrdersQuery = "SELECT order_id, username, order_date, total_amount, status FROM orders ORDER BY order_date DESC LIMIT 8";
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
@@ -260,6 +298,8 @@ public class AdminStatisticsServlet extends HttpServlet {
         req.setAttribute("pendingOrders", pendingOrders);
         req.setAttribute("confirmedOrders", confirmedOrders);
         req.setAttribute("lowStockTitleCount", lowStockTitleCount);
+        req.setAttribute("slowMovingStockCount", slowMovingStockCount);
+        req.setAttribute("slowMovingStockValue", slowMovingStockValue);
 
         req.setAttribute("revenueDatesJson", toJsonArrayStrings(revDates));
         req.setAttribute("revenueAmountsJson", toJsonArrayNumbers(revAmounts));
@@ -273,6 +313,7 @@ public class AdminStatisticsServlet extends HttpServlet {
         req.setAttribute("statusCountsJson", toJsonArrayIntegers(statusCounts));
 
         req.setAttribute("lowStockBooks", lowStockBooks);
+        req.setAttribute("slowMovingStockBooks", slowMovingStockBooks);
         req.setAttribute("recentOrders", recentOrders);
 
         // Forward to JSP View

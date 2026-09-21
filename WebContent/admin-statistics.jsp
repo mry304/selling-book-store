@@ -651,6 +651,8 @@
                   int confirmedOrders = (Integer)request.getAttribute("confirmedOrders");
                   int actionableOrders = pendingOrders + confirmedOrders;
                   int lowStockTitleCount = (Integer)request.getAttribute("lowStockTitleCount");
+                  int slowMovingStockCount = (Integer)request.getAttribute("slowMovingStockCount");
+                  double slowMovingStockValue = (Double)request.getAttribute("slowMovingStockValue");
                   %>
                   <div class="store-operation-metric">
                     <div>
@@ -685,6 +687,17 @@
                     </div>
                     <div class="store-operation-icon metric-stock">📦</div>
                   </a>
+
+                  <a href="#slow-moving-stock" class="store-operation-metric store-operation-link">
+                    <div>
+                      <div class="store-operation-label">Hàng tồn đọng (90 ngày)</div>
+                      <div class="store-operation-value <%= slowMovingStockCount > 0 ? "metric-alert" : "metric-good" %>">
+                        <%= slowMovingStockCount > 0 ? slowMovingStockCount + " đầu sách" : "Không có" %>
+                      </div>
+                      <div class="store-operation-detail"><%= String.format("%,.0f đ giá trị tồn", slowMovingStockValue) %></div>
+                    </div>
+                    <div class="store-operation-icon metric-slow-stock">⏳</div>
+                  </a>
               </div>
             </div>
 
@@ -694,6 +707,52 @@
                 <span>Quản Lý Kho Sách Cửa Hàng</span> &rarr;
               </a>
             </div>
+          </div>
+        </div>
+
+        <div class="chart-card" id="slow-moving-stock" style="margin-bottom:28px;">
+          <div class="chart-card-header">
+            <div>
+              <h3 class="chart-card-title">⏳ Hàng Tồn Đọng</h3>
+              <p class="chart-card-subtitle">Còn trong kho nhưng không có đơn hoàn tất trong 90 ngày gần nhất</p>
+            </div>
+            <a href="storebooks" class="nav-pill-btn" style="font-size:0.8rem; padding:6px 14px;">Quản lý kho &rarr;</a>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-hover align-middle" style="margin:0; font-size:0.9rem;">
+              <thead style="background:var(--shelf-surface);">
+                <tr>
+                  <th style="padding:10px 14px;">Tựa sách</th>
+                  <th style="padding:10px 14px; text-align:center;">Tồn kho</th>
+                  <th style="padding:10px 14px;">Lần bán hoàn tất gần nhất</th>
+                  <th style="padding:10px 14px; text-align:right;">Giá trị tồn</th>
+                  <th style="padding:10px 14px; text-align:center;">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% List<Map<String, Object>> slowMoving = (List<Map<String, Object>>) request.getAttribute("slowMovingStockBooks");
+                   if (slowMoving == null || slowMoving.isEmpty()) { %>
+                  <tr><td colspan="5" class="text-center py-4" style="color:var(--text-secondary);">🎉 Không có sách tồn đọng theo mốc 90 ngày.</td></tr>
+                <% } else { for (Map<String, Object> b : slowMoving) { %>
+                  <tr>
+                    <td style="vertical-align:middle; padding:12px 14px;">
+                      <div style="font-weight:700; color:var(--text-primary);"><%= b.get("name") %></div>
+                      <div style="font-size:0.78rem; color:var(--text-secondary);"><%= b.get("author") %></div>
+                    </td>
+                    <td style="vertical-align:middle; text-align:center; padding:12px 14px;"><strong><%= b.get("quantity") %> cuốn</strong></td>
+                    <td style="vertical-align:middle; padding:12px 14px;"><%= b.get("lastSold") != null ? b.get("lastSold") : "Chưa từng bán" %></td>
+                    <td style="vertical-align:middle; text-align:right; padding:12px 14px; font-weight:700; color:var(--accent-hover);"><%= String.format("%,.0f đ", (Double)b.get("stockValue")) %></td>
+                    <td style="vertical-align:middle; text-align:center; padding:12px 14px;">
+                      <form method="post" action="updatebook" style="margin:0;">
+                        <input type="hidden" name="bookId" value="<%= b.get("barcode") %>">
+                        <button type="submit" class="nav-pill-btn" style="padding:5px 12px; font-size:0.8rem; background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); cursor:pointer;">Xem / sửa</button>
+                      </form>
+                    </td>
+                  </tr>
+                <% } } %>
+              </tbody>
+            </table>
           </div>
         </div>
 

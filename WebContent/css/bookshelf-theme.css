@@ -2047,6 +2047,7 @@ body.admin-bookshelf-body .bookshelf-canvas .bookshelf-page-container {
 .metric-aov { background: #f4e7d7; }
 .metric-orders { background: #ffedd5; }
 .metric-stock { background: #dcfce7; }
+.metric-slow-stock { background: #fee2e2; }
 
 /* Tables in Dashboard */
 .stats-tables-row {
